@@ -1,92 +1,82 @@
 import { CreateUserDto } from './dtos/create-user-dto';
 import { UpdateUserDto } from './dtos/update-user-dto';
-import { NotFoundException, Injectable} from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument } from './schema/user-schema';
+import { Model, isValidObjectId } from 'mongoose';
 
- export type UserRole = 'ADMIN' | 'DEVS' | "QA";
+export type UserRole = 'ADMIN' | 'DEVS' | 'QA';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  ) {}
 
-  private users = [
-    {
-      id: 1,
-      name: 'Alex Rivers',
-      email: 'alex.rivers@example.com',
-      role: 'ADMIN',
-    },
-    {
-      id: 2,
-      name: 'Sam Varma',
-      email: 'sam.varma@example.com',
-      role: 'DEVS',
-    },
-    {
-      id: 3,
-      name: 'Jordan Lee',
-      email: 'jordan.lee@example.com',
-      role: 'QA',
-    },
-    {
-      id: 4,
-      name: 'Taylor Chen',
-      email: 'taylor.chen@example.com',
-      role: 'DEVS',
-    },
-    {
-      id: 5,
-      name: 'Morgan Smith',
-      email: 'morgan.smith@example.com',
-      role: 'QA',
-    },
-  ];
+  // Get All Users
+  async findAll(role?: UserRole): Promise<User[]> {
+    if (role) {
+      return this.userModel.find({ role }).exec();
+    }
+    return this.userModel.find().exec();
+  }
 
-  findAll(role?: UserRole) {
-    if (role){
-        const roleArray = this.users.filter(user => user.role === role)
-        if(roleArray.length === 0) throw new NotFoundException('User Role not Found')
-        return roleArray
+  // Get User by ID
+  async findOne(id: string): Promise<User> {
+    this.validateObjectId(id);
+
+    const user = await this.userModel.findById(id).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    return this.users
+    return user;
   }
 
-  findOne(id: number){
-    const user = this.users.find(user => user.id === id)
-    if(!user) throw new NotFoundException('User Not Found')
-    return user
+  //Create User
+  async create(user: CreateUserDto): Promise<User> {
+    const newUser = new this.userModel(user);
+    return newUser.save();
   }
 
-  create(user: CreateUserDto){
-    const usersByHighestId = [...this.users].sort((a,b) => b.id - a.id)
+  //Update
+  async patch(id: string, updatedUser: UpdateUserDto): Promise<User> {
+    this.validateObjectId(id);
 
-    const newUser = {
-        id: usersByHighestId[0].id + 1,
-        ...user
+    const existingUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        updatedUser,
+        { returnDocument: 'after'},
+      )
+      .exec();
+
+    if (!existingUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
-    this.users.push(newUser)
-    return newUser
+    return existingUser;
   }
 
-  patch(id: number, updatedUser: UpdateUserDto){
-    this.users = this.users.map(user => {
-        if(user.id == id) {
-            return {...user, ...updatedUser}
-        }
-        return user;
-    });
+  async delete(id: string): Promise<User> {
+    this.validateObjectId(id);
 
-    return this.findOne(id)
-  }
+    const removedUser = await this.userModel.findByIdAndDelete(id).exec();
 
-
-
-   delete(id: number){
-    const removedUser = this.findOne(id)
-
-    this.users = this.users.filter(user => user.id !== id)
+    if (!removedUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
 
     return removedUser;
-
   }
 
+  private validateObjectId(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException(`Invalid MongoDB ObjectId: ${id}`);
+    }
+  }
 }
