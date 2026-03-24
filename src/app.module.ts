@@ -1,37 +1,37 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 
-// Base App files
+// Core Infrastructure
+import { DatabaseModule } from './core/database/database-module';
+
+// Feature Modules
+import { UsersModule } from './features/users/users.module';
+import { SprintsModule } from './features/sprints/sprints.module';
+import { TicketsModule } from './features/tickets/tickets.module';
+import { TeamsModule } from './features/teams/teams.module';
+
+// App Base (Optional - consider moving to a 'Health' feature later)
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// Feature Modules
-import { UsersModule } from './users/users.module';
 @Module({
   imports: [
-    // 1. Setup Environment Config
+    // 1. Global Configuration
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
 
-    // 2. Database Connection (Asynchronous)
-    MongooseModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        uri: config.get<string>('MONGODB_URI'),
-      }),
-    }),
+    // 2. Centralized Infrastructure
+    DatabaseModule,
 
-    // 3. Feature Modules
-    UsersModule
-    // ProjectsModule,
-    // TicketsModule,
-    // SprintsModule,
-    // TeamsModule,
+    // 3. Business Features
+    UsersModule,
+    SprintsModule,
+    TicketsModule,
+    TeamsModule,
   ],
   controllers: [AppController],
-  providers: [AppService], 
+  providers: [AppService],
 })
 export class AppModule {}

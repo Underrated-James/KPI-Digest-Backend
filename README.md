@@ -97,5 +97,29 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
+Flow:
 
-Controller -> UseCase -> UserRepository (interface) -> UserMongooseRepository -> MongoDB
+HTTP Request (POST/GET/PATCH/PUT/DELETE)
+↓
+UsersController (@Controller)
+↓
+Use Cases (CreateUserUseCase, GetUsersUseCase, etc.)
+↓
+UserRepository Interface (injected via @Inject('UserRepository'))
+↓
+UserMongooseRepository (implements UserRepository)
+↓
+Mongoose UserModel (MongoDB Driver)
+↓
+MongoDB
+↓
+[Response Path]
+Mongoose Document
+↓
+toEntity() method (converts to UserEntity)
+↓
+UserEntity (Domain Entity)
+↓
+UserResponseDto (mapping UserEntity fields)
+↓
+HTTP Response
