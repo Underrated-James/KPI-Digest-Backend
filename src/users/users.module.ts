@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './presentation/http/users.controller';
+import { UsersController } from './application/controllers/users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './infrastracture/persistence/schema/user-schema';
-import { UserMongooseRepository } from './infrastracture/persistence/user-mongoose-repositories';
+import { UserMongooseRepository } from './application/service/user-impl-repository';
 import { GetUsersUseCase } from './application/use-cases/get-users-use-case';
 import { CreateUserUseCase } from './application/use-cases/create-user-use-case';
 import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id-use-case';
-import { UpdateUserUseCase } from './application/use-cases/update-user-use-case';
+import { PatchUserUseCase } from './application/use-cases/patch-user-use-case';
+import { PutUserUseCase } from './application/use-cases/put-user-use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user-use-case';
+import { User } from './domain/persistence/entities/user.entity';
+import { UserSchema } from './domain/persistence/schema/user-schema';
 
 @Module({
     imports: [
@@ -18,7 +20,8 @@ import { DeleteUserUseCase } from './application/use-cases/delete-user-use-case'
         GetUsersUseCase,
         CreateUserUseCase,
         GetUserByIdUseCase,
-        UpdateUserUseCase,
+        PatchUserUseCase,
+        PutUserUseCase,
         DeleteUserUseCase,
         {
             provide: 'UserRepository',
@@ -30,7 +33,8 @@ import { DeleteUserUseCase } from './application/use-cases/delete-user-use-case'
         GetUsersUseCase,
         CreateUserUseCase,
         GetUserByIdUseCase,
-        UpdateUserUseCase,
+        PatchUserUseCase,
+        PutUserUseCase,
         DeleteUserUseCase
     ]
 })

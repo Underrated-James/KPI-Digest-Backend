@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { type UserRepository } from '../../domain/repositories/user.repository';
-import { User as UserEntity } from '../../domain/entities/user.entity';
-import { UserRole } from '../../domain/entities/user-role.enum';
+import { type UserRepository } from '../../infrastracture/repositories/user.repository';
+import { User as UserEntity } from '../../domain/persistence/entities/user.entity';
+import { UserRole } from '../../domain/persistence/enums/user-role.enum';
 
 @Injectable()
 export class GetUsersUseCase {
