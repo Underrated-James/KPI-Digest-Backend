@@ -1,10 +1,10 @@
 import { Project as ProjectEntity } from 'src/features/project/domain/entities/project.entity';
-
+import { ProjectStatus } from 'src/features/project/domain/enums/project-status-enums';
 export class ProjectResponseDto {
   constructor(
     public readonly id: string,
     public readonly name: string,
-    public readonly status: boolean,
+    public readonly status: ProjectStatus,
     public readonly finishDate: Date,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,

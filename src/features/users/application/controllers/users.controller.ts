@@ -21,6 +21,7 @@ import { PatchUserDto } from '../api/dtos/request/patch-user-dto';
 import { PutUserDto } from '../api/dtos/request/put-user-dto';
 import { UserResponseDto } from '../api/dtos/response/user-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
+import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 
 @Controller('users')
 export class UsersController {
@@ -42,7 +43,7 @@ export class UsersController {
 
   @Get(':id') // Get a user by ID
   @ResponseMessage('User retrieved successfully')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseMongoIdPipe) id: string) {
     const user = await this.getUserByIdUseCase.execute(id);
     return UserResponseDto.fromEntity(user);
   }
@@ -56,21 +57,27 @@ export class UsersController {
 
   @Patch(':id')
   @ResponseMessage('User updated successfully')
-  async patch(@Param('id') id: string, @Body() userUpdate: PatchUserDto) {
+  async patch(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Body() userUpdate: PatchUserDto,
+  ) {
     const user = await this.patchUserUseCase.execute(id, userUpdate);
     return UserResponseDto.fromEntity(user);
   }
 
   @Put(':id')
   @ResponseMessage('User updated successfully')
-  async put(@Param('id') id: string, @Body() userUpdate: PutUserDto) {
+  async put(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Body() userUpdate: PutUserDto,
+  ) {
     const user = await this.putUserUseCase.execute(id, userUpdate);
     return UserResponseDto.fromEntity(user);
   }
 
   @Delete(':id') // Delete a user by ID
   @ResponseMessage('User deleted successfully')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id', ParseMongoIdPipe) id: string) {
     await this.deleteUserUseCase.execute(id);
     return { id };
   }

@@ -1,8 +1,10 @@
+import { ProjectStatus } from '../enums/project-status-enums';
+
 export class Project {
   constructor(
     public readonly id: string,
     public _name: string,
-    public _status: boolean,
+    public _status: ProjectStatus,
     public _finishDate: Date,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
@@ -12,7 +14,7 @@ export class Project {
     return this._name;
   }
 
-  get status(): boolean {
+  get status(): ProjectStatus {
     return this._status;
   }
 
@@ -31,11 +33,11 @@ export class Project {
   updateName(name: string): void {
     this._name = name;
   }
-  updatestatus(status: boolean): void {
+  updateStatus(status: ProjectStatus): void {
     this._status = status;
   }
 
-  updatefinishDate(finishDate: Date): void {
+  updateFinishDate(finishDate: Date): void {
     this._finishDate = finishDate;
   }
 }
