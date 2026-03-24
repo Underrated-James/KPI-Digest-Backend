@@ -1,5 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { isValidObjectId } from 'mongoose';
+import { Injectable, Inject} from '@nestjs/common';
 import { type UserRepository } from '../../infrastracture/repositories/user.repository';
 import { UserNotFoundError } from '../../presentation/errors/user-not-found.error';
 
@@ -11,10 +10,6 @@ export class DeleteUserUseCase {
   ) {}
 
   async execute(id: string): Promise<void> {
-    if (!isValidObjectId(id)) {
-     throw new NotFoundException(`User not found with ID: ${id}`);
-    }
-
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new UserNotFoundError(id);
