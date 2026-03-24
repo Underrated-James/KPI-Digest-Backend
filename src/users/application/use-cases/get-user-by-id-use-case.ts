@@ -1,8 +1,8 @@
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
-import { type UserRepository } from '../../domain/repositories/user.repository';
-import { User as UserEntity } from '../../domain/entities/user.entity';
-import { UserNotFoundError } from '../../domain/errors/user-not-found.error';
+import { type UserRepository } from '../../infrastracture/repositories/user.repository';
+import { User as UserEntity } from '../../domain/persistence/entities/user.entity';
+import { UserNotFoundError } from '../../presentation/errors/user-not-found.error';
 
 @Injectable()
 export class GetUserByIdUseCase {
@@ -13,7 +13,7 @@ export class GetUserByIdUseCase {
 
     async execute(id: string): Promise<UserEntity> {
         if (!isValidObjectId(id)) {
-            throw new BadRequestException(`Invalid MongoDB ObjectId: ${id}`);
+            throw new NotFoundException(`User not found with ID: ${id}`);
         }
 
         const user = await this.userRepository.findById(id);

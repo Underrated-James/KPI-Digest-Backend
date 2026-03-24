@@ -1,7 +1,8 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UserRole } from '../../domain/entities/user-role.enum';
+import { UserRole } from 'src/users/domain/persistence/enums/user-role.enum';
 
-export class CreateUserDto {
+
+export class PutUserDto {
 
     @IsNotEmpty()
     @IsString()
