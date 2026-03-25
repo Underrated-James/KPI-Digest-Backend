@@ -1,26 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSprintDto } from './dto/create-sprint.dto';
-import { UpdateSprintDto } from './dto/update-sprint.dto';
+import {
+  Injectable
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
+import { Model } from 'mongoose';
+import { Sprint, SprintDocument } from './domain/schema/sprint-schema';
 
 @Injectable()
-export class SprintsService {
-  create(createSprintDto: CreateSprintDto) {
-    return 'This action adds a new sprint';
-  }
+export class SprintService {
+  constructor(
+    @InjectModel(Sprint.name) private readonly sprintModel: Model<SprintDocument>,
+  ) { }
 
-  findAll() {
-    return `This action returns all sprints`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} sprint`;
-  }
-
-  update(id: number, updateSprintDto: UpdateSprintDto) {
-    return `This action updates a #${id} sprint`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} sprint`;
-  }
 }
