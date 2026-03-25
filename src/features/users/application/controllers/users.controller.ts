@@ -43,7 +43,7 @@ export class UsersController {
 
   @Get(':id') // Get a user by ID
   @ResponseMessage('User retrieved successfully')
-  async findOne(@Param('id', ParseMongoIdPipe) id: string) {
+  async findOne(@Param('id', new ParseMongoIdPipe('User')) id: string) {
     const user = await this.getUserByIdUseCase.execute(id);
     return UserResponseDto.fromEntity(user);
   }
@@ -58,7 +58,7 @@ export class UsersController {
   @Patch(':id')
   @ResponseMessage('User updated successfully')
   async patch(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id', new ParseMongoIdPipe('User')) id: string,
     @Body() userUpdate: PatchUserDto,
   ) {
     const user = await this.patchUserUseCase.execute(id, userUpdate);
@@ -68,7 +68,7 @@ export class UsersController {
   @Put(':id')
   @ResponseMessage('User updated successfully')
   async put(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id', new ParseMongoIdPipe('User')) id: string,
     @Body() userUpdate: PutUserDto,
   ) {
     const user = await this.putUserUseCase.execute(id, userUpdate);
@@ -77,7 +77,7 @@ export class UsersController {
 
   @Delete(':id') // Delete a user by ID
   @ResponseMessage('User deleted successfully')
-  async delete(@Param('id', ParseMongoIdPipe) id: string) {
+  async delete(@Param('id', new ParseMongoIdPipe('User')) id: string) {
     await this.deleteUserUseCase.execute(id);
     return { id };
   }
