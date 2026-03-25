@@ -20,11 +20,13 @@ export class PutSprintUseCase {
 
     const sprintToUpdate = new SprintEntity(
       id,
+      dto.projectId,
       dto.name,
       dto.status,
       dto.startDate,
       dto.endDate,
       dto.workingHoursDay,
+      dto.dayOff,
     );
 
     const updatedSprint = await this.sprintRepository.put(id, sprintToUpdate);

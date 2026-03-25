@@ -11,11 +11,13 @@ import { GetSprintUseCase } from './application/use-cases/get-sprints-use-case';
 import { PatchSprintUseCase } from './application/use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from './application/use-cases/put-sprint-use-case';
 import { Sprint } from './domain/entities/sprint.entity';
+import { ProjectModule } from '../project/project.module';
 
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: Sprint.name, schema: SprintSchema }])
+        MongooseModule.forFeature([{ name: Sprint.name, schema: SprintSchema }]),
+        ProjectModule
     ],
     controllers: [SprintController],
     providers: [
