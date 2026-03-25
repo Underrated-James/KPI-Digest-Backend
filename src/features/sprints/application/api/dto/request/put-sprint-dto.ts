@@ -7,11 +7,19 @@ import {
   Min,
   MaxLength,
   MinLength,
+  IsArray,
+  IsOptional,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
+import { DayOffDto } from './child/create-sprint-child-dto';
 
 export class PutSprintDto {
+  @IsString()
+  @IsNotEmpty()
+  projectId: string;
+
   @IsString()
   @IsNotEmpty({ message: 'Name is required' })
   @MaxLength(50, { message: 'Project name is too long (max 50 characters)' })
@@ -39,4 +47,10 @@ export class PutSprintDto {
     message: 'Working hours cannot exceed $constraint1 hours per day',
   })
   workingHoursDay: number;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => DayOffDto)
+  dayOff: DayOffDto[];
 }

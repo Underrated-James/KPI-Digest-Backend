@@ -19,11 +19,13 @@ export class SprintMongooseRepository implements SprintRepository {
   private toEntity(doc: SprintDocument): SprintEntity {
     return new SprintEntity(
       doc._id.toString(),
+      doc.projectId,
       doc.name,
       doc.status,
       doc.startDate,
       doc.endDate,
       doc.workingHoursDay,
+      doc.dayOff || [],
       doc.createdAt,
       doc.updatedAt
     );
@@ -32,12 +34,14 @@ export class SprintMongooseRepository implements SprintRepository {
   // Create Sprint
   async create(sprint: SprintEntity): Promise<SprintEntity> {
     const createdSprint = new this.SprintModel({
+      projectId: sprint.projectId,
       name: sprint.name,
       status: sprint.status,
       sprintDuration: sprint.sprintDuration,
       startDate: sprint.startDate,
       endDate: sprint.endDate,
       workingHoursDay: sprint.workingHoursDay,
+      dayOff: sprint.dayOff,
     });
     const doc = await createdSprint.save();
     return this.toEntity(doc);
@@ -62,24 +66,28 @@ export class SprintMongooseRepository implements SprintRepository {
     project: Partial<SprintEntity>,
   ): Promise<SprintEntity | null> {
     const updateData: any = {};
+    if (project.projectId) updateData.projectId = project.projectId;
     if (project.name) updateData.name = project.name;
     if (project.status) updateData.status = project.status;
     if (project.startDate) updateData.startDate = project.startDate;
     if (project.endDate) updateData.endDate = project.endDate;
     if (project.workingHoursDay) updateData.workingHoursDay = project.workingHoursDay;
+    if (project.dayOff) updateData.dayOff = project.dayOff;
 
-    // Recalculate duration if dates changed
-    if (project.startDate || project.endDate) {
-      // We need the full entity to calculate duration properly if only one date is provided
+    // Recalculate duration if dates or dayOff changed
+    if (project.startDate || project.endDate || project.dayOff) {
+      // We need the full entity to calculate duration properly if only one field is provided
       const current = await this.findById(id);
       if (current) {
         const tempEntity = new SprintEntity(
           id,
+          project.projectId || current.projectId,
           project.name || current.name,
           project.status || current.status,
           project.startDate || current.startDate,
           project.endDate || current.endDate,
-          project.workingHoursDay || current.workingHoursDay
+          project.workingHoursDay || current.workingHoursDay,
+          project.dayOff || current.dayOff
         );
         updateData.sprintDuration = tempEntity.sprintDuration;
       }
@@ -95,12 +103,14 @@ export class SprintMongooseRepository implements SprintRepository {
   //PUT Sprint by ID
   async put(id: string, sprint: SprintEntity): Promise<SprintEntity | null> {
     const updateData = {
+      projectId: sprint.projectId,
       name: sprint.name,
       status: sprint.status,
       sprintDuration: sprint.sprintDuration,
       startDate: sprint.startDate,
       endDate: sprint.endDate,
       workingHoursDay: sprint.workingHoursDay,
+      dayOff: sprint.dayOff,
     };
 
     const doc = await this.SprintModel

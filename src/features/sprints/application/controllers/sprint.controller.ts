@@ -15,7 +15,7 @@ import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 import { SprintResponseDto } from '../api/dto/response/sprint-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
-import { CreateSprintDto } from '../api/dto/request/create-sprint-dto';
+import { CreateSprintDto } from '../api/dto/request/create-sprint-parent-dto';
 import { PatchSprintDto } from '../api/dto/request/patch-sprint-dto';
 import { PutSprintDto } from '../api/dto/request/put-sprint-dto';
 import { CreateSprintUseCase } from '../use-cases/create-sprint-use-case';
