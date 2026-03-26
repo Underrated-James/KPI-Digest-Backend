@@ -10,23 +10,21 @@ import { ProjectModule } from './features/project/project.module';
 import { SprintsModule } from './features/sprints/sprints.module';
 import { TicketsModule } from './features/tickets/tickets.module';
 import { TeamsModule } from './features/teams/teams.module';
-
-// App Base (Optional - consider moving to a 'Health' feature later)
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
   imports: [
-    // 1. Global Configuration
+    // Global Configuration
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
 
-    // 2. Centralized Infrastructure
+    // Centralized Infrastructure
     DatabaseModule,
 
-    // 3. Business Features
+    // Business Features
     UsersModule,
     ProjectModule,
     SprintsModule,

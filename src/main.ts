@@ -11,6 +11,7 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
+    stopAtFirstError: true,
     exceptionFactory: (errors) => {
       const messages = errors.flatMap((error) => {
         if (error.constraints) {

@@ -47,15 +47,18 @@ export class SprintController {
   // Get All Projects
   @Get()
   @ResponseMessage('Sprints retrieved successfully')
-  async findAll(@Query('status') status?: SprintStatus) {
-    const sprints = await this.getSprintUseCase.execute(status);
+  async findAll(
+    @Query('status') status?: SprintStatus,
+    @Query('project') projectId?: string,
+  ) {
+    const sprints = await this.getSprintUseCase.execute(status, projectId);
     return SprintResponseDto.fromEntities(sprints);
   }
 
   // Get a Project by ID
   @Get(':id')
   @ResponseMessage('Sprint retrieved successfully')
-  async findOne(@Param('id', ParseMongoIdPipe) id: string) {
+  async findOne(@Param('id', new ParseMongoIdPipe('Sprint')) id: string) {
     const sprint = await this.getSprintByIdUseCase.execute(id);
     return SprintResponseDto.fromEntity(sprint);
   }
@@ -64,7 +67,7 @@ export class SprintController {
   @Patch(':id')
   @ResponseMessage('Sprint patched successfully')
   async patch(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id', new ParseMongoIdPipe('Sprint')) id: string,
     @Body() patchSprintDto: PatchSprintDto
   ) {
     const sprint = await this.patchSprintUseCase.execute(id, patchSprintDto);
@@ -74,7 +77,7 @@ export class SprintController {
   @Put(':id')
   @ResponseMessage('Sprint put successfully')
   async put(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id', new ParseMongoIdPipe('Sprint')) id: string,
      @Body() putSprintDto: PutSprintDto
     ) {
       const sprint = await this.putSprintUseCase.execute(id, putSprintDto);
@@ -83,7 +86,7 @@ export class SprintController {
 
   @Delete(':id')
   @ResponseMessage('Sprint deleted successfully')
-  async remove(@Param('id', ParseMongoIdPipe) id: string) {
+  async remove(@Param('id', new ParseMongoIdPipe('Sprint')) id: string) {
     await this.deleteSprintUseCase.execute(id);
   }
 }

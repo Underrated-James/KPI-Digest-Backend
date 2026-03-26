@@ -10,7 +10,7 @@ import { GetSprintByIdUseCase } from './application/use-cases/get-sprint-by-id-u
 import { GetSprintUseCase } from './application/use-cases/get-sprints-use-case';
 import { PatchSprintUseCase } from './application/use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from './application/use-cases/put-sprint-use-case';
-import { Sprint } from './domain/entities/sprint.entity';
+import { Sprint } from './domain/entities/sprint-entity';
 import { ProjectModule } from '../project/project.module';
 
 

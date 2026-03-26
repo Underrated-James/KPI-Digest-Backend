@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type SprintRepository } from '../../infrastracture/repository/sprint-repository';
-import { Sprint as SprintEntity } from '../../domain/entities/sprint.entity';
+import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import { SprintNotFoundError } from './../../presentation/errors/sprint-not-found';
 @Injectable()
 export class GetSprintByIdUseCase {

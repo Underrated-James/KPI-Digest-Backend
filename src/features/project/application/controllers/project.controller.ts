@@ -54,7 +54,7 @@ export class ProjectController {
   // Get a Project by ID
   @Get(':id')
   @ResponseMessage('Project retrieved successfully')
-  async findOne(@Param('id', ParseMongoIdPipe) id: string) {
+  async findOne(@Param('id', new ParseMongoIdPipe('Project')) id: string) {
     const project = await this.getProjectByIdUseCase.execute(id);
     return ProjectResponseDto.fromEntity(project);
   }
@@ -63,7 +63,7 @@ export class ProjectController {
   @Patch(':id')
   @ResponseMessage('Project patched successfully')
   async patch(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id', new ParseMongoIdPipe('Project')) id: string,
     @Body() patchProjectDto: PatchProjectDto
   ) {
     const project = await this.patchProjectUseCase.execute(id, patchProjectDto);
@@ -73,7 +73,7 @@ export class ProjectController {
   @Put(':id')
   @ResponseMessage('Project put successfully')
   async put(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id', new ParseMongoIdPipe('Project')) id: string,
      @Body() putProjectDto: PutProjectDto
     ) {
       const project = await this.putProjectUseCase.execute(id, putProjectDto);
@@ -82,7 +82,7 @@ export class ProjectController {
 
   @Delete(':id')
   @ResponseMessage('Project deleted successfully')
-  async remove(@Param('id', ParseMongoIdPipe) id: string) {
+  async remove(@Param('id', new ParseMongoIdPipe('Project')) id: string) {
     await this.deleteProjectUseCase.execute(id);
   }
 }

@@ -32,6 +32,12 @@ export class Sprint {
   @Prop({ required: true })
   workingHoursDay: number;
 
+  @Prop({ type: Date, default: null })
+  officialStartDate: Date | null;
+
+  @Prop({ type: Date, default: null })
+  officialEndDate: Date | null;
+
   @Prop({ type: [DayOffSchema], default: [] })
   dayOff: { label: string; date: string }[];
 
