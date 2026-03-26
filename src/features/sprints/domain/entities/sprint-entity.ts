@@ -14,7 +14,10 @@ export class Sprint {
     public _startDate: Date,
     public _endDate: Date,
     public _workingHoursDay: number,
+    public _sprintDuration: number,
     public _dayOff: DayOff[] = [],
+    public _officialStartDate: Date | null = null,
+    public _officialEndDate: Date | null = null,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) {}
@@ -28,34 +31,7 @@ export class Sprint {
   }
 
   get sprintDuration(): number {
-    let workingDaysCount = 0;
-    const curDate = new Date(this._startDate.getTime());
-    curDate.setHours(0, 0, 0, 0);
-    const end = new Date(this._endDate.getTime());
-    end.setHours(0, 0, 0, 0);
-
-    // Get unique valid dayOff dates within the sprint range
-    const validDayOffDates = new Set(
-      this._dayOff
-        .map(d => d.date)
-        .filter(dateStr => {
-          const d = new Date(dateStr);
-          d.setHours(0, 0, 0, 0);
-          return d >= curDate && d <= end;
-        })
-    );
-
-    while (curDate <= end) {
-      const dayOfWeek = curDate.getDay();
-      const dateStr = curDate.toISOString().split('T')[0];
-
-      // Only count if it's a weekday AND NOT in the valid dayOff list
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !validDayOffDates.has(dateStr)) {
-        workingDaysCount++;
-      }
-      curDate.setDate(curDate.getDate() + 1);
-    }
-    return workingDaysCount;
+    return this._sprintDuration;
   }
 
   get dayOff(): DayOff[] {
@@ -70,8 +46,16 @@ export class Sprint {
     return this._startDate;
   }
 
+  get officialStartDate(): Date | null {
+    return this._officialStartDate;
+  }
+
   get endDate(): Date {
     return this._endDate;
+  }
+
+  get officialEndDate(): Date | null {
+    return this._officialEndDate;
   }
 
   get workingHoursDay(): number {
@@ -98,12 +82,24 @@ export class Sprint {
     this._startDate = startDate;
   }
 
+  updateOfficialStartDate(officialStartDate: Date | null): void {
+    this._officialStartDate = officialStartDate;
+  }
+
   updateEndDate(endDate: Date): void {
     this._endDate = endDate;
   }
 
+  updateOfficialEndDate(officialEndDate: Date | null): void {
+    this._officialEndDate = officialEndDate;
+  }
+
   updateWorkingHoursDate(workingHoursDay: number): void {
     this._workingHoursDay = workingHoursDay;
+  }
+
+  updateSprintDuration(sprintDuration: number): void {
+    this._sprintDuration = sprintDuration;
   }
 
   updateDayOff(dayOff: DayOff[]): void {

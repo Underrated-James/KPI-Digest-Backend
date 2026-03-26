@@ -13,7 +13,10 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
-import { DayOffDto } from './child/create-sprint-child-dto';
+import { DayOffDto } from './create-sprint-parent-dto';
+import { IsWithinRange } from 'src/common/decorators/is-within-range-decorator';
+import { IsRealDate } from 'src/common/decorators/is-real-dates-decorator';
+import { IsAfterStartDate } from 'src/common/decorators/is-after-start-decorator';
 
 export class PutSprintDto {
   @IsString()
@@ -30,15 +33,27 @@ export class PutSprintDto {
   @IsNotEmpty({ message: 'Status is required' })
   status: SprintStatus;
 
-  @Type(() => Date)
-  @IsDate()
+  @IsRealDate({ message: 'Start date must be a valid calendar date' })
   @IsNotEmpty()
-  startDate: Date;
+  startDate: string;
 
-  @Type(() => Date)
-  @IsDate()
+  @IsRealDate({ message: 'End date must be a valid calendar date' })
   @IsNotEmpty()
-  endDate: Date;
+  @IsAfterStartDate('startDate')
+  endDate: string;
+
+  @IsOptional()
+  @IsRealDate({ message: 'Official start date must be a valid calendar date' })
+  officialStartDate?: string;
+
+  @IsOptional()
+  @IsRealDate({ message: 'Official end date must be a valid calendar date' })
+  @IsAfterStartDate('officialStartDate')
+  officialEndDate?: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  sprintDuration: number;
 
   @IsNumber({}, { message: 'Working hours must be a valid number' })
   @IsNotEmpty({ message: 'Working hours are required' })
@@ -52,5 +67,8 @@ export class PutSprintDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => DayOffDto)
+  @IsWithinRange('startDate')
   dayOff: DayOffDto[];
 }
+
+

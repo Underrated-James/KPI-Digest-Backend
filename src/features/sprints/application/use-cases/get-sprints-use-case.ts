@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type SprintRepository } from '../../infrastracture/repository/sprint-repository';
-import { Sprint as SprintEntity } from '../../domain/entities/sprint.entity';
+import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class GetSprintUseCase {
     private readonly SprintRepository: SprintRepository,
   ) {}
 
-  async execute(status?: SprintStatus): Promise<SprintEntity[]> {
-    return this.SprintRepository.findAll(status);
+  async execute(status?: SprintStatus, projectId?: string): Promise<SprintEntity[]> {
+    return this.SprintRepository.findAll(status, projectId);
   }
 }

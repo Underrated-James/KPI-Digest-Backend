@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SprintRepository } from '../../infrastracture/repository/sprint-repository';
-import { Sprint as SprintEntity } from '../../domain/entities/sprint.entity';
+import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import {
   Sprint as SprintSchema,
   SprintDocument,
@@ -25,7 +25,10 @@ export class SprintMongooseRepository implements SprintRepository {
       doc.startDate,
       doc.endDate,
       doc.workingHoursDay,
+      doc.sprintDuration,
       doc.dayOff || [],
+      doc.officialStartDate ?? null,
+      doc.officialEndDate ?? null,
       doc.createdAt,
       doc.updatedAt
     );
@@ -42,14 +45,19 @@ export class SprintMongooseRepository implements SprintRepository {
       endDate: sprint.endDate,
       workingHoursDay: sprint.workingHoursDay,
       dayOff: sprint.dayOff,
+      officialStartDate: sprint.officialStartDate,
+      officialEndDate: sprint.officialEndDate,
     });
     const doc = await createdSprint.save();
     return this.toEntity(doc);
   }
 
   //Get All Sprint (filter with status optional)
-  async findAll(status?: SprintStatus): Promise<SprintEntity[]> {
-    const query = status ? { status } : {};
+  async findAll(status?: SprintStatus, projectId?: string): Promise<SprintEntity[]> {
+    const query: any = {};
+    if (status) query.status = status;
+    if (projectId) query.projectId = projectId;
+    
     const docs = await this.SprintModel.find(query).exec();
     return docs.map((doc) => this.toEntity(doc));
   }
@@ -72,26 +80,10 @@ export class SprintMongooseRepository implements SprintRepository {
     if (project.startDate) updateData.startDate = project.startDate;
     if (project.endDate) updateData.endDate = project.endDate;
     if (project.workingHoursDay) updateData.workingHoursDay = project.workingHoursDay;
+    if (project.sprintDuration) updateData.sprintDuration = project.sprintDuration;
     if (project.dayOff) updateData.dayOff = project.dayOff;
-
-    // Recalculate duration if dates or dayOff changed
-    if (project.startDate || project.endDate || project.dayOff) {
-      // We need the full entity to calculate duration properly if only one field is provided
-      const current = await this.findById(id);
-      if (current) {
-        const tempEntity = new SprintEntity(
-          id,
-          project.projectId || current.projectId,
-          project.name || current.name,
-          project.status || current.status,
-          project.startDate || current.startDate,
-          project.endDate || current.endDate,
-          project.workingHoursDay || current.workingHoursDay,
-          project.dayOff || current.dayOff
-        );
-        updateData.sprintDuration = tempEntity.sprintDuration;
-      }
-    }
+    if (project.officialStartDate !== undefined) updateData.officialStartDate = project.officialStartDate;
+    if (project.officialEndDate !== undefined) updateData.officialEndDate = project.officialEndDate;
 
 
     const doc = await this.SprintModel
@@ -111,12 +103,13 @@ export class SprintMongooseRepository implements SprintRepository {
       endDate: sprint.endDate,
       workingHoursDay: sprint.workingHoursDay,
       dayOff: sprint.dayOff,
+      officialStartDate: sprint.officialStartDate,
+      officialEndDate: sprint.officialEndDate,
     };
 
     const doc = await this.SprintModel
-      .findByIdAndUpdate(id, updateData, {
+      .findOneAndReplace({ _id: id }, updateData, {
         returnDocument: 'after',
-        overwrite: true,
         runValidators: true,
       })
       .exec();

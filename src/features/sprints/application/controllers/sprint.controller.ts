@@ -47,8 +47,11 @@ export class SprintController {
   // Get All Projects
   @Get()
   @ResponseMessage('Sprints retrieved successfully')
-  async findAll(@Query('status') status?: SprintStatus) {
-    const sprints = await this.getSprintUseCase.execute(status);
+  async findAll(
+    @Query('status') status?: SprintStatus,
+    @Query('project') projectId?: string,
+  ) {
+    const sprints = await this.getSprintUseCase.execute(status, projectId);
     return SprintResponseDto.fromEntities(sprints);
   }
 
