@@ -11,7 +11,7 @@ export class Sprint {
   projectId: string;
 
   @Prop({
-     required: true,
+    required: true,
     minlength: 2,
     maxlength: 50,
   })

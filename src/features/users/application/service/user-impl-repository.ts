@@ -51,6 +51,12 @@ export class UserMongooseRepository implements UserRepository {
     return doc ? this.toEntity(doc) : null;
   }
 
+  //Get Users by IDs (batch lookup)
+  async findByIds(ids: string[]): Promise<UserEntity[]> {
+    const docs = await this.userModel.find({ _id: { $in: ids } }).exec();
+    return docs.map((doc) => this.toEntity(doc));
+  }
+
   // Patch User by ID
   async patch(
     id: string,
