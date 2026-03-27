@@ -8,13 +8,40 @@ import {
   ProjectDocument,
 } from '../../domain/schema/project-schema';
 import { ProjectStatus } from '../../domain/enums/project-status-enums';
+import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 
 @Injectable()
 export class ProjectMongooseRepository implements ProjectRepository {
   constructor(
     @InjectModel(ProjectSchema.name)
     private readonly ProjectModel: Model<ProjectDocument>,
-  ) {}
+  ) { }
+
+  //Get All Projects with Pagination (page is 1-indexed)
+  async findAllPaginated(page: number, size: number, status?: ProjectStatus): Promise<PaginatedResult<ProjectsEntity>> {
+    const query = status ? { status } : {};
+    const skip = (page - 1) * size; // Zero-Index Trap: page 1 → skip 0
+
+    // Run count + paginated fetch in parallel for performance
+    const [totalElements, docs] = await Promise.all([
+      this.ProjectModel.countDocuments(query).exec(),
+      this.ProjectModel.find(query).skip(skip).limit(size).exec(),
+    ]);
+
+    const content = docs.map((doc) => this.toEntity(doc));
+    const totalPages = Math.ceil(totalElements / size);
+
+    return {
+      content,
+      page,
+      size,
+      totalElements,
+      totalPages,
+      numberOfElements: content.length,
+      firstPage: page === 1,
+      lastPage: page >= totalPages,
+    };
+  }
 
   private toEntity(doc: ProjectDocument): ProjectsEntity {
     return new ProjectsEntity(

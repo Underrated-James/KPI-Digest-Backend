@@ -8,6 +8,7 @@ import {
   UserDocument,
 } from '../../domain/persistence/schema/user-schema';
 import { UserRole } from '../../domain/persistence/enums/user-role.enum';
+import { PaginatedResult } from '../../../../common/interfaces/paginated-result.interface';
 
 @Injectable()
 export class UserMongooseRepository implements UserRepository {
@@ -43,6 +44,32 @@ export class UserMongooseRepository implements UserRepository {
     const query = role ? { role } : {};
     const docs = await this.userModel.find(query).exec();
     return docs.map((doc) => this.toEntity(doc));
+  }
+
+  // Get All Users with Pagination (page is 1-indexed)
+  async findAllPaginated(page: number, size: number, role?: UserRole): Promise<PaginatedResult<UserEntity>> {
+    const query = role ? { role } : {};
+    const skip = (page - 1) * size; // Zero-Index Trap: page 1 → skip 0
+
+    // Run count + paginated fetch in parallel for performance
+    const [totalElements, docs] = await Promise.all([
+      this.userModel.countDocuments(query).exec(),
+      this.userModel.find(query).skip(skip).limit(size).exec(),
+    ]);
+
+    const content = docs.map((doc) => this.toEntity(doc));
+    const totalPages = Math.ceil(totalElements / size);
+
+    return {
+      content,
+      page,
+      size,
+      totalElements,
+      totalPages,
+      numberOfElements: content.length,
+      firstPage: page === 1,
+      lastPage: page >= totalPages,
+    };
   }
 
   //Get User by ID
