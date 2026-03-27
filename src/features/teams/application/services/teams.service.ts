@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
+import { CreateTeamDto } from '../api/dto/request/create-team.dto';
+import { PatchTeamDto } from '../api/dto/request/patch-team.dto';
 
 @Injectable()
 export class TeamsService {
@@ -16,7 +16,7 @@ export class TeamsService {
     return `This action returns a #${id} team`;
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
+  update(id: number, updateTeamDto: PatchTeamDto) {
     return `This action updates a #${id} team`;
   }
 

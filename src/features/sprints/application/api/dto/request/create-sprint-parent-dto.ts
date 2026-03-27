@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -7,7 +6,6 @@ import {
   IsArray,
   IsOptional,
   ValidateNested,
-  IsDateString,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -58,7 +56,7 @@ export class CreateSprintDto {
 
   @IsArray()
   @IsOptional()
-  @ValidateNested({ each: true }) 
+  @ValidateNested({ each: true })
   @Type(() => DayOffDto)
   @IsWithinRange('startDate')
   dayOff: DayOffDto[];
