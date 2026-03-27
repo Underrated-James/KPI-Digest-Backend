@@ -1,5 +1,6 @@
 import { UserRole } from '../../../../domain/persistence/enums/user-role.enum';
 import { User as UserEntity } from '../../../../domain/persistence/entities/user.entity';
+import { PaginatedResult } from '../../../../../../common/interfaces/paginated-result.interface';
 
 export class UserResponseDto {
   constructor(
@@ -24,5 +25,18 @@ export class UserResponseDto {
 
   static fromEntities(users: UserEntity[]): UserResponseDto[] {
     return users.map((user) => UserResponseDto.fromEntity(user));
+  }
+
+  static fromPaginatedResult(result: PaginatedResult<UserEntity>): PaginatedResult<UserResponseDto> {
+    return {
+      content: UserResponseDto.fromEntities(result.content),
+      page: result.page,
+      size: result.size,
+      totalElements: result.totalElements,
+      totalPages: result.totalPages,
+      numberOfElements: result.numberOfElements,
+      firstPage: result.firstPage,
+      lastPage: result.lastPage,
+    };
   }
 }

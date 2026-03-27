@@ -43,7 +43,7 @@ export class CreateTeamUseCase {
       throw new NotFoundException(`Project with ID ${sprint.projectId} not found`);
     }
 
-    // Validate that only one team can exist per sprint
+    // Validate that only one team can exist per sprinta
     if (existingTeams.length > 0) {
       throw new BadRequestException(
         `A team already exists for sprint '${sprint.name}'. Only one team is allowed per sprint.`

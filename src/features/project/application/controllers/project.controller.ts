@@ -22,6 +22,7 @@ import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 import { CreateProjectDto } from '../api/dto/request/create-project-dto';
 import { PatchProjectDto } from '../api/dto/request/patch-project-dto';
 import { PutProjectDto } from '../api/dto/request/put-project-dto';
+import { PaginationQueryDto } from 'src/common/dtos/pagination-query.dto';
 
 @Controller('projects')
 export class ProjectController {
@@ -32,8 +33,23 @@ export class ProjectController {
     private readonly patchProjectUseCase: PatchProjectUseCase,
     private readonly putProjectUseCase: PutProjectUseCase,
     private readonly deleteProjectUseCase: DeleteProjectUseCase,
-  ) {}
+  ) { }
 
+
+  // Get All Projects (Paginated)
+  @Get()
+  @ResponseMessage('Projects retrieved successfully')
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query('status') status?: ProjectStatus
+  ) {
+    const projects = await this.getProjectsUseCase.execute(
+      paginationQuery.page,
+      paginationQuery.size,
+      status
+    );
+    return ProjectResponseDto.fromPaginatedResult(projects);
+  }
 
   // Create a New Project
   @Post()
@@ -41,14 +57,6 @@ export class ProjectController {
   async create(@Body() createProjectDto: CreateProjectDto) {
     const project = await this.createProjectUseCase.execute(createProjectDto);
     return ProjectResponseDto.fromEntity(project);
-  }
-
-  // Get All Projects
-  @Get()
-  @ResponseMessage('Projects retrieved successfully')
-  async findAll(@Query('status') status?: ProjectStatus) {
-    const projects = await this.getProjectsUseCase.execute(status);
-    return ProjectResponseDto.fromEntities(projects);
   }
 
   // Get a Project by ID
@@ -74,9 +82,9 @@ export class ProjectController {
   @ResponseMessage('Project put successfully')
   async put(
     @Param('id', new ParseMongoIdPipe('Project')) id: string,
-     @Body() putProjectDto: PutProjectDto
-    ) {
-      const project = await this.putProjectUseCase.execute(id, putProjectDto);
+    @Body() putProjectDto: PutProjectDto
+  ) {
+    const project = await this.putProjectUseCase.execute(id, putProjectDto);
     return ProjectResponseDto.fromEntity(project);
   }
 

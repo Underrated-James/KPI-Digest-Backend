@@ -22,6 +22,7 @@ import { PutUserDto } from '../api/dtos/request/put-user-dto';
 import { UserResponseDto } from '../api/dtos/response/user-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
+import { PaginationQueryDto } from '../../../../common/dtos/pagination-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -34,11 +35,18 @@ export class UsersController {
     private readonly deleteUserUseCase: DeleteUserUseCase,
   ) {}
 
-  @Get() // Get all users
+  @Get() // Get all users (paginated)
   @ResponseMessage('Users retrieved successfully')
-  async findAll(@Query('role') role?: UserRole) {
-    const users = await this.getUsersUseCase.execute(role);
-    return UserResponseDto.fromEntities(users);
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query('role') role?: UserRole,
+  ) {
+    const result = await this.getUsersUseCase.execute(
+      paginationQuery.page,
+      paginationQuery.size,
+      role,
+    );
+    return UserResponseDto.fromPaginatedResult(result);
   }
 
   @Get(':id') // Get a user by ID
