@@ -1,5 +1,5 @@
-import { UserRole } from '../../../../domain/persistence/enums/user-role.enum';
-import { User as UserEntity } from '../../../../domain/persistence/entities/user.entity';
+import { UserRole } from '../../../../domain/enums/user-role.enum';
+import { User as UserEntity } from '../../../../domain/entities/user.entity';
 import { PaginatedResult } from '../../../../../../common/interfaces/paginated-result.interface';
 
 export class UserResponseDto {
@@ -10,7 +10,7 @@ export class UserResponseDto {
     public readonly role: UserRole,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
-  ) {}
+  ) { }
 
   static fromEntity(user: UserEntity): UserResponseDto {
     return new UserResponseDto(

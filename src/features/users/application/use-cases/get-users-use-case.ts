@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type UserRepository } from '../../infrastracture/repositories/user.repository';
-import { User as UserEntity } from '../../domain/persistence/entities/user.entity';
-import { UserRole } from '../../domain/persistence/enums/user-role.enum';
+import { User as UserEntity } from '../../domain/entities/user.entity';
+import { UserRole } from '../../domain/enums/user-role.enum';
 import { PaginatedResult } from '../../../../common/interfaces/paginated-result.interface';
 
 @Injectable()

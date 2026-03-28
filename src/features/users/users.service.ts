@@ -4,7 +4,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
-import { User, UserDocument } from './domain/persistence/schema/user-schema';
+import { User, UserDocument } from './domain/schema/user-schema';
 
 @Injectable()
 export class UsersService {

@@ -8,8 +8,8 @@ import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id-use-c
 import { PatchUserUseCase } from './application/use-cases/patch-user-use-case';
 import { PutUserUseCase } from './application/use-cases/put-user-use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user-use-case';
-import { User } from './domain/persistence/entities/user.entity';
-import { UserSchema } from './domain/persistence/schema/user-schema';
+import { User } from './domain/entities/user.entity';
+import { UserSchema } from './domain/schema/user-schema';
 
 @Module({
     imports: [
