@@ -32,7 +32,7 @@ export function IsWithinRange(property: string, validationOptions?: ValidationOp
             return d.getTime() >= start.getTime() && d.getTime() <= end.getTime();
           });
         },
-        defaultMessage(args: ValidationArguments) {
+        defaultMessage(_args: ValidationArguments) {
           return `One or more day-off dates are outside the sprint range`;
         }
       },

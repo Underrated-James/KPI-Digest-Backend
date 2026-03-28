@@ -1,7 +1,6 @@
 import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
 import { Sprint as SprintEntity, DayOff } from '../../../../domain/entities/sprint-entity';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
-import { Sprint } from 'src/features/sprints/domain/schema/sprint-schema';
 
 export class SprintResponseDto {
   constructor(

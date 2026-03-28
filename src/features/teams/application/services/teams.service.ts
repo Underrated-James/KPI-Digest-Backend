@@ -4,7 +4,7 @@ import { PatchTeamDto } from '../api/dto/request/patch-team.dto';
 
 @Injectable()
 export class TeamsService {
-  create(createTeamDto: CreateTeamDto) {
+  create(_createTeamDto: CreateTeamDto) {
     return 'This action adds a new team';
   }
 
@@ -16,7 +16,7 @@ export class TeamsService {
     return `This action returns a #${id} team`;
   }
 
-  update(id: number, updateTeamDto: PatchTeamDto) {
+  update(id: number, _updateTeamDto: PatchTeamDto) {
     return `This action updates a #${id} team`;
   }
 
