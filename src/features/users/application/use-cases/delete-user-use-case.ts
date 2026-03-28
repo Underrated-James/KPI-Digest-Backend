@@ -1,11 +1,12 @@
 import { Injectable, Inject} from '@nestjs/common';
 import { type UserRepository } from '../../infrastracture/repositories/user.repository';
+import { USER_REPOSITORY } from '../../domain/constants/user.constants';
 import { UserNotFoundError } from '../../presentation/errors/user-not-found.error';
 
 @Injectable()
 export class DeleteUserUseCase {
   constructor(
-    @Inject('UserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
   ) {}
 

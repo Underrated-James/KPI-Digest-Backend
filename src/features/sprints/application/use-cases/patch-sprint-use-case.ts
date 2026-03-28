@@ -1,5 +1,6 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { type SprintRepository } from '../../infrastracture/repository/sprint-repository';
+import { SPRINT_REPOSITORY } from '../../domain/constants/sprint.constants';
 import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import { SprintNotFoundError } from './../../presentation/errors/sprint-not-found';
 import { PatchSprintDto } from '../api/dto/request/patch-sprint-dto';
@@ -8,7 +9,7 @@ import { DateUtils } from '../../../../shared/date-utils';
 @Injectable()
 export class PatchSprintUseCase {
   constructor(
-    @Inject('SprintRepository')
+    @Inject(SPRINT_REPOSITORY)
     private readonly SprintRepository: SprintRepository,
   ) { }
 

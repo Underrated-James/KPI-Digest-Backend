@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type SprintRepository } from '../../infrastracture/repository/sprint-repository';
+import { SPRINT_REPOSITORY } from '../../domain/constants/sprint.constants';
 import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
@@ -7,7 +8,7 @@ import { PaginatedResult } from 'src/common/interfaces/paginated-result.interfac
 @Injectable()
 export class GetSprintUseCase {
   constructor(
-    @Inject('SprintRepository')
+    @Inject(SPRINT_REPOSITORY)
     private readonly SprintRepository: SprintRepository,
   ) { }
 

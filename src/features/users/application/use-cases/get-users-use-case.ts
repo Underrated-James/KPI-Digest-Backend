@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type UserRepository } from '../../infrastracture/repositories/user.repository';
+import { USER_REPOSITORY } from '../../domain/constants/user.constants';
 import { User as UserEntity } from '../../domain/entities/user.entity';
 import { UserRole } from '../../domain/enums/user-role.enum';
 import { PaginatedResult } from '../../../../common/interfaces/paginated-result.interface';
@@ -7,7 +8,7 @@ import { PaginatedResult } from '../../../../common/interfaces/paginated-result.
 @Injectable()
 export class GetUsersUseCase {
     constructor(
-        @Inject('UserRepository')
+        @Inject(USER_REPOSITORY)
         private readonly userRepository: UserRepository,
     ) { }
 

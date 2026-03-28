@@ -22,6 +22,7 @@ import { UserResponseDto } from '../api/dtos/response/user-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 import { GetUserQueryDto } from '../api/dtos/request/get-users-dto';
+import { USER_RESPONSE_MESSAGES, USER_MODEL } from '../../domain/constants/user.constants';
 
 @Controller('users')
 export class UsersController {
@@ -35,7 +36,7 @@ export class UsersController {
   ) { }
 
   @Get() // Get all users (paginated)
-  @ResponseMessage('Users retrieved successfully')
+  @ResponseMessage(USER_RESPONSE_MESSAGES.RETRIEVED_ALL)
   async findAll(
     @Query() getUserQueryDto: GetUserQueryDto,
   ) {
@@ -48,23 +49,23 @@ export class UsersController {
   }
 
   @Get(':id') // Get a user by ID
-  @ResponseMessage('User retrieved successfully')
-  async findOne(@Param('id', new ParseMongoIdPipe('User')) id: string) {
+  @ResponseMessage(USER_RESPONSE_MESSAGES.RETRIEVED_ONE)
+  async findOne(@Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string) {
     const user = await this.getUserByIdUseCase.execute(id);
     return UserResponseDto.fromEntity(user);
   }
 
   @Post()
-  @ResponseMessage('User created successfully')
+  @ResponseMessage(USER_RESPONSE_MESSAGES.CREATED)
   async create(@Body() newUser: CreateUserDto) {
     const user = await this.createUserUseCase.execute(newUser);
     return UserResponseDto.fromEntity(user);
   }
 
   @Patch(':id')
-  @ResponseMessage('User updated successfully')
+  @ResponseMessage(USER_RESPONSE_MESSAGES.UPDATED)
   async patch(
-    @Param('id', new ParseMongoIdPipe('User')) id: string,
+    @Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string,
     @Body() userUpdate: PatchUserDto,
   ) {
     const user = await this.patchUserUseCase.execute(id, userUpdate);
@@ -72,9 +73,9 @@ export class UsersController {
   }
 
   @Put(':id')
-  @ResponseMessage('User updated successfully')
+  @ResponseMessage(USER_RESPONSE_MESSAGES.UPDATED)
   async put(
-    @Param('id', new ParseMongoIdPipe('User')) id: string,
+    @Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string,
     @Body() userUpdate: PutUserDto,
   ) {
     const user = await this.putUserUseCase.execute(id, userUpdate);
@@ -82,8 +83,8 @@ export class UsersController {
   }
 
   @Delete(':id') // Delete a user by ID
-  @ResponseMessage('User deleted successfully')
-  async delete(@Param('id', new ParseMongoIdPipe('User')) id: string) {
+  @ResponseMessage(USER_RESPONSE_MESSAGES.DELETED)
+  async delete(@Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string) {
     await this.deleteUserUseCase.execute(id);
     return { id };
   }

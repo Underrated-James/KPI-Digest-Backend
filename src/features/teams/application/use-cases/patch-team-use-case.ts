@@ -1,5 +1,8 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { type TeamRepository } from '../../infrastracture/repository/team-repository';
+import { TEAM_REPOSITORY } from '../../domain/constants/team.constants';
+import { SPRINT_REPOSITORY } from '../../../sprints/domain/constants/sprint.constants';
+import { USER_REPOSITORY } from '../../../users/domain/constants/user.constants';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
 import { PatchTeamDto } from '../api/dto/request/patch-team.dto';
 import { type SprintRepository } from '../../../sprints/infrastracture/repository/sprint-repository';
@@ -8,11 +11,11 @@ import { type UserRepository } from '../../../users/infrastracture/repositories/
 @Injectable()
 export class PatchTeamUseCase {
   constructor(
-    @Inject('TeamRepository')
+    @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
-    @Inject('SprintRepository')
+    @Inject(SPRINT_REPOSITORY)
     private readonly sprintRepository: SprintRepository,
-    @Inject('UserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
   ) {}
 

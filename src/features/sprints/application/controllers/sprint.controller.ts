@@ -23,6 +23,7 @@ import { PatchSprintUseCase } from '../use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from '../use-cases/put-sprint-use-case';
 import { DeleteSprintUseCase } from '../use-cases/delete-sprint-use-case';
 import { GetSprintsQueryDto } from '../api/dto/request/get-sprints-dto';
+import { SPRINT_RESPONSE_MESSAGES, SPRINT_MODEL } from '../../domain/constants/sprint.constants';
 
 @Controller('sprints')
 export class SprintController {
@@ -38,7 +39,7 @@ export class SprintController {
 
   // Create a New Project
   @Post()
-  @ResponseMessage('Sprint created successfully')
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.CREATED)
   async create(@Body() createSprintDto: CreateSprintDto) {
     const sprint = await this.createSprintUseCase.execute(createSprintDto);
     return SprintResponseDto.fromEntity(sprint);
@@ -46,7 +47,7 @@ export class SprintController {
 
   // Get All Projects
   @Get()
-  @ResponseMessage('Sprints retrieved successfully')
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.RETRIEVED_ALL)
   async findAll(
     @Query() paginationQuery: GetSprintsQueryDto,
   ) {
@@ -61,17 +62,17 @@ export class SprintController {
 
   // Get a Project by ID
   @Get(':id')
-  @ResponseMessage('Sprint retrieved successfully')
-  async findOne(@Param('id', new ParseMongoIdPipe('Sprint')) id: string) {
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.RETRIEVED_ONE)
+  async findOne(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
     const sprint = await this.getSprintByIdUseCase.execute(id);
     return SprintResponseDto.fromEntity(sprint);
   }
 
   // Patch User by ID
   @Patch(':id')
-  @ResponseMessage('Sprint patched successfully')
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.PATCHED)
   async patch(
-    @Param('id', new ParseMongoIdPipe('Sprint')) id: string,
+    @Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string,
     @Body() patchSprintDto: PatchSprintDto
   ) {
     const sprint = await this.patchSprintUseCase.execute(id, patchSprintDto);
@@ -79,9 +80,9 @@ export class SprintController {
   }
 
   @Put(':id')
-  @ResponseMessage('Sprint put successfully')
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.PUT)
   async put(
-    @Param('id', new ParseMongoIdPipe('Sprint')) id: string,
+    @Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string,
     @Body() putSprintDto: PutSprintDto
   ) {
     const sprint = await this.putSprintUseCase.execute(id, putSprintDto);
@@ -89,8 +90,8 @@ export class SprintController {
   }
 
   @Delete(':id')
-  @ResponseMessage('Sprint deleted successfully')
-  async remove(@Param('id', new ParseMongoIdPipe('Sprint')) id: string) {
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.DELETED)
+  async remove(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
     await this.deleteSprintUseCase.execute(id);
   }
 }

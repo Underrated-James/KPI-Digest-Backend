@@ -4,17 +4,17 @@ import { Model } from 'mongoose';
 import { ProjectRepository } from '../../infrastracture/repositories/project.repository';
 import { Project as ProjectsEntity } from '../../domain/entities/project.entity';
 import {
-  Project as ProjectSchema,
   ProjectDocument,
-} from '../../domain/schema/project-schema';
+} from '../../infrastracture/models/project.model';
+import { PROJECT_MODEL } from '../../domain/constants/project.constants';
 import { ProjectStatus } from '../../domain/enums/project-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 import { toEntity } from '../../infrastracture/mappers/project-mapper';
 @Injectable()
 export class ProjectMongooseRepository implements ProjectRepository {
   constructor(
-    @InjectModel(ProjectSchema.name)
-    private readonly ProjectModel: Model<ProjectDocument>,
+    @InjectModel(PROJECT_MODEL)
+    private readonly projectModel: Model<ProjectDocument>,
   ) { }
 
   //Get All Projects with Pagination (page is 1-indexed)
@@ -24,8 +24,8 @@ export class ProjectMongooseRepository implements ProjectRepository {
 
     // Run count + paginated fetch in parallel for performance
     const [totalElements, docs] = await Promise.all([
-      this.ProjectModel.countDocuments(query).exec(),
-      this.ProjectModel.find(query).skip(skip).limit(size).exec(),
+      this.projectModel.countDocuments(query).exec(),
+      this.projectModel.find(query).skip(skip).limit(size).exec(),
     ]);
 
     const content = docs.map((doc) => toEntity(doc));
@@ -44,7 +44,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
   }
   // Create Project
   async create(project: ProjectsEntity): Promise<ProjectsEntity> {
-    const createdProject = new this.ProjectModel({
+    const createdProject = new this.projectModel({
       name: project.name,
       status: project.status,
       finishDate: project.finishDate,
@@ -56,13 +56,13 @@ export class ProjectMongooseRepository implements ProjectRepository {
   //Get All Prooject (filter with status optional)
   async findAll(status?: ProjectStatus): Promise<ProjectsEntity[]> {
     const query = status ? { status } : {};
-    const docs = await this.ProjectModel.find(query).exec();
+    const docs = await this.projectModel.find(query).exec();
     return docs.map((doc) => toEntity(doc));
   }
 
   //Get Project by ID
   async findById(id: string): Promise<ProjectsEntity | null> {
-    const doc = await this.ProjectModel.findById(id).exec();
+    const doc = await this.projectModel.findById(id).exec();
     return doc ? toEntity(doc) : null;
   }
 
@@ -76,7 +76,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
     if (project.status) updateData.status = project.status;
     if (project.finishDate) updateData.finishDate = project.finishDate;
 
-    const doc = await this.ProjectModel
+    const doc = await this.projectModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
     return doc ? toEntity(doc) : null;
@@ -90,7 +90,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
       finishDate: project.finishDate,
     };
 
-    const doc = await this.ProjectModel
+    const doc = await this.projectModel
       .findByIdAndUpdate(id, updateData, {
         returnDocument: 'after',
         overwrite: true,
@@ -103,12 +103,12 @@ export class ProjectMongooseRepository implements ProjectRepository {
 
   //Delete Project by ID
   async delete(id: string): Promise<void> {
-    await this.ProjectModel.findByIdAndDelete(id).exec();
+    await this.projectModel.findByIdAndDelete(id).exec();
   }
 
   //Find Project by Name
   async findByName(name: string): Promise<ProjectsEntity | null> {
-    const doc = await this.ProjectModel.findOne({ name }).exec();
+    const doc = await this.projectModel.findOne({ name }).exec();
     return doc ? toEntity(doc) : null;
   }
 }

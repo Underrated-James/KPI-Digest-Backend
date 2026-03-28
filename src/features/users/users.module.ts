@@ -8,12 +8,12 @@ import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id-use-c
 import { PatchUserUseCase } from './application/use-cases/patch-user-use-case';
 import { PutUserUseCase } from './application/use-cases/put-user-use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user-use-case';
-import { User } from './domain/entities/user.entity';
-import { UserSchema } from './domain/schema/user-schema';
+import { UserSchema } from './infrastracture/models/user.model';
+import { USER_REPOSITORY, USER_MODEL } from './domain/constants/user.constants';
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+        MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }])
     ],
     controllers: [UsersController],
     providers: [
@@ -24,12 +24,12 @@ import { UserSchema } from './domain/schema/user-schema';
         PutUserUseCase,
         DeleteUserUseCase,
         {
-            provide: 'UserRepository',
+            provide: USER_REPOSITORY,
             useClass: UserMongooseRepository
         }
     ],
     exports: [
-        'UserRepository',
+        USER_REPOSITORY,
         GetUsersUseCase,
         CreateUserUseCase,
         GetUserByIdUseCase,

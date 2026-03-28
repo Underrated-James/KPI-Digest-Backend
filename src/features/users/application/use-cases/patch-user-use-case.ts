@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type UserRepository } from '../../infrastracture/repositories/user.repository';
+import { USER_REPOSITORY } from '../../domain/constants/user.constants';
 import { User as UserEntity } from '../../domain/entities/user.entity';
 import { UserNotFoundError } from '../../presentation/errors/user-not-found.error';
 import { PatchUserDto } from 'src/features/users/application/api/dtos/request/patch-user-dto';
@@ -7,7 +8,7 @@ import { PatchUserDto } from 'src/features/users/application/api/dtos/request/pa
 @Injectable()
 export class PatchUserUseCase {
   constructor(
-    @Inject('UserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
   ) { }
 

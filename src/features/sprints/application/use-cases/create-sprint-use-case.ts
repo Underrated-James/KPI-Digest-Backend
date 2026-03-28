@@ -1,5 +1,7 @@
 import { Injectable, Inject, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { type SprintRepository } from '../../infrastracture/repository/sprint-repository';
+import { SPRINT_REPOSITORY } from '../../domain/constants/sprint.constants';
+import { PROJECT_REPOSITORY } from '../../../project/domain/constants/project.constants';
 import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import { CreateSprintDto } from '../api/dto/request/create-sprint-parent-dto';
 import { type ProjectRepository } from '../../../project/infrastracture/repositories/project.repository';
@@ -8,9 +10,9 @@ import { DateUtils } from '../../../../shared/date-utils';
 @Injectable()
 export class CreateSprintUseCase {
   constructor(
-    @Inject('SprintRepository')
+    @Inject(SPRINT_REPOSITORY)
     private readonly SprintRepository: SprintRepository,
-    @Inject('ProjectRepository')
+    @Inject(PROJECT_REPOSITORY)
     private readonly projectRepository: ProjectRepository,
   ) { }
 

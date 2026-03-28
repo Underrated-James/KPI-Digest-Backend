@@ -21,6 +21,7 @@ import { TeamResponseDto } from '../api/dto/response/teams-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 import { GetTeamsQueryDto } from '../api/dto/request/get-teams-dto';
+import { TEAM_RESPONSE_MESSAGES, TEAM_MODEL } from '../../domain/constants/team.constants';
 
 @Controller('teams')
 export class TeamsController {
@@ -35,7 +36,7 @@ export class TeamsController {
 
   // Create a New Team
   @Post()
-  @ResponseMessage('Team created successfully')
+  @ResponseMessage(TEAM_RESPONSE_MESSAGES.CREATED)
   async create(@Body() createTeamDto: CreateTeamDto) {
     const team = await this.createTeamUseCase.execute(createTeamDto);
     return TeamResponseDto.fromEntity(team);
@@ -43,7 +44,7 @@ export class TeamsController {
 
   // Get All Teams
   @Get()
-  @ResponseMessage('Teams retrieved successfully')
+  @ResponseMessage(TEAM_RESPONSE_MESSAGES.RETRIEVED_ALL)
   async findAll(
     @Query() paginationQuery: GetTeamsQueryDto,
   ) {
@@ -58,17 +59,17 @@ export class TeamsController {
 
   // Get a Team by ID
   @Get(':id')
-  @ResponseMessage('Team retrieved successfully')
-  async findOne(@Param('id', new ParseMongoIdPipe('Team')) id: string) {
+  @ResponseMessage(TEAM_RESPONSE_MESSAGES.RETRIEVED_ONE)
+  async findOne(@Param('id', new ParseMongoIdPipe(TEAM_MODEL)) id: string) {
     const team = await this.getTeamByIdUseCase.execute(id);
     return TeamResponseDto.fromEntity(team);
   }
 
   // Patch Team by ID
   @Patch(':id')
-  @ResponseMessage('Team patched successfully')
+  @ResponseMessage(TEAM_RESPONSE_MESSAGES.PATCHED)
   async patch(
-    @Param('id', new ParseMongoIdPipe('Team')) id: string,
+    @Param('id', new ParseMongoIdPipe(TEAM_MODEL)) id: string,
     @Body() patchTeamDto: PatchTeamDto,
   ) {
     const team = await this.patchTeamUseCase.execute(id, patchTeamDto);
@@ -77,9 +78,9 @@ export class TeamsController {
 
   // Put Team by ID
   @Put(':id')
-  @ResponseMessage('Team put successfully')
+  @ResponseMessage(TEAM_RESPONSE_MESSAGES.PUT)
   async put(
-    @Param('id', new ParseMongoIdPipe('Team')) id: string,
+    @Param('id', new ParseMongoIdPipe(TEAM_MODEL)) id: string,
     @Body() putTeamDto: CreateTeamDto,
   ) {
     const team = await this.putTeamUseCase.execute(id, putTeamDto);
@@ -88,8 +89,8 @@ export class TeamsController {
 
   // Delete Team by ID
   @Delete(':id')
-  @ResponseMessage('Team deleted successfully')
-  async remove(@Param('id', new ParseMongoIdPipe('Team')) id: string) {
+  @ResponseMessage(TEAM_RESPONSE_MESSAGES.DELETED)
+  async remove(@Param('id', new ParseMongoIdPipe(TEAM_MODEL)) id: string) {
     await this.deleteTeamUseCase.execute(id);
   }
 }
