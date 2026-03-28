@@ -1,5 +1,7 @@
 import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
 import { Sprint as SprintEntity, DayOff } from '../../../../domain/entities/sprint-entity';
+import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
+import { Sprint } from 'src/features/sprints/domain/schema/sprint-schema';
 
 export class SprintResponseDto {
   constructor(
@@ -38,5 +40,18 @@ export class SprintResponseDto {
 
   static fromEntities(sprints: SprintEntity[]): SprintResponseDto[] {
     return sprints.map((sprint) => SprintResponseDto.fromEntity(sprint));
+  }
+
+  static fromPaginatedResult(result: PaginatedResult<SprintEntity>): PaginatedResult<SprintResponseDto> {
+    return {
+      content: SprintResponseDto.fromEntities(result.content),
+      page: result.page,
+      size: result.size,
+      totalElements: result.totalElements,
+      totalPages: result.totalPages,
+      numberOfElements: result.numberOfElements,
+      firstPage: result.firstPage,
+      lastPage: result.lastPage,
+    };
   }
 }

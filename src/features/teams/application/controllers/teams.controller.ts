@@ -20,6 +20,7 @@ import { PatchTeamDto } from '../api/dto/request/patch-team.dto';
 import { TeamResponseDto } from '../api/dto/response/teams-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
+import { GetTeamsQueryDto } from '../api/dto/request/get-teams-dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -44,11 +45,15 @@ export class TeamsController {
   @Get()
   @ResponseMessage('Teams retrieved successfully')
   async findAll(
-    @Query('sprintId') sprintId?: string,
-    @Query('projectId') projectId?: string,
+    @Query() paginationQuery: GetTeamsQueryDto,
   ) {
-    const teams = await this.getTeamsUseCase.execute(sprintId, projectId);
-    return TeamResponseDto.fromEntities(teams);
+    const teams = await this.getTeamsUseCase.execute(
+      paginationQuery.page,
+      paginationQuery.size,
+      paginationQuery.sprintId,
+      paginationQuery.projectId
+    );
+    return TeamResponseDto.fromPaginatedResult(teams);
   }
 
   // Get a Team by ID

@@ -8,13 +8,38 @@ import {
   SprintDocument,
 } from '../../domain/schema/sprint-schema';
 import { SprintStatus } from '../../domain/enums/sprint-status-enums';
+import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 
 @Injectable()
 export class SprintMongooseRepository implements SprintRepository {
   constructor(
     @InjectModel(SprintSchema.name)
     private readonly SprintModel: Model<SprintDocument>,
-  ) {}
+  ) { }
+  // Get all Sprint Paginated 
+  async findAllPaginated(page: number, size: number, status?: SprintStatus, projectId?: string): Promise<PaginatedResult<SprintEntity>> {
+    const query: any = {};
+    if (status) query.status = status;
+    if (projectId) query.projectId = projectId;
+    const skip = (page - 1) * size;
+
+    const docs = await this.SprintModel.find(query).skip(skip).limit(size).exec();
+    const totalElements = await this.SprintModel.countDocuments(query).exec();
+    const totalPages = Math.ceil(totalElements / size);
+    const numberOfElements = docs.length;
+    const firstPage = page === 1;
+    const lastPage = page === totalPages;
+    return {
+      content: docs.map((doc) => this.toEntity(doc)),
+      page,
+      size,
+      totalElements,
+      totalPages,
+      numberOfElements,
+      firstPage,
+      lastPage,
+    };
+  }
 
   private toEntity(doc: SprintDocument): SprintEntity {
     return new SprintEntity(
@@ -57,7 +82,7 @@ export class SprintMongooseRepository implements SprintRepository {
     const query: any = {};
     if (status) query.status = status;
     if (projectId) query.projectId = projectId;
-    
+
     const docs = await this.SprintModel.find(query).exec();
     return docs.map((doc) => this.toEntity(doc));
   }

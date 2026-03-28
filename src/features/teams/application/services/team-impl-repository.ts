@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { TeamRepository } from '../../infrastracture/repository/team-repository';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
 import { Team as TeamSchema, TeamDocument } from '../../domain/schema/team-schema';
+import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 
 @Injectable()
 export class TeamMongooseRepository implements TeamRepository {
@@ -11,6 +12,29 @@ export class TeamMongooseRepository implements TeamRepository {
     @InjectModel(TeamSchema.name)
     private readonly teamModel: Model<TeamDocument>,
   ) { }
+
+  async findAllPaginated(page: number, size: number, sprintId?: string, projectId?: string): Promise<PaginatedResult<TeamEntity>> {
+    const query: any = {};
+    if (sprintId) query.sprintId = sprintId;
+    if (projectId) query.projectId = projectId;
+
+    const totalElements = await this.teamModel.countDocuments(query).exec();
+    const skip = (page - 1) * size;
+    const docs = await this.teamModel.find(query).skip(skip).limit(size).exec();
+    const content = docs.map((doc) => this.toEntity(doc));
+
+    return {
+      content,
+      page,
+      size,
+      totalElements,
+      totalPages: Math.ceil(totalElements / size),
+      numberOfElements: content.length,
+      firstPage: page === 1,
+      lastPage: page === Math.ceil(totalElements / size),
+
+    };
+  }
 
   private toEntity(doc: TeamDocument): TeamEntity {
     return new TeamEntity(
