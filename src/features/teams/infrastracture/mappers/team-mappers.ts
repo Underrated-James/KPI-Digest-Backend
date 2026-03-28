@@ -1,4 +1,4 @@
-import { TeamDocument } from "../../domain/schema/team-schema";
+import { TeamDocument } from "../../infrastracture/models/team.model";
 import { Team as TeamEntity } from "../../domain/entities/team.entity";
 
 export function toEntity(doc: TeamDocument): TeamEntity {

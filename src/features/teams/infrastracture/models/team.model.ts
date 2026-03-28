@@ -3,11 +3,12 @@ import { HydratedDocument } from 'mongoose';
 import { ListOfUsers } from '../../application/api/dto/request/create-team.dto';
 import { ProjectStatus } from 'src/features/project/domain/enums/project-status-enums';
 import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
+import { TEAM_COLLECTION } from '../../domain/constants/team.constants';
 
-export type TeamDocument = HydratedDocument<Team>;
+export type TeamDocument = HydratedDocument<TeamModel>;
 
-@Schema({ collection: 'Teams', timestamps: true })
-export class Team {
+@Schema({ collection: TEAM_COLLECTION, timestamps: true })
+export class TeamModel {
 
   @Prop({ required: true })
   projectId: string;
@@ -41,8 +42,9 @@ export class Team {
 
   @Prop()
   createdAt: Date;
+  
   @Prop()
   updatedAt: Date;
 }
 
-export const TeamSchema = SchemaFactory.createForClass(Team);
+export const TeamSchema = SchemaFactory.createForClass(TeamModel);

@@ -1,5 +1,9 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { type TeamRepository } from '../../infrastracture/repository/team-repository';
+import { TEAM_REPOSITORY } from '../../domain/constants/team.constants';
+import { SPRINT_REPOSITORY } from '../../../sprints/domain/constants/sprint.constants';
+import { PROJECT_REPOSITORY } from '../../../project/domain/constants/project.constants';
+import { USER_REPOSITORY } from '../../../users/domain/constants/user.constants';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
 import { CreateTeamDto } from '../api/dto/request/create-team.dto';
 import { type ProjectRepository } from '../../../project/infrastracture/repositories/project.repository';
@@ -9,13 +13,13 @@ import { type UserRepository } from '../../../users/infrastracture/repositories/
 @Injectable()
 export class CreateTeamUseCase {
   constructor(
-    @Inject('TeamRepository')
+    @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
-    @Inject('SprintRepository')
+    @Inject(SPRINT_REPOSITORY)
     private readonly sprintRepository: SprintRepository,
-    @Inject('ProjectRepository')
+    @Inject(PROJECT_REPOSITORY)
     private readonly projectRepository: ProjectRepository,
-    @Inject('UserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
   ) { }
 

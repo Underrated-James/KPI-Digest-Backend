@@ -1,10 +1,11 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { type TeamRepository } from '../../infrastracture/repository/team-repository';
+import { TEAM_REPOSITORY } from '../../domain/constants/team.constants';
 
 @Injectable()
 export class DeleteTeamUseCase {
   constructor(
-    @Inject('TeamRepository')
+    @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
   ) {}
 

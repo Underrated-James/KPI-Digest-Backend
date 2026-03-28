@@ -4,16 +4,16 @@ import { Model } from 'mongoose';
 import { UserRepository } from '../../infrastracture/repositories/user.repository';
 import { User as UserEntity } from '../../domain/entities/user.entity';
 import {
-  User as UserSchema,
   UserDocument,
-} from '../../domain/schema/user-schema';
+} from '../../infrastracture/models/user.model';
+import { USER_MODEL } from '../../domain/constants/user.constants';
 import { UserRole } from '../../domain/enums/user-role.enum';
 import { PaginatedResult } from '../../../../common/interfaces/paginated-result.interface';
 import { toEntity } from '../../infrastracture/mappers/user-mapper';
 @Injectable()
 export class UserMongooseRepository implements UserRepository {
   constructor(
-    @InjectModel(UserSchema.name)
+    @InjectModel(USER_MODEL)
     private readonly userModel: Model<UserDocument>,
   ) { }
 

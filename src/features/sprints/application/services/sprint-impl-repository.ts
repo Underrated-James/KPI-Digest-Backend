@@ -4,9 +4,9 @@ import { Model } from 'mongoose';
 import { SprintRepository } from '../../infrastracture/repository/sprint-repository';
 import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import {
-  Sprint as SprintSchema,
   SprintDocument,
-} from '../../domain/schema/sprint-schema';
+} from '../../infrastracture/models/sprint.model';
+import { SPRINT_MODEL } from '../../domain/constants/sprint.constants';
 import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 import { toEntity } from '../../infrastracture/mappers/sprint-mappers';
@@ -14,8 +14,8 @@ import { toEntity } from '../../infrastracture/mappers/sprint-mappers';
 @Injectable()
 export class SprintMongooseRepository implements SprintRepository {
   constructor(
-    @InjectModel(SprintSchema.name)
-    private readonly SprintModel: Model<SprintDocument>,
+    @InjectModel(SPRINT_MODEL)
+    private readonly sprintModel: Model<SprintDocument>,
   ) { }
   // Get all Sprint Paginated 
   async findAllPaginated(page: number, size: number, status?: SprintStatus, projectId?: string): Promise<PaginatedResult<SprintEntity>> {
@@ -24,8 +24,8 @@ export class SprintMongooseRepository implements SprintRepository {
     if (projectId) query.projectId = projectId;
     const skip = (page - 1) * size;
 
-    const docs = await this.SprintModel.find(query).skip(skip).limit(size).exec();
-    const totalElements = await this.SprintModel.countDocuments(query).exec();
+    const docs = await this.sprintModel.find(query).skip(skip).limit(size).exec();
+    const totalElements = await this.sprintModel.countDocuments(query).exec();
     const totalPages = Math.ceil(totalElements / size);
     const numberOfElements = docs.length;
     const firstPage = page === 1;
@@ -44,7 +44,7 @@ export class SprintMongooseRepository implements SprintRepository {
 
   // Create Sprint
   async create(sprint: SprintEntity): Promise<SprintEntity> {
-    const createdSprint = new this.SprintModel({
+    const createdSprint = new this.sprintModel({
       projectId: sprint.projectId,
       name: sprint.name,
       status: sprint.status,
@@ -66,13 +66,13 @@ export class SprintMongooseRepository implements SprintRepository {
     if (status) query.status = status;
     if (projectId) query.projectId = projectId;
 
-    const docs = await this.SprintModel.find(query).exec();
+    const docs = await this.sprintModel.find(query).exec();
     return docs.map((doc) => toEntity(doc));
   }
 
   //Get Sprint by ID
   async findById(id: string): Promise<SprintEntity | null> {
-    const doc = await this.SprintModel.findById(id).exec();
+    const doc = await this.sprintModel.findById(id).exec();
     return doc ? toEntity(doc) : null;
   }
 
@@ -94,7 +94,7 @@ export class SprintMongooseRepository implements SprintRepository {
     if (project.officialEndDate !== undefined) updateData.officialEndDate = project.officialEndDate;
 
 
-    const doc = await this.SprintModel
+    const doc = await this.sprintModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
     return doc ? toEntity(doc) : null;
@@ -115,9 +115,10 @@ export class SprintMongooseRepository implements SprintRepository {
       officialEndDate: sprint.officialEndDate,
     };
 
-    const doc = await this.SprintModel
-      .findOneAndReplace({ _id: id }, updateData, {
+    const doc = await this.sprintModel
+      .findByIdAndUpdate(id, updateData, {
         returnDocument: 'after',
+        overwrite: true,
         runValidators: true,
       })
       .exec();
@@ -127,12 +128,12 @@ export class SprintMongooseRepository implements SprintRepository {
 
   //Delete Sprint by ID
   async delete(id: string): Promise<void> {
-    await this.SprintModel.findByIdAndDelete(id).exec();
+    await this.sprintModel.findByIdAndDelete(id).exec();
   }
 
   //Find Sprint by Name
   async findByName(name: string): Promise<SprintEntity | null> {
-    const doc = await this.SprintModel.findOne({ name }).exec();
+    const doc = await this.sprintModel.findOne({ name }).exec();
     return doc ? toEntity(doc) : null;
   }
 }

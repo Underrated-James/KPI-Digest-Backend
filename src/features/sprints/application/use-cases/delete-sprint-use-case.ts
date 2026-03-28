@@ -1,11 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { type SprintRepository } from '../../infrastracture/repository/sprint-repository';
+import { SPRINT_REPOSITORY } from '../../domain/constants/sprint.constants';
 import { SprintNotFoundError } from './../../presentation/errors/sprint-not-found';
 
 @Injectable()
 export class DeleteSprintUseCase {
   constructor(
-    @Inject('SprintRepository')
+    @Inject(SPRINT_REPOSITORY)
     private readonly SprintRepository: SprintRepository,
   ) {}
 

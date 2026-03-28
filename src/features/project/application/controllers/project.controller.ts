@@ -22,6 +22,7 @@ import { CreateProjectDto } from '../api/dto/request/create-project-dto';
 import { PatchProjectDto } from '../api/dto/request/patch-project-dto';
 import { PutProjectDto } from '../api/dto/request/put-project-dto';
 import { GetProjectQueryDto } from '../api/dto/request/get-project-dto';
+import { PROJECT_RESPONSE_MESSAGES, PROJECT_MODEL } from '../../domain/constants/project.constants';
 
 @Controller('projects')
 export class ProjectController {
@@ -37,7 +38,7 @@ export class ProjectController {
 
   // Get All Projects (Paginated)
   @Get()
-  @ResponseMessage('Projects retrieved successfully')
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.RETRIEVED_ALL)
   async findAll(
     @Query() getProjectQueryDto: GetProjectQueryDto
   ) {
@@ -51,7 +52,7 @@ export class ProjectController {
 
   // Create a New Project
   @Post()
-  @ResponseMessage('Project created successfully')
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.CREATED)
   async create(@Body() createProjectDto: CreateProjectDto) {
     const project = await this.createProjectUseCase.execute(createProjectDto);
     return ProjectResponseDto.fromEntity(project);
@@ -59,17 +60,17 @@ export class ProjectController {
 
   // Get a Project by ID
   @Get(':id')
-  @ResponseMessage('Project retrieved successfully')
-  async findOne(@Param('id', new ParseMongoIdPipe('Project')) id: string) {
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.RETRIEVED_ONE)
+  async findOne(@Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string) {
     const project = await this.getProjectByIdUseCase.execute(id);
     return ProjectResponseDto.fromEntity(project);
   }
 
   // Patch User by ID
   @Patch(':id')
-  @ResponseMessage('Project patched successfully')
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.PATCHED)
   async patch(
-    @Param('id', new ParseMongoIdPipe('Project')) id: string,
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,
     @Body() patchProjectDto: PatchProjectDto
   ) {
     const project = await this.patchProjectUseCase.execute(id, patchProjectDto);
@@ -77,9 +78,9 @@ export class ProjectController {
   }
 
   @Put(':id')
-  @ResponseMessage('Project put successfully')
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.PUT)
   async put(
-    @Param('id', new ParseMongoIdPipe('Project')) id: string,
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,
     @Body() putProjectDto: PutProjectDto
   ) {
     const project = await this.putProjectUseCase.execute(id, putProjectDto);
@@ -87,8 +88,8 @@ export class ProjectController {
   }
 
   @Delete(':id')
-  @ResponseMessage('Project deleted successfully')
-  async remove(@Param('id', new ParseMongoIdPipe('Project')) id: string) {
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.DELETED)
+  async remove(@Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string) {
     await this.deleteProjectUseCase.execute(id);
   }
 }

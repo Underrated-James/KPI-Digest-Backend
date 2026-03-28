@@ -1,12 +1,13 @@
 import { Injectable, Inject, ConflictException, BadRequestException } from '@nestjs/common';
 import { type ProjectRepository } from '../../../infrastracture/repositories/project.repository';
+import { PROJECT_REPOSITORY } from '../../../domain/constants/project.constants';
 import { Project as ProjectEntity } from '../../../domain/entities/project.entity';
 import { CreateProjectDto } from '../dto/request/create-project-dto';
 
 @Injectable()
 export class CreateProjectUseCase {
   constructor(
-    @Inject('ProjectRepository')
+    @Inject(PROJECT_REPOSITORY)
     private readonly projectRepository: ProjectRepository,
   ) {}
 

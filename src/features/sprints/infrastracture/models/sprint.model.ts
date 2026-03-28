@@ -1,12 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { SprintStatus } from '../enums/sprint-status-enums';
-import { DayOffSchema } from './dayOff-schema';
-export type SprintDocument = HydratedDocument<Sprint>;
+import { SprintStatus } from '../../domain/enums/sprint-status-enums';
+import { SPRINT_COLLECTION } from '../../domain/constants/sprint.constants';
 
-// Define the nested schema for DayOff
-@Schema({ collection: 'Sprints', timestamps: true })
-export class Sprint {
+@Schema({ _id: false }) 
+export class DayOffModel {
+  @Prop({ required: true })
+  label: string;
+
+  @Prop({ required: true })
+  date: string;
+}
+
+export const DayOffSchema = SchemaFactory.createForClass(DayOffModel);
+
+export type SprintDocument = HydratedDocument<SprintModel>;
+
+@Schema({ collection: SPRINT_COLLECTION, timestamps: true })
+export class SprintModel {
   @Prop({ required: true })
   projectId: string;
 
@@ -43,8 +54,9 @@ export class Sprint {
 
   @Prop()
   createdAt: Date;
+  
   @Prop()
   updatedAt: Date;
 }
 
-export const SprintSchema = SchemaFactory.createForClass(Sprint);
+export const SprintSchema = SchemaFactory.createForClass(SprintModel);

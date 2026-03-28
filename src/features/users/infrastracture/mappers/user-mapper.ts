@@ -1,4 +1,4 @@
-import { UserDocument } from "../../domain/schema/user-schema";
+import { UserDocument } from "../../infrastracture/models/user.model";
 import { User as UserEntity } from "../../domain/entities/user.entity";
 
 export function toEntity(doc: UserDocument): UserEntity {

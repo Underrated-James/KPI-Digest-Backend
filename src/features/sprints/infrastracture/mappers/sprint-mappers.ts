@@ -1,4 +1,4 @@
-import { SprintDocument } from "../../domain/schema/sprint-schema";
+import { SprintDocument } from "../../infrastracture/models/sprint.model";
 import { Sprint as SprintEntity } from "../../domain/entities/sprint-entity";
 export function toEntity(doc: SprintDocument): SprintEntity {
     return new SprintEntity(

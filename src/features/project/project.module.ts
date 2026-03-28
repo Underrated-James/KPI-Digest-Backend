@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Project } from './domain/entities/project.entity';
-import { ProjectSchema } from './domain/schema/project-schema';
+import { ProjectSchema } from './infrastracture/models/project.model';
 import { ProjectController } from './application/controllers/project.controller';
 import { GetProjectsUseCase } from './application/api/use-cases/get-projects-use-case';
 import { CreateProjectUseCase } from './application/api/use-cases/create-project-use-case';
@@ -10,11 +9,12 @@ import { PatchProjectUseCase } from './application/api/use-cases/patch-project-u
 import { DeleteProjectUseCase } from './application/api/use-cases/delete-project-use-case';
 import { PutProjectUseCase } from './application/api/use-cases/put-project-use-case';
 import { ProjectMongooseRepository } from './application/services/project-impl-repository';
+import { PROJECT_REPOSITORY, PROJECT_MODEL } from './domain/constants/project.constants';
 
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }])
+        MongooseModule.forFeature([{ name: PROJECT_MODEL, schema: ProjectSchema }])
     ],
     controllers: [ProjectController],
     providers: [
@@ -25,12 +25,12 @@ import { ProjectMongooseRepository } from './application/services/project-impl-r
         PutProjectUseCase,
         DeleteProjectUseCase,
         {
-            provide: 'ProjectRepository',
+            provide: PROJECT_REPOSITORY,
             useClass: ProjectMongooseRepository
         }
     ],
     exports: [
-        'ProjectRepository',
+        PROJECT_REPOSITORY,
         GetProjectsUseCase,
         CreateProjectUseCase,
         GetProjectByIdUseCase,

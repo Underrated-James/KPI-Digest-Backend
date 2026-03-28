@@ -9,14 +9,15 @@ import { PatchTeamUseCase } from './application/use-cases/patch-team-use-case';
 import { PutTeamUseCase } from './application/use-cases/put-team-use-case';
 import { DeleteTeamUseCase } from './application/use-cases/delete-team-use-case';
 import { TeamMongooseRepository } from './application/services/team-impl-repository';
-import { Team, TeamSchema } from './domain/schema/team-schema';
+import { TeamSchema } from './infrastracture/models/team.model';
+import { TEAM_REPOSITORY, TEAM_MODEL } from './domain/constants/team.constants';
 import { ProjectModule } from '../project/project.module';
 import { SprintsModule } from '../sprints/sprints.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Team.name, schema: TeamSchema }]),
+    MongooseModule.forFeature([{ name: TEAM_MODEL, schema: TeamSchema }]),
     ProjectModule,
     SprintsModule,
     UsersModule,
@@ -31,12 +32,12 @@ import { UsersModule } from '../users/users.module';
     PutTeamUseCase,
     DeleteTeamUseCase,
     {
-      provide: 'TeamRepository',
+      provide: TEAM_REPOSITORY,
       useClass: TeamMongooseRepository,
     },
   ],
   exports: [
-    'TeamRepository',
+    TEAM_REPOSITORY,
     CreateTeamUseCase,
     GetTeamsUseCase,
     GetTeamByIdUseCase,

@@ -3,13 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TeamRepository } from '../../infrastracture/repository/team-repository';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
-import { Team as TeamSchema, TeamDocument } from '../../domain/schema/team-schema';
+import { TeamDocument } from '../../infrastracture/models/team.model';
+import { TEAM_MODEL } from '../../domain/constants/team.constants';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 import { toEntity } from '../../infrastracture/mappers/team-mappers';
 @Injectable()
 export class TeamMongooseRepository implements TeamRepository {
   constructor(
-    @InjectModel(TeamSchema.name)
+    @InjectModel(TEAM_MODEL)
     private readonly teamModel: Model<TeamDocument>,
   ) { }
 
