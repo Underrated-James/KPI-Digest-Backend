@@ -15,7 +15,6 @@ import { GetProjectByIdUseCase } from '../api/use-cases/get-project-by-id-use-ca
 import { PatchProjectUseCase } from '../api/use-cases/patch-project-use-case';
 import { PutProjectUseCase } from '../api/use-cases/put-project-use-case';
 import { DeleteProjectUseCase } from '../api/use-cases/delete-project-use-case';
-import { ProjectStatus } from '../../domain/enums/project-status-enums';
 import { ProjectResponseDto } from '../api/dto/response/project-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';

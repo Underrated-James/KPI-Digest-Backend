@@ -15,14 +15,12 @@ import { GetUserByIdUseCase } from '../use-cases/get-user-by-id-use-case';
 import { PatchUserUseCase } from '../use-cases/patch-user-use-case';
 import { PutUserUseCase } from '../use-cases/put-user-use-case';
 import { DeleteUserUseCase } from '../use-cases/delete-user-use-case';
-import { UserRole } from '../../domain/enums/user-role.enum';
 import { CreateUserDto } from '../api/dtos/request/create-user-dto';
 import { PatchUserDto } from '../api/dtos/request/patch-user-dto';
 import { PutUserDto } from '../api/dtos/request/put-user-dto';
 import { UserResponseDto } from '../api/dtos/response/user-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
-import { PaginationQueryDto } from '../../../../common/dtos/pagination-query.dto';
 import { GetUserQueryDto } from '../api/dtos/request/get-users-dto';
 
 @Controller('users')

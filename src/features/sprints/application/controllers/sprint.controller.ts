@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { GetSprintUseCase } from '../use-cases/get-sprints-use-case';
 
-import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 import { SprintResponseDto } from '../api/dto/response/sprint-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
@@ -23,7 +22,6 @@ import { GetSprintByIdUseCase } from '../use-cases/get-sprint-by-id-use-case';
 import { PatchSprintUseCase } from '../use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from '../use-cases/put-sprint-use-case';
 import { DeleteSprintUseCase } from '../use-cases/delete-sprint-use-case';
-import { PaginationQueryDto } from 'src/common/dtos/pagination-query.dto';
 import { GetSprintsQueryDto } from '../api/dto/request/get-sprints-dto';
 
 @Controller('sprints')
