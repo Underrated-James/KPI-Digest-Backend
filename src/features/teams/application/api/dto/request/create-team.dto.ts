@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { LeaveDays } from 'src/features/teams/domain/enums/leave-days-enums';
-import { UserRole } from 'src/features/users/domain/persistence/enums/user-role.enum';
+import { UserRole } from 'src/features/users/domain/enums/user-role.enum';
 
 export class CreateTeamDto {
     @IsNotEmpty()

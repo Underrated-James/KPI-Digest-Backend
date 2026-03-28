@@ -1,5 +1,5 @@
-import { User } from '../../domain/persistence/entities/user.entity';
-import { UserRole } from '../../domain/persistence/enums/user-role.enum';
+import { User } from '../../domain/entities/user.entity';
+import { UserRole } from '../../domain/enums/user-role.enum';
 import { PaginatedResult } from '../../../../common/interfaces/paginated-result.interface';
 
 export interface UserRepository {

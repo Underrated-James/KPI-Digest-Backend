@@ -5,7 +5,7 @@ import { TeamRepository } from '../../infrastracture/repository/team-repository'
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
 import { Team as TeamSchema, TeamDocument } from '../../domain/schema/team-schema';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
-
+import { toEntity } from '../../infrastracture/mappers/team-mappers';
 @Injectable()
 export class TeamMongooseRepository implements TeamRepository {
   constructor(
@@ -21,7 +21,7 @@ export class TeamMongooseRepository implements TeamRepository {
     const totalElements = await this.teamModel.countDocuments(query).exec();
     const skip = (page - 1) * size;
     const docs = await this.teamModel.find(query).skip(skip).limit(size).exec();
-    const content = docs.map((doc) => this.toEntity(doc));
+    const content = docs.map((doc) => toEntity(doc));
 
     return {
       content,
@@ -34,24 +34,6 @@ export class TeamMongooseRepository implements TeamRepository {
       lastPage: page === Math.ceil(totalElements / size),
 
     };
-  }
-
-  private toEntity(doc: TeamDocument): TeamEntity {
-    return new TeamEntity(
-      doc._id.toString(),
-      doc.projectId,
-      doc.projectName,
-      doc.projectStatus,
-      doc.sprintId,
-      doc.sprintName,
-      doc.sprintStatus,
-      doc.HoursDay,
-      doc.userIds,
-      doc.allocationPercentage,
-      doc.calculatedHoursPerDay,
-      doc.createdAt,
-      doc.updatedAt,
-    );
   }
 
   async create(team: TeamEntity): Promise<TeamEntity> {
@@ -68,7 +50,7 @@ export class TeamMongooseRepository implements TeamRepository {
       calculatedHoursPerDay: team.calculatedHoursPerDay,
     });
     const doc = await createdTeam.save();
-    return this.toEntity(doc);
+    return toEntity(doc);
   }
 
   async findAll(sprintId?: string, projectId?: string): Promise<TeamEntity[]> {
@@ -77,19 +59,19 @@ export class TeamMongooseRepository implements TeamRepository {
     if (projectId) query.projectId = projectId;
 
     const docs = await this.teamModel.find(query).exec();
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc) => toEntity(doc));
   }
 
   async findById(id: string): Promise<TeamEntity | null> {
     const doc = await this.teamModel.findById(id).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   async findByName(name: string): Promise<TeamEntity | null> {
     const doc = await this.teamModel.findOne({
       $or: [{ projectName: name }, { sprintName: name }]
     }).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   async patch(id: string, team: Partial<TeamEntity>): Promise<TeamEntity | null> {
@@ -102,7 +84,7 @@ export class TeamMongooseRepository implements TeamRepository {
     const doc = await this.teamModel
       .findByIdAndUpdate(id, updateData, { new: true })
       .exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   async put(id: string, team: Partial<TeamEntity>): Promise<TeamEntity | null> {
@@ -122,7 +104,7 @@ export class TeamMongooseRepository implements TeamRepository {
     const doc = await this.teamModel
       .findByIdAndUpdate(id, updateData, { new: true, overwrite: true })
       .exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   async delete(id: string): Promise<void> {

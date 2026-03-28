@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UserRole } from 'src/features/users/domain/persistence/enums/user-role.enum';
+import { UserRole } from 'src/features/users/domain/enums/user-role.enum';
 
 
 export class CreateUserDto {

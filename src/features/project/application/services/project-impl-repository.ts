@@ -9,7 +9,7 @@ import {
 } from '../../domain/schema/project-schema';
 import { ProjectStatus } from '../../domain/enums/project-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
-
+import { toEntity } from '../../infrastracture/mappers/project-mapper';
 @Injectable()
 export class ProjectMongooseRepository implements ProjectRepository {
   constructor(
@@ -28,7 +28,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
       this.ProjectModel.find(query).skip(skip).limit(size).exec(),
     ]);
 
-    const content = docs.map((doc) => this.toEntity(doc));
+    const content = docs.map((doc) => toEntity(doc));
     const totalPages = Math.ceil(totalElements / size);
 
     return {
@@ -42,18 +42,6 @@ export class ProjectMongooseRepository implements ProjectRepository {
       lastPage: page >= totalPages,
     };
   }
-
-  private toEntity(doc: ProjectDocument): ProjectsEntity {
-    return new ProjectsEntity(
-      doc._id.toString(),
-      doc.name,
-      doc.status,
-      doc.finishDate,
-      doc.createdAt,
-      doc.updatedAt,
-    );
-  }
-
   // Create Project
   async create(project: ProjectsEntity): Promise<ProjectsEntity> {
     const createdProject = new this.ProjectModel({
@@ -62,20 +50,20 @@ export class ProjectMongooseRepository implements ProjectRepository {
       finishDate: project.finishDate,
     });
     const doc = await createdProject.save();
-    return this.toEntity(doc);
+    return toEntity(doc);
   }
 
   //Get All Prooject (filter with status optional)
   async findAll(status?: ProjectStatus): Promise<ProjectsEntity[]> {
     const query = status ? { status } : {};
     const docs = await this.ProjectModel.find(query).exec();
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc) => toEntity(doc));
   }
 
   //Get Project by ID
   async findById(id: string): Promise<ProjectsEntity | null> {
     const doc = await this.ProjectModel.findById(id).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   // Patch Project by ID
@@ -91,7 +79,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
     const doc = await this.ProjectModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //PUT Project by ID
@@ -110,7 +98,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
       })
       .exec();
 
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //Delete Project by ID
@@ -121,6 +109,6 @@ export class ProjectMongooseRepository implements ProjectRepository {
   //Find Project by Name
   async findByName(name: string): Promise<ProjectsEntity | null> {
     const doc = await this.ProjectModel.findOne({ name }).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 }

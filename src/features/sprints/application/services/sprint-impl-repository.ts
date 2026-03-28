@@ -9,6 +9,7 @@ import {
 } from '../../domain/schema/sprint-schema';
 import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
+import { toEntity } from '../../infrastracture/mappers/sprint-mappers';
 
 @Injectable()
 export class SprintMongooseRepository implements SprintRepository {
@@ -30,7 +31,7 @@ export class SprintMongooseRepository implements SprintRepository {
     const firstPage = page === 1;
     const lastPage = page === totalPages;
     return {
-      content: docs.map((doc) => this.toEntity(doc)),
+      content: docs.map((doc) => toEntity(doc)),
       page,
       size,
       totalElements,
@@ -39,24 +40,6 @@ export class SprintMongooseRepository implements SprintRepository {
       firstPage,
       lastPage,
     };
-  }
-
-  private toEntity(doc: SprintDocument): SprintEntity {
-    return new SprintEntity(
-      doc._id.toString(),
-      doc.projectId,
-      doc.name,
-      doc.status,
-      doc.startDate,
-      doc.endDate,
-      doc.workingHoursDay,
-      doc.sprintDuration,
-      doc.dayOff || [],
-      doc.officialStartDate ?? null,
-      doc.officialEndDate ?? null,
-      doc.createdAt,
-      doc.updatedAt
-    );
   }
 
   // Create Sprint
@@ -74,7 +57,7 @@ export class SprintMongooseRepository implements SprintRepository {
       officialEndDate: sprint.officialEndDate,
     });
     const doc = await createdSprint.save();
-    return this.toEntity(doc);
+    return toEntity(doc);
   }
 
   //Get All Sprint (filter with status optional)
@@ -84,13 +67,13 @@ export class SprintMongooseRepository implements SprintRepository {
     if (projectId) query.projectId = projectId;
 
     const docs = await this.SprintModel.find(query).exec();
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc) => toEntity(doc));
   }
 
   //Get Sprint by ID
   async findById(id: string): Promise<SprintEntity | null> {
     const doc = await this.SprintModel.findById(id).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   // Patch Sprint by ID
@@ -114,7 +97,7 @@ export class SprintMongooseRepository implements SprintRepository {
     const doc = await this.SprintModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //PUT Sprint by ID
@@ -139,7 +122,7 @@ export class SprintMongooseRepository implements SprintRepository {
       })
       .exec();
 
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //Delete Sprint by ID
@@ -150,6 +133,6 @@ export class SprintMongooseRepository implements SprintRepository {
   //Find Sprint by Name
   async findByName(name: string): Promise<SprintEntity | null> {
     const doc = await this.SprintModel.findOne({ name }).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 }

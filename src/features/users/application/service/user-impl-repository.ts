@@ -2,31 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserRepository } from '../../infrastracture/repositories/user.repository';
-import { User as UserEntity } from '../../domain/persistence/entities/user.entity';
+import { User as UserEntity } from '../../domain/entities/user.entity';
 import {
   User as UserSchema,
   UserDocument,
-} from '../../domain/persistence/schema/user-schema';
-import { UserRole } from '../../domain/persistence/enums/user-role.enum';
+} from '../../domain/schema/user-schema';
+import { UserRole } from '../../domain/enums/user-role.enum';
 import { PaginatedResult } from '../../../../common/interfaces/paginated-result.interface';
-
+import { toEntity } from '../../infrastracture/mappers/user-mapper';
 @Injectable()
 export class UserMongooseRepository implements UserRepository {
   constructor(
     @InjectModel(UserSchema.name)
     private readonly userModel: Model<UserDocument>,
-  ) {}
-
-  private toEntity(doc: UserDocument): UserEntity {
-    return new UserEntity(
-      doc._id.toString(),
-      doc.name,
-      doc.email,
-      doc.role,
-      doc.createdAt,
-      doc.updatedAt,
-    );
-  }
+  ) { }
 
   // Create User
   async create(user: UserEntity): Promise<UserEntity> {
@@ -36,20 +25,20 @@ export class UserMongooseRepository implements UserRepository {
       role: user.role,
     });
     const doc = await createdUser.save();
-    return this.toEntity(doc);
+    return toEntity(doc);
   }
 
   //Get All User (filter with role optional)
   async findAll(role?: UserRole): Promise<UserEntity[]> {
     const query = role ? { role } : {};
     const docs = await this.userModel.find(query).exec();
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc) => toEntity(doc));
   }
 
   // Get All Users with Pagination (page is 1-indexed)
   async findAllPaginated(page: number, size: number, role?: UserRole): Promise<PaginatedResult<UserEntity>> {
     const query = role ? { role } : {};
-    const skip = (page - 1) * size; // Zero-Index Trap: page 1 → skip 0
+    const skip = (page - 1) * size;
 
     // Run count + paginated fetch in parallel for performance
     const [totalElements, docs] = await Promise.all([
@@ -57,7 +46,7 @@ export class UserMongooseRepository implements UserRepository {
       this.userModel.find(query).skip(skip).limit(size).exec(),
     ]);
 
-    const content = docs.map((doc) => this.toEntity(doc));
+    const content = docs.map((doc) => toEntity(doc));
     const totalPages = Math.ceil(totalElements / size);
 
     return {
@@ -75,13 +64,13 @@ export class UserMongooseRepository implements UserRepository {
   //Get User by ID
   async findById(id: string): Promise<UserEntity | null> {
     const doc = await this.userModel.findById(id).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //Get Users by IDs (batch lookup)
   async findByIds(ids: string[]): Promise<UserEntity[]> {
     const docs = await this.userModel.find({ _id: { $in: ids } }).exec();
-    return docs.map((doc) => this.toEntity(doc));
+    return docs.map((doc) => toEntity(doc));
   }
 
   // Patch User by ID
@@ -97,7 +86,7 @@ export class UserMongooseRepository implements UserRepository {
     const doc = await this.userModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //PUT User by ID
@@ -116,7 +105,7 @@ export class UserMongooseRepository implements UserRepository {
       })
       .exec();
 
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 
   //Delete User by ID
@@ -127,6 +116,6 @@ export class UserMongooseRepository implements UserRepository {
   //Find User by Email
   async findByEmail(email: string): Promise<UserEntity | null> {
     const doc = await this.userModel.findOne({ email }).exec();
-    return doc ? this.toEntity(doc) : null;
+    return doc ? toEntity(doc) : null;
   }
 }
