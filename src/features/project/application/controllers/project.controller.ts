@@ -22,7 +22,7 @@ import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 import { CreateProjectDto } from '../api/dto/request/create-project-dto';
 import { PatchProjectDto } from '../api/dto/request/patch-project-dto';
 import { PutProjectDto } from '../api/dto/request/put-project-dto';
-import { PaginationQueryDto } from 'src/common/dtos/pagination-query.dto';
+import { GetProjectQueryDto } from '../api/dto/request/get-project-dto';
 
 @Controller('projects')
 export class ProjectController {
@@ -40,13 +40,12 @@ export class ProjectController {
   @Get()
   @ResponseMessage('Projects retrieved successfully')
   async findAll(
-    @Query() paginationQuery: PaginationQueryDto,
-    @Query('status') status?: ProjectStatus
+    @Query() getProjectQueryDto: GetProjectQueryDto
   ) {
     const projects = await this.getProjectsUseCase.execute(
-      paginationQuery.page,
-      paginationQuery.size,
-      status
+      getProjectQueryDto.page,
+      getProjectQueryDto.size,
+      getProjectQueryDto.status
     );
     return ProjectResponseDto.fromPaginatedResult(projects);
   }

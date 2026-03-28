@@ -2,6 +2,7 @@ import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-en
 import { Team as TeamEntity } from '../../../../domain/entities/team.entity';
 import { ProjectStatus } from 'src/features/project/domain/enums/project-status-enums';
 import { ListOfUsers } from '../../dto/request/create-team.dto';
+import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 
 export class TeamResponseDto {
   constructor(
@@ -40,5 +41,18 @@ export class TeamResponseDto {
 
   static fromEntities(teams: TeamEntity[]): TeamResponseDto[] {
     return teams.map((team) => TeamResponseDto.fromEntity(team));
+  }
+
+  static fromPaginatedResult(paginatedResult: PaginatedResult<TeamEntity>): PaginatedResult<TeamResponseDto> {
+    return {
+      content: TeamResponseDto.fromEntities(paginatedResult.content),
+      page: paginatedResult.page,
+      size: paginatedResult.size,
+      totalElements: paginatedResult.totalElements,
+      totalPages: paginatedResult.totalPages,
+      numberOfElements: paginatedResult.numberOfElements,
+      firstPage: paginatedResult.firstPage,
+      lastPage: paginatedResult.lastPage,
+    };
   }
 }

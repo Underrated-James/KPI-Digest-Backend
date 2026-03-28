@@ -23,6 +23,7 @@ import { UserResponseDto } from '../api/dtos/response/user-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 import { PaginationQueryDto } from '../../../../common/dtos/pagination-query.dto';
+import { GetUserQueryDto } from '../api/dtos/request/get-users-dto';
 
 @Controller('users')
 export class UsersController {
@@ -33,18 +34,17 @@ export class UsersController {
     private readonly patchUserUseCase: PatchUserUseCase,
     private readonly putUserUseCase: PutUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
-  ) {}
+  ) { }
 
   @Get() // Get all users (paginated)
   @ResponseMessage('Users retrieved successfully')
   async findAll(
-    @Query() paginationQuery: PaginationQueryDto,
-    @Query('role') role?: UserRole,
+    @Query() getUserQueryDto: GetUserQueryDto,
   ) {
     const result = await this.getUsersUseCase.execute(
-      paginationQuery.page,
-      paginationQuery.size,
-      role,
+      getUserQueryDto.page,
+      getUserQueryDto.size,
+      getUserQueryDto.role,
     );
     return UserResponseDto.fromPaginatedResult(result);
   }

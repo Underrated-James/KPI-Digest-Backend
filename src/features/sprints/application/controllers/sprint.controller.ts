@@ -23,6 +23,8 @@ import { GetSprintByIdUseCase } from '../use-cases/get-sprint-by-id-use-case';
 import { PatchSprintUseCase } from '../use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from '../use-cases/put-sprint-use-case';
 import { DeleteSprintUseCase } from '../use-cases/delete-sprint-use-case';
+import { PaginationQueryDto } from 'src/common/dtos/pagination-query.dto';
+import { GetSprintsQueryDto } from '../api/dto/request/get-sprints-dto';
 
 @Controller('sprints')
 export class SprintController {
@@ -33,7 +35,7 @@ export class SprintController {
     private readonly patchSprintUseCase: PatchSprintUseCase,
     private readonly putSprintUseCase: PutSprintUseCase,
     private readonly deleteSprintUseCase: DeleteSprintUseCase,
-  ) {}
+  ) { }
 
 
   // Create a New Project
@@ -48,11 +50,15 @@ export class SprintController {
   @Get()
   @ResponseMessage('Sprints retrieved successfully')
   async findAll(
-    @Query('status') status?: SprintStatus,
-    @Query('project') projectId?: string,
+    @Query() paginationQuery: GetSprintsQueryDto,
   ) {
-    const sprints = await this.getSprintUseCase.execute(status, projectId);
-    return SprintResponseDto.fromEntities(sprints);
+    const sprints = await this.getSprintUseCase.execute(
+      paginationQuery.page,
+      paginationQuery.size,
+      paginationQuery.status,
+      paginationQuery.projectId
+    );
+    return SprintResponseDto.fromPaginatedResult(sprints);
   }
 
   // Get a Project by ID
@@ -78,9 +84,9 @@ export class SprintController {
   @ResponseMessage('Sprint put successfully')
   async put(
     @Param('id', new ParseMongoIdPipe('Sprint')) id: string,
-     @Body() putSprintDto: PutSprintDto
-    ) {
-      const sprint = await this.putSprintUseCase.execute(id, putSprintDto);
+    @Body() putSprintDto: PutSprintDto
+  ) {
+    const sprint = await this.putSprintUseCase.execute(id, putSprintDto);
     return SprintResponseDto.fromEntity(sprint);
   }
 
