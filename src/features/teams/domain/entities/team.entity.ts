@@ -6,15 +6,14 @@ export class Team {
   constructor(
     public readonly id: string,
     public _projectId: string,
-    public _projectName: string,
-    public _projectStatus: ProjectStatus,
     public _sprintId: string,
-    public _sprintName: string,
-    public _sprintStatus: SprintStatus,
-    public _HoursDay: number,
-    public _userIds: ListOfUsers[],
-    public _allocationPercentage: number,
     public _calculatedHoursPerDay: number,
+    public _userIds: ListOfUsers[],
+    public _projectName?: string,
+    public _projectStatus?: ProjectStatus,
+    public _sprintName?: string,
+    public _sprintStatus?: SprintStatus,
+    public _HoursDay?: number,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) { }
@@ -23,11 +22,11 @@ export class Team {
     return this._projectId;
   }
 
-  get projectName(): string {
+  get projectName(): string | undefined {
     return this._projectName;
   }
 
-  get projectStatus(): ProjectStatus {
+  get projectStatus(): ProjectStatus | undefined {
     return this._projectStatus;
   }
 
@@ -35,24 +34,20 @@ export class Team {
     return this._sprintId;
   }
 
-  get sprintName(): string {
+  get sprintName(): string | undefined {
     return this._sprintName;
   }
 
-  get sprintStatus(): SprintStatus {
+  get sprintStatus(): SprintStatus | undefined {
     return this._sprintStatus;
   }
 
-  get HoursDay(): number {
+  get HoursDay(): number | undefined {
     return this._HoursDay;
   }
 
   get userIds(): ListOfUsers[] {
     return this._userIds;
-  }
-
-  get allocationPercentage(): number {
-    return this._allocationPercentage;
   }
 
   get calculatedHoursPerDay(): number {
@@ -97,10 +92,6 @@ export class Team {
 
   updateUserIds(userIds: ListOfUsers[]): void {
     this._userIds = userIds;
-  }
-
-  updateAllocationPercentage(allocationPercentage: number): void {
-    this._allocationPercentage = allocationPercentage;
   }
 
   updateCalculatedHoursPerDay(calculatedHoursPerDay: number): void {

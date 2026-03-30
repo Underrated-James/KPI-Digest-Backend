@@ -36,16 +36,6 @@ export class PatchTeamUseCase {
         if (!dbUser) {
           throw new BadRequestException(`User with ID '${userEntry.userId}' does not exist`);
         }
-        if (dbUser.name !== userEntry.name) {
-          throw new BadRequestException(
-            `Name mismatch for user ID '${userEntry.userId}': expected '${dbUser.name}', got '${userEntry.name}'`
-          );
-        }
-        if (dbUser.role !== userEntry.role) {
-          throw new BadRequestException(
-            `Role mismatch for user ID '${userEntry.userId}': expected '${dbUser.role}', got '${userEntry.role}'`
-          );
-        }
       }
     }
 
@@ -74,7 +64,7 @@ export class PatchTeamUseCase {
 
             if (leaveDate < sprintStart || leaveDate > sprintEnd) {
               throw new BadRequestException(
-                `Leave date '${leave.leaveDate.toISOString().split('T')[0]}' for user '${user.name}' is outside the sprint range (${sprint.startDate.toISOString().split('T')[0]} to ${sprint.endDate.toISOString().split('T')[0]})`
+                `Leave date '${leave.leaveDate.toISOString().split('T')[0]}' for user '${user.userId}' is outside the sprint range (${sprint.startDate.toISOString().split('T')[0]} to ${sprint.endDate.toISOString().split('T')[0]})`
               );
             }
           });

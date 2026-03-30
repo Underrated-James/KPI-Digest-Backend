@@ -25,7 +25,7 @@ export class PutTeamUseCase {
       throw new NotFoundException(`Team with id '${id}' not found`);
     }
 
-    // Validate that all users exist and their name/role match the database records
+    // Validate that all users exist
     const userIdsList = dto.userIds.map(u => u.userId);
     const existingUsers = await this.userRepository.findByIds(userIdsList);
     const userMap = new Map(existingUsers.map(u => [u.id, u]));
@@ -34,16 +34,6 @@ export class PutTeamUseCase {
       const dbUser = userMap.get(userEntry.userId);
       if (!dbUser) {
         throw new BadRequestException(`User with ID '${userEntry.userId}' does not exist`);
-      }
-      if (dbUser.name !== userEntry.name) {
-        throw new BadRequestException(
-          `Name mismatch for user ID '${userEntry.userId}': expected '${dbUser.name}', got '${userEntry.name}'`
-        );
-      }
-      if (dbUser.role !== userEntry.role) {
-        throw new BadRequestException(
-          `Role mismatch for user ID '${userEntry.userId}': expected '${dbUser.role}', got '${userEntry.role}'`
-        );
       }
     }
 
@@ -67,7 +57,7 @@ export class PutTeamUseCase {
 
           if (leaveDate < sprintStart || leaveDate > sprintEnd) {
             throw new BadRequestException(
-              `Leave date '${leave.leaveDate.toISOString().split('T')[0]}' for user '${user.name}' is outside the sprint range (${sprint.startDate.toISOString().split('T')[0]} to ${sprint.endDate.toISOString().split('T')[0]})`
+              `Leave date '${leave.leaveDate.toISOString().split('T')[0]}' for user '${user.userId}' is outside the sprint range (${sprint.startDate.toISOString().split('T')[0]} to ${sprint.endDate.toISOString().split('T')[0]})`
             );
           }
         });
