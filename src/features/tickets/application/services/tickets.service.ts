@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTicketDto } from './dto/create-ticket.dto';
-import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { CreateTicketDto } from '../api/dto/request/create-ticket-dto';
+import { PatchTicketDto } from '../api/dto/request/patch-ticket.dto';
 
 @Injectable()
 export class TicketsService {
@@ -16,7 +16,7 @@ export class TicketsService {
     return `This action returns a #${id} ticket`;
   }
 
-  update(id: number, _updateTicketDto: UpdateTicketDto) {
+  update(id: number, _updateTicketDto: PatchTicketDto) {
     return `This action updates a #${id} ticket`;
   }
 

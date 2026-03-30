@@ -13,15 +13,22 @@ async function bootstrap() {
     transform: true,
     stopAtFirstError: true,
     exceptionFactory: (errors) => {
-      const messages = errors.flatMap((error) => {
+      const formatError = (error: any): string[] => {
+        const messages: string[] = [];
         if (error.constraints) {
-          return Object.values(error.constraints).map(msg => 
+          messages.push(...Object.values(error.constraints).map((msg: any) => 
             msg.replace('should not exist', 'is not exist')
-          );
+          ));
         }
-        return [];
-      }).flat();
+        if (error.children && error.children.length > 0) {
+          error.children.forEach((child: any) => {
+            messages.push(...formatError(child));
+          });
+        }
+        return messages;
+      };
 
+      const messages = errors.flatMap(formatError);
       return new BadRequestException(messages);
     }
   }));

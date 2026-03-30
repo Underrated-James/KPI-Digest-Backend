@@ -29,10 +29,6 @@ export class CreateTeamDto {
     @Type(() => ListOfUsers)
     userIds: ListOfUsers[];
 
-    @IsNotEmpty({ message: 'Allocation percentage is required' })
-    @IsNumber()
-    allocationPercentage: number;
-
     @IsNotEmpty({ message: 'Calculated hours per day is required' })
     @IsNumber()
     calculatedHoursPerDay: number;
@@ -46,9 +42,9 @@ export class ListOfUsers {
     @IsString()
     userId: string;
 
-    @IsNotEmpty()
-    @IsString()
-    name: string;
+    @IsNotEmpty({ message: 'Allocation percentage is required' })
+    @IsNumber()
+    allocationPercentage: number;
 
     @IsNotEmpty()
     @IsEnum(UserRole, { message: `Role must be one of the following values: ${Object.values(UserRole).join(', ')}` })
