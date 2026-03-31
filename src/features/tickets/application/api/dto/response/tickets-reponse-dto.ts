@@ -1,16 +1,28 @@
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 import { Ticket as TicketEntity } from 'src/features/tickets/domain/entities/ticket.entity';
 import { TicketStatus } from '../../../../domain/enums/ticket-status';
+import { ProjectStatus } from 'src/features/project/domain/enums/project-status-enums';
+import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
 
 export class TicketResponseDto {
   constructor(
     public readonly id: string,
+    public readonly projectId: string,
+    public readonly sprintId: string,
+    public readonly teamId: string | null,
+    public readonly assignedUserId: string | null,
     public readonly ticketNumber: string,
     public readonly ticketTitle: string,
     public readonly status: TicketStatus,
     public readonly descriptionLink: string,
     public readonly developmentEstimation: number,
     public readonly estimationTesting: number,
+    public readonly projectName?: string,
+    public readonly projectStatus?: ProjectStatus,
+    public readonly sprintName?: string,
+    public readonly sprintStatus?: SprintStatus,
+    public readonly assignedUserName?: string,
+    public readonly assignedUserRole?: string,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) { }
@@ -18,12 +30,22 @@ export class TicketResponseDto {
   static fromEntity(ticket: TicketEntity): TicketResponseDto {
     return new TicketResponseDto(
       ticket.id,
+      ticket.projectId,
+      ticket.sprintId,
+      ticket.teamId,
+      ticket.assignedUserId,
       ticket.ticketNumber,
       ticket.ticketTitle,
       ticket.status as TicketStatus,
       ticket.descriptionLink,
       ticket.developmentEstimation,
       ticket.estimationTesting,
+      ticket.projectName,
+      ticket.projectStatus,
+      ticket.sprintName,
+      ticket.sprintStatus,
+      ticket.assignedUserName,
+      ticket.assignedUserRole,
       ticket.createdAt,
       ticket.updatedAt,
     );

@@ -1,0 +1,1226 @@
+{
+  "info": {
+    "_postman_id": "66ce9e9a-5614-49cc-b95c-2fbce60e278c",
+    "name": "Agile-Digest",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51719191",
+    "_collection_link": "https://go.postman.co/collection/51719191-66ce9e9a-5614-49cc-b95c-2fbce60e278c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Backend",
+      "item": [
+        {
+          "name": "Users",
+          "item": [
+            {
+              "name": "List of Users",
+              "item": [
+                {
+                  "name": "List of All Users",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/users",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "users"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get User By ID",
+              "item": [
+                {
+                  "name": "Get User By ID",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/projects/69c39c2e0cb8a4d088a8d66",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects",
+                        "69c39c2e0cb8a4d088a8d66"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Create User",
+              "item": [
+                {
+                  "name": "Create User",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\": \"Test\",\r\n    \"email\": \"Test@example.com\",\r\n    \"role\": \"DEVS\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{LocalDev}}/users",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "users"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Users By Role",
+              "item": [
+                {
+                  "name": "Get User By Developers",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/users?role=DEVS",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "users"
+                      ],
+                      "query": [
+                        {
+                          "key": "role",
+                          "value": "DEVS"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get User By Quality Assurance",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/users?role=QA",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "users"
+                      ],
+                      "query": [
+                        {
+                          "key": "role",
+                          "value": "QA"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Update User",
+              "item": [
+                {
+                  "name": "Patch User",
+                  "item": [
+                    {
+                      "name": "Update User By ID",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/users/69c0b632cc5d6ab6a878f5cb",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "users",
+                            "69c0b632cc5d6ab6a878f5cb"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Put User",
+                  "item": [
+                    {
+                      "name": "Put User By ID",
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/users/69c0b632cc5d6ab6a878f5cbs",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "users",
+                            "69c0b632cc5d6ab6a878f5cbs"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Delete User",
+              "item": [
+                {
+                  "name": "Delete User By ID",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/users/1",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "users",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Projects",
+          "item": [
+            {
+              "name": "List of Projects",
+              "item": [
+                {
+                  "name": "List of All Projects",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/projects",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "inProgress",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Project By ID",
+              "item": [
+                {
+                  "name": "Get Project By ID",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/projects/69c37f27a20420d488b2d810",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects",
+                        "69c37f27a20420d488b2d810"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Create Project",
+              "item": [
+                {
+                  "name": "Create Project",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\": \"Kondo Ko\",\r\n    \"status\": \"inProgress\",\r\n    \"finishDate\": \"2026-04-09T18:00:00.000Z\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{LocalDev}}/projects",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Projects By Status",
+              "item": [
+                {
+                  "name": "Get Project By Status(active)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/projects?status=active",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "active"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Project By Status(inProgress))",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/projects?status=inProgress",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "inProgress"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Update Project",
+              "item": [
+                {
+                  "name": "Patch Project",
+                  "item": [
+                    {
+                      "name": "Update Project By ID",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/projects/69c37f27a20420d488b2d810",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "projects",
+                            "69c37f27a20420d488b2d810"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Put Project",
+                  "item": [
+                    {
+                      "name": "Put Project By ID",
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/projects/69c37f27a20420d488b2d810",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "projects",
+                            "69c37f27a20420d488b2d810"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Delete Project",
+              "item": [
+                {
+                  "name": "Delete Project By ID",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/projects/69c37f27a20420d488b2d810",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "projects",
+                        "69c37f27a20420d488b2d810"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Sprints",
+          "item": [
+            {
+              "name": "List of Sprints",
+              "item": [
+                {
+                  "name": "List of All Sprints",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c37f27a20420d488b2d810",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "draft",
+                          "type": "text",
+                          "disabled": true
+                        },
+                        {
+                          "key": "project",
+                          "value": "69c39c2e0cb8a4d088a8d66b",
+                          "type": "text",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Sprint By ID",
+              "item": [
+                {
+                  "name": "Get Sprint By ID",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints",
+                        "69c4a4b281218cea8e1e1f30"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Create Sprint",
+              "item": [
+                {
+                  "name": "Create Sprint",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"projectId\": \"69c39c2e0cb8a4d088a8d66b\",\r\n    \"name\": \"Sprint 6.2 - Deployment New Features\",\r\n    \"status\": \"draft\",\r\n    \"startDate\": \"2026-05-02T09:00:00.000Z\",\r\n    \"endDate\": \"2026-05-09T18:00:00.000Z\",\r\n    \"workingHoursDay\": 8,\r\n    \"sprintDuration\": 4,\r\n    \"dayOff\": [\r\n        {\r\n            \"label\": \"Holiday (Special Day)\",\r\n            \"date\": \"2026-05-03\"\r\n        },\r\n        {\r\n            \"label\": \"Holy week (Holl Day)\",\r\n            \"date\": \"2026-05-04\"\r\n        },\r\n        {\r\n            \"label\": \"Holiday (Independence Day)\",\r\n            \"date\": \"2026-05-06\"\r\n        }\r\n    ]    \r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Sprints By Project",
+              "item": [
+                {
+                  "name": "Get Sprint By Nimbus(Project)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints?project=69c37f27a20420d488b2d810",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c37f27a20420d488b2d810"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Sprint By Repnotes(Project)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints?project=69c39c2e0cb8a4d088a8d66b",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c39c2e0cb8a4d088a8d66b"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Update Sprint",
+              "item": [
+                {
+                  "name": "Patch Sprint",
+                  "item": [
+                    {
+                      "name": "Update Sprint By ID",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"projectId\": \"69c37f27a20420d488b2d810\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "sprints",
+                            "69c4a4b281218cea8e1e1f30"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Put Sprint",
+                  "item": [
+                    {
+                      "name": "Put Sprint By ID",
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "sprints",
+                            "69c4a4b281218cea8e1e1f30"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Delete Sprint",
+              "item": [
+                {
+                  "name": "Delete Sprint By ID",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints",
+                        "69c4a4b281218cea8e1e1f30"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Teams",
+          "item": [
+            {
+              "name": "List of Teams",
+              "item": [
+                {
+                  "name": "List of All Teams",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c37f27a20420d488b2d810",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "draft",
+                          "type": "text",
+                          "disabled": true
+                        },
+                        {
+                          "key": "project",
+                          "value": "69c39c2e0cb8a4d088a8d66b",
+                          "type": "text",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Sprint By ID",
+              "item": [
+                {
+                  "name": "Get Sprint By ID",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints",
+                        "69c4a4b281218cea8e1e1f30"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Create Teams",
+              "item": [
+                {
+                  "name": "Create Teams",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"projectId\": \"69c39c2e0cb8a4d088a8d66b\",\r\n  \"sprintId\": \"69c4a81738a74a09228b8ba7\",\r\n  \"HoursDay\": 8,\r\n  \"allocationPercentage\": 100,\r\n  \"calculatedHoursPerDay\": 8,\r\n  \"userIds\": [\r\n    {\r\n      \"userId\": \"69c2276ca8a8213a937c50e5\",\r\n      \"role\": \"DEVS\",\r\n      \"leave\": [\r\n        {\r\n          \"leaveType\": [\"vacation\"],\r\n          \"leaveDate\": \"2026-05-04T00:00:00.000Z\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"userId\": \"69c228c4a8a8213a937c50e9\",\r\n      \"role\": \"QA\",\r\n      \"leave\": [\r\n        {\r\n          \"leaveType\": [\"sick\"],\r\n          \"leaveDate\": \"2026-05-06T09:00:00.000Z\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"userId\": \"69c228d5a8a8213a937c50ec\",\r\n      \"role\": \"DEVS\",\r\n      \"leave\": [\r\n        {\r\n          \"leaveType\": [\"wholeDayLeave\"],\r\n          \"leaveDate\": \"2026-05-08T09:00:00.000Z\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{LocalDev}}/teams",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "teams"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Sprints By Project",
+              "item": [
+                {
+                  "name": "Get Sprint By Nimbus(Project)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints?project=69c37f27a20420d488b2d810",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c37f27a20420d488b2d810"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Sprint By Repnotes(Project)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints?project=69c39c2e0cb8a4d088a8d66b",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c39c2e0cb8a4d088a8d66b"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Update Sprint",
+              "item": [
+                {
+                  "name": "Patch Sprint",
+                  "item": [
+                    {
+                      "name": "Update Sprint By ID",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"projectId\": \"69c37f27a20420d488b2d810\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "sprints",
+                            "69c4a4b281218cea8e1e1f30"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Put Sprint",
+                  "item": [
+                    {
+                      "name": "Put Sprint By ID",
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "sprints",
+                            "69c4a4b281218cea8e1e1f30"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Delete Sprint",
+              "item": [
+                {
+                  "name": "Delete Sprint By ID",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints",
+                        "69c4a4b281218cea8e1e1f30"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tickets",
+          "item": [
+            {
+              "name": "List of Teams",
+              "item": [
+                {
+                  "name": "List of All Teams",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c37f27a20420d488b2d810",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "draft",
+                          "type": "text",
+                          "disabled": true
+                        },
+                        {
+                          "key": "project",
+                          "value": "69c39c2e0cb8a4d088a8d66b",
+                          "type": "text",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Sprint By ID",
+              "item": [
+                {
+                  "name": "Get Sprint By ID",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints",
+                        "69c4a4b281218cea8e1e1f30"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Create Tickets",
+              "item": [
+                {
+                  "name": "Create Tickets",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\r\n  {\r\n    \"projectId\": \"69c39c2e0cb8a4d088a8d66b\",\r\n    \"sprintId\": \"69c4a81738a74a09228b8ba7\",\r\n    \"ticketNumber\": \"KPI-101\",\r\n    \"ticketTitle\": \"Implement User Authentication\",\r\n    \"status\": \"inProgress\",\r\n    \"descriptionLink\": \"https://jira.com/KPI-101\",\r\n    \"estimationTesting\": 2,\r\n    \"developmentEstimation\": 5,\r\n    \"assignedUserId\": \"69c2276ca8a8213a937c50e5\"\r\n  },\r\n  {\r\n    \"projectId\": \"69c39c2e0cb8a4d088a8d66b\",\r\n    \"sprintId\": \"69c4a81738a74a09228b8ba7\",\r\n    \"ticketNumber\": \"KPI-102\",\r\n    \"ticketTitle\": \"Setup Database Schema\",\r\n    \"status\": \"inProgress\",\r\n    \"descriptionLink\": \"https://jira.com/KPI-102\",\r\n    \"estimationTesting\": 1,\r\n    \"developmentEstimation\": 3,\r\n    \"assignedUserId\": \"69c2276ca8a8213a937c50e5\"\r\n  },\r\n  {\r\n    \"projectId\": \"69c39c2e0cb8a4d088a8d66b\",\r\n    \"sprintId\": \"69c4a81738a74a09228b8ba7\",\r\n    \"ticketNumber\": \"KPI-103\",\r\n    \"ticketTitle\": \"Create API Documentation\",\r\n    \"status\": \"inProgress\",\r\n    \"descriptionLink\": \"https://jira.com/KPI-103\",\r\n    \"estimationTesting\": 1,\r\n    \"developmentEstimation\": 2,\r\n    \"assignedUserId\": \"69c2276ca8a8213a937c50e5\"\r\n  }\r\n]",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{LocalDev}}/tickets",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "tickets"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get Sprints By Project",
+              "item": [
+                {
+                  "name": "Get Sprint By Nimbus(Project)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints?project=69c37f27a20420d488b2d810",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c37f27a20420d488b2d810"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Sprint By Repnotes(Project)",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints?project=69c39c2e0cb8a4d088a8d66b",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints"
+                      ],
+                      "query": [
+                        {
+                          "key": "project",
+                          "value": "69c39c2e0cb8a4d088a8d66b"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Update Sprint",
+              "item": [
+                {
+                  "name": "Patch Sprint",
+                  "item": [
+                    {
+                      "name": "Update Sprint By ID",
+                      "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"projectId\": \"69c37f27a20420d488b2d810\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "sprints",
+                            "69c4a4b281218cea8e1e1f30"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Put Sprint",
+                  "item": [
+                    {
+                      "name": "Put Sprint By ID",
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Taylor Chen1\",\r\n    \"email\": \"taylor.chen@example.com\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                          "host": [
+                            "{{LocalDev}}"
+                          ],
+                          "path": [
+                            "sprints",
+                            "69c4a4b281218cea8e1e1f30"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Delete Sprint",
+              "item": [
+                {
+                  "name": "Delete Sprint By ID",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{LocalDev}}/sprints/69c4a4b281218cea8e1e1f30",
+                      "host": [
+                        "{{LocalDev}}"
+                      ],
+                      "path": [
+                        "sprints",
+                        "69c4a4b281218cea8e1e1f30"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Start-Server",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{LocalDev}}/projects/69c39c2e0cb8a4d088a8d66b",
+              "host": [
+                "{{LocalDev}}"
+              ],
+              "path": [
+                "projects",
+                "69c39c2e0cb8a4d088a8d66b"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

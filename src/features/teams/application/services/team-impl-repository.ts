@@ -152,6 +152,12 @@ export class TeamMongooseRepository implements TeamRepository {
     return docs.length > 0 ? toEntity(docs[0]) : null;
   }
 
+  async findBySprintId(sprintId: string): Promise<TeamEntity | null> {
+    const query = { sprintId };
+    const docs = await this.teamModel.aggregate(this.getAggregationPipeline(query)).exec();
+    return docs.length > 0 ? toEntity(docs[0]) : null;
+  }
+
   async findByName(name: string): Promise<TeamEntity | null> {
     const pipeline = [
       ...this.getAggregationPipeline({}),

@@ -6,4 +6,14 @@ export class GetTicketQueryDto extends PaginationQueryDto {
     @IsOptional()
     @IsEnum(TicketStatus, { message: 'Invalid status value' })
     ticketStatus?: TicketStatus;
+
+    @IsOptional()
+    teamId?: string;
+
+    @IsOptional()
+    sprintId?: string;
+    
+    @IsOptional()
+    projectId?: string;
+
 }
