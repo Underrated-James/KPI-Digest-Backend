@@ -8,47 +8,36 @@ export type TicketDocument = HydratedDocument<TicketModel>;
 @Schema({ collection: TICKET_COLLECTION, timestamps: true })
 export class TicketModel {
 
-    @Prop({
-        unique: true,
-        required: true,
-    })
+    @Prop({ required: true, index: true })
+    projectId: string;
+
+    @Prop({ required: true, index: true })
+    sprintId: string;
+
+    @Prop({ type: String, required: false, index: true, default: null }) 
+    teamId: string | null;
+
+    @Prop({ type: String, required: false, index: true, default: null }) 
+    assignedUserId: string | null;
+
+    @Prop({ unique: true, required: true })
     ticketNumber: string;
 
-    @Prop({
-        required: true,
-        enum: TicketStatus,
-    })
-    ticketStatus: TicketStatus;
+    @Prop({ required: true, enum: TicketStatus, default: TicketStatus.Open })
+    status: TicketStatus;
 
-    @Prop({
-        required: true,
-    })
+    @Prop({ required: true })
     ticketTitle: string;
 
-    @Prop({
-        required: true,
-    })
+    @Prop({ required: true })
     descriptionLink: string;
 
-    @Prop({
-        required: true,
-    })
+    @Prop({ required: true })
     estimationTesting: number;
 
-    @Prop({
-        required: true,
-    })
+    @Prop({ required: true })
     developmentEstimation: number;
-
-    @Prop({
-        required: true,
-    })
-    createdAt: Date;
-
-    @Prop({
-        required: true,
-    })
-    updatedAt: Date;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(TicketModel);
+TicketSchema.index({ sprintId: 1, assignedUserId: 1 });

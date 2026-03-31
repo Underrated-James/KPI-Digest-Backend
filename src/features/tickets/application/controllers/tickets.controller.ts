@@ -8,9 +8,10 @@ import {
   Delete,
   Put,
   Query,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../use-cases/create-ticket-use-case';
-import { GetTicketsUseCase } from '../use-cases/get-ticket-use-case';
+import { GetTicketsUseCase } from '../use-cases/get-tickets-use-case';
 import { GetTicketByIdUseCase } from '../use-cases/get-ticket-by-id-user-case';
 import { PatchTicketUseCase } from '../use-cases/patch-ticket-use-case';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
@@ -51,12 +52,15 @@ export class TicketsController {
     return TicketResponseDto.fromPaginatedResult(tickets);
   }
 
-  // Create a New Ticket
+  // Create Tickets (Single or Multiple)
   @Post()
   @ResponseMessage(TICKET_RESPONSE_MESSAGES.CREATED)
-  async create(@Body() createTicketDto: CreateTicketDto) {
-    const ticket = await this.createTicketUseCase.execute(createTicketDto);
-    return TicketResponseDto.fromEntity(ticket);
+  async create(
+    @Body(new ParseArrayPipe({ items: CreateTicketDto, optional: true })) 
+    createTicketDto: CreateTicketDto[]
+  ) {
+    const tickets = await this.createTicketUseCase.execute(createTicketDto);
+    return TicketResponseDto.fromEntities(tickets as any[]);
   }
 
   // Get a Ticket by ID

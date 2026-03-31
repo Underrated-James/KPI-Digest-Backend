@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TicketSchema } from './infrastracture/models/ticket-model';
-import { GetTicketsUseCase } from './application/use-cases/get-ticket-use-case';
+import { GetTicketsUseCase } from './application/use-cases/get-tickets-use-case';
 import { TicketsController } from './application/controllers/tickets.controller';
 import { TicketMongooseRepository } from './application/services/tickets-impl-repository';
 import { CreateTicketUseCase } from './application/use-cases/create-ticket-use-case';
@@ -10,11 +10,15 @@ import { GetTicketByIdUseCase } from './application/use-cases/get-ticket-by-id-u
 import { PatchTicketUseCase } from './application/use-cases/patch-ticket-use-case';
 import { PutTicketUseCase } from './application/use-cases/put-ticket-use-case';
 import { TICKET_MODEL, TICKET_REPOSITORY } from './domain/constants/ticket.constants';
+import { SprintsModule } from '../sprints/sprints.module';
+import { TeamsModule } from '../teams/teams.module';
 
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: TICKET_MODEL, schema: TicketSchema }])
+        MongooseModule.forFeature([{ name: TICKET_MODEL, schema: TicketSchema }]),
+        SprintsModule,
+        TeamsModule
     ],
     controllers: [TicketsController],
     providers: [

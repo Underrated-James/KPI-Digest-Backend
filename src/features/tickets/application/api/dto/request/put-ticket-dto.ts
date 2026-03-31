@@ -1,42 +1,42 @@
-import { Prop } from '@nestjs/mongoose';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
+import { TicketStatus } from 'src/features/tickets/domain/enums/ticket-status';
+
 
 export class PutTicketDto {
 
+    @IsNotEmpty()
+    @IsString()
+    projectId: string;
+
+    @IsNotEmpty()
+    @IsString()
+    sprintId: string;
+
+    @IsOptional()
+    @IsString()
+    assignedUserId?: string;
 
     @IsString()
     @IsNotEmpty({ message: 'Ticket number is required' })
-    @Prop({
-        unique: true,
-        required: [true, 'Ticket number is required']
-    })
     ticketNumber: string;
+
+    @IsEnum(TicketStatus)
+    @IsNotEmpty({ message: 'Status is required' })
+    status: TicketStatus;
 
     @IsNotEmpty({ message: 'Ticket title is required' })
     @IsString()
-    @Prop({
-        required: [true, 'Ticket title is required']
-    })
     ticketTitle: string;
 
     @IsNotEmpty({ message: 'Description link is required' })
     @IsString()
-    @Prop({
-        required: [true, 'Description link is required']
-    })
     descriptionLink: string;
 
     @IsNotEmpty({ message: 'Estimation testing is required' })
     @IsNumber()
-    @Prop({
-        required: [true, 'Estimation testing is required']
-    })
     estimationTesting: number;
 
     @IsNotEmpty({ message: 'Development estimation is required' })
     @IsNumber()
-    @Prop({
-        required: [true, 'Development estimation is required']
-    })
     developmentEstimation: number;
 }
