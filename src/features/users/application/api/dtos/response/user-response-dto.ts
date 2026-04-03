@@ -8,6 +8,7 @@ export class UserResponseDto {
     public readonly name: string,
     public readonly email: string,
     public readonly role: UserRole,
+    public readonly status: boolean,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) { }
@@ -18,6 +19,7 @@ export class UserResponseDto {
       user.name,
       user.email,
       user.role,
+      user.status,
       user.createdAt,
       user.updatedAt,
     );

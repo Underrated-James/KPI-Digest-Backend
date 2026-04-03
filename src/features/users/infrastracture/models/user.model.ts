@@ -16,6 +16,9 @@ export class UserModel {
   @Prop({ required: true, enum: UserRole })
   role: UserRole;
 
+  @Prop({ required: true })
+  status: boolean;
+  
   @Prop()
   createdAt: Date;
   
