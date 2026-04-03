@@ -7,6 +7,7 @@ export function toEntity(doc: UserDocument): UserEntity {
         doc.name,
         doc.email,
         doc.role,
+        doc.status,
         doc.createdAt,
         doc.updatedAt,
     );

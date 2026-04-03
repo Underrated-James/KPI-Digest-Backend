@@ -23,6 +23,7 @@ export class UserMongooseRepository implements UserRepository {
       name: user.name,
       email: user.email,
       role: user.role,
+      status: user.status,
     });
     const doc = await createdUser.save();
     return toEntity(doc);
@@ -79,9 +80,10 @@ export class UserMongooseRepository implements UserRepository {
     user: Partial<UserEntity>,
   ): Promise<UserEntity | null> {
     const updateData: any = {};
-    if (user.name) updateData.name = user.name;
-    if (user.email) updateData.email = user.email;
-    if (user.role) updateData.role = user.role;
+    if (user.name !== undefined) updateData.name = user.name;
+    if (user.email !== undefined) updateData.email = user.email;
+    if (user.role !== undefined) updateData.role = user.role;
+    if (user.status !== undefined) updateData.status = user.status;
 
     const doc = await this.userModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
@@ -95,6 +97,7 @@ export class UserMongooseRepository implements UserRepository {
       name: user.name,
       email: user.email,
       role: user.role,
+      status: user.status,
     };
 
     const doc = await this.userModel

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { UserRole } from 'src/features/users/domain/enums/user-role.enum';
 
 
@@ -15,4 +15,9 @@ export class CreateUserDto {
         message: 'Valid Role is Required (ADMIN, DEVS, or QA)'
     })
     role: UserRole;
+
+    
+    @IsNotEmpty({ message: 'Status is Required' })
+    @IsBoolean()
+    status: boolean;
 }

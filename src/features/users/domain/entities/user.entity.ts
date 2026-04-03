@@ -6,6 +6,7 @@ export class User {
         public _name: string,
         public _email: string,
         public _role: UserRole,
+        public _status: boolean,
         public readonly _createdAt?: Date,
         public readonly _updatedAt?: Date,
     ) { }
@@ -20,6 +21,10 @@ export class User {
 
     get role(): UserRole {
         return this._role;
+    }
+
+    get status(): boolean {
+        return this._status;
     }
 
     get createdAt(): Date | undefined {
@@ -40,5 +45,9 @@ export class User {
 
     updateRole(role: UserRole): void {
         this._role = role;
+    }
+
+    updateStatus(status: boolean): void {
+        this._status = status;
     }
 }

@@ -14,7 +14,7 @@ export class CreateUserUseCase {
   async execute(dto: CreateUserDto): Promise<UserEntity> {
     const existingUser = await this.userRepository.findByEmail(dto.email);
     if (existingUser) {
-      throw new ConflictException(`User with email ${dto.email} already exists`);
+      throw new ConflictException(`User with email already exists`);
     }
 
     const userEntity = new UserEntity(
@@ -22,6 +22,7 @@ export class CreateUserUseCase {
       dto.name,
       dto.email,
       dto.role,
+      dto.status
     );
 
     return this.userRepository.create(userEntity);
