@@ -154,8 +154,8 @@ export class UserMongooseRepository implements UserRepository {
   //Restore User by ID
   async restore(id: string): Promise<void> {
     await this.userModel.findByIdAndUpdate(id, {
-      isDeleted: false,
-      deletedAt: null,
+      $set: { isDeleted: false },
+      $unset: { deletedAt: 1 },
     }).exec();
   }
 

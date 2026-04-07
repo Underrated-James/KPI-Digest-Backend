@@ -80,7 +80,6 @@ export class SprintMongooseRepository implements SprintRepository {
       officialStartDate: sprint.officialStartDate,
       officialEndDate: sprint.officialEndDate,
       isDeleted: false,
-      deletedAt: null,
     });
     const doc = await createdSprint.save();
     return toEntity(doc);
@@ -180,7 +179,7 @@ export class SprintMongooseRepository implements SprintRepository {
   //Restore Sprint by ID
   async restore(id: string): Promise<void> {
     await this.sprintModel
-      .findByIdAndUpdate(id, { isDeleted: false, deletedAt: null })
+      .findByIdAndUpdate(id, { $set: { isDeleted: false }, $unset: { deletedAt: 1 } })
       .exec();
   }
 
