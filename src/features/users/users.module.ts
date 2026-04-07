@@ -8,6 +8,8 @@ import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id-use-c
 import { PatchUserUseCase } from './application/use-cases/patch-user-use-case';
 import { PutUserUseCase } from './application/use-cases/put-user-use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user-use-case';
+import { RestoreUserUseCase } from './application/use-cases/restore-user-use-case';
+import { HardDeleteUserUseCase } from './application/use-cases/hard-delete-user-use-case';
 import { UserSchema } from './infrastracture/models/user.model';
 import { USER_REPOSITORY, USER_MODEL } from './domain/constants/user.constants';
 
@@ -23,6 +25,8 @@ import { USER_REPOSITORY, USER_MODEL } from './domain/constants/user.constants';
         PatchUserUseCase,
         PutUserUseCase,
         DeleteUserUseCase,
+        RestoreUserUseCase,
+        HardDeleteUserUseCase,
         {
             provide: USER_REPOSITORY,
             useClass: UserMongooseRepository
@@ -35,7 +39,9 @@ import { USER_REPOSITORY, USER_MODEL } from './domain/constants/user.constants';
         GetUserByIdUseCase,
         PatchUserUseCase,
         PutUserUseCase,
-        DeleteUserUseCase
+        DeleteUserUseCase,
+        RestoreUserUseCase,
+        HardDeleteUserUseCase
     ]
 })
 export class UsersModule { }

@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { type ProjectRepository } from '../../../infrastracture/repositories/project.repository';
-import { PROJECT_REPOSITORY } from '../../../domain/constants/project.constants';
-import { ProjectNotFoundError } from '../../../presentation/errors/project-not-found';
+import { type ProjectRepository } from '../../infrastracture/repositories/project.repository';
+import { PROJECT_REPOSITORY } from '../../domain/constants/project.constants';
+import { ProjectNotFoundError } from '../../presentation/errors/project-not-found';
 
 @Injectable()
 export class DeleteProjectUseCase {

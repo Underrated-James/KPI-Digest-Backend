@@ -11,14 +11,21 @@ export class ProjectModel {
     required: true,
     minlength: 2,
     maxlength: 50,
+    index: true,
   })
   name: string;
 
-  @Prop({ required: true, enum: ProjectStatus })
+  @Prop({ required: true, enum: ProjectStatus, index: true })
   status: ProjectStatus;
 
   @Prop({ required: true })
   finishDate: Date;
+
+  @Prop({ default: false, index: true})
+  isDeleted: boolean;
+  
+  @Prop()
+  deletedAt: Date;
 
   @Prop()
   createdAt: Date;

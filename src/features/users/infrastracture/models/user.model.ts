@@ -7,17 +7,23 @@ export type UserDocument = HydratedDocument<UserModel>;
 
 @Schema({ collection: USER_COLLECTION, timestamps: true })
 export class UserModel {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   email: string;
 
-  @Prop({ required: true, enum: UserRole })
+  @Prop({ required: true, enum: UserRole, index: true })
   role: UserRole;
 
   @Prop({ required: true })
   status: boolean;
+
+  @Prop({ default: false, index: true })
+  isDeleted: boolean;
+
+  @Prop()
+  deletedAt: Date;
   
   @Prop()
   createdAt: Date;

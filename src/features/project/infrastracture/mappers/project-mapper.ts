@@ -7,6 +7,8 @@ export function toEntity(doc: ProjectDocument): ProjectsEntity {
         doc.name,
         doc.status,
         doc.finishDate,
+        doc.isDeleted,
+        doc.deletedAt,
         doc.createdAt,
         doc.updatedAt,
     );
