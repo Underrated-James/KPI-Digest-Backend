@@ -22,6 +22,8 @@ import { GetSprintByIdUseCase } from '../use-cases/get-sprint-by-id-use-case';
 import { PatchSprintUseCase } from '../use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from '../use-cases/put-sprint-use-case';
 import { DeleteSprintUseCase } from '../use-cases/delete-sprint-use-case';
+import { RestoreSprintUseCase } from '../use-cases/restore-sprint-use-case';
+import { HardDeleteSprintUseCase } from '../use-cases/hard-delete-sprint-use-case';
 import { GetSprintsQueryDto } from '../api/dto/request/get-sprints-dto';
 import { SPRINT_RESPONSE_MESSAGES, SPRINT_MODEL } from '../../domain/constants/sprint.constants';
 
@@ -34,10 +36,12 @@ export class SprintController {
     private readonly patchSprintUseCase: PatchSprintUseCase,
     private readonly putSprintUseCase: PutSprintUseCase,
     private readonly deleteSprintUseCase: DeleteSprintUseCase,
+    private readonly restoreSprintUseCase: RestoreSprintUseCase,
+    private readonly hardDeleteSprintUseCase: HardDeleteSprintUseCase,
   ) { }
 
 
-  // Create a New Project
+  // Create a New Sprint
   @Post()
   @ResponseMessage(SPRINT_RESPONSE_MESSAGES.CREATED)
   async create(@Body() createSprintDto: CreateSprintDto) {
@@ -45,7 +49,7 @@ export class SprintController {
     return SprintResponseDto.fromEntity(sprint);
   }
 
-  // Get All Projects
+  // Get All Sprints
   @Get()
   @ResponseMessage(SPRINT_RESPONSE_MESSAGES.RETRIEVED_ALL)
   async findAll(
@@ -55,12 +59,13 @@ export class SprintController {
       paginationQuery.page,
       paginationQuery.size,
       paginationQuery.status,
-      paginationQuery.projectId
+      paginationQuery.projectId,
+      paginationQuery.search
     );
     return SprintResponseDto.fromPaginatedResult(sprints);
   }
 
-  // Get a Project by ID
+  // Get a Sprint by ID
   @Get(':id')
   @ResponseMessage(SPRINT_RESPONSE_MESSAGES.RETRIEVED_ONE)
   async findOne(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
@@ -68,7 +73,7 @@ export class SprintController {
     return SprintResponseDto.fromEntity(sprint);
   }
 
-  // Patch User by ID
+  // Patch Sprint by ID
   @Patch(':id')
   @ResponseMessage(SPRINT_RESPONSE_MESSAGES.PATCHED)
   async patch(
@@ -93,5 +98,17 @@ export class SprintController {
   @ResponseMessage(SPRINT_RESPONSE_MESSAGES.DELETED)
   async remove(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
     await this.deleteSprintUseCase.execute(id);
+  }
+
+  @Patch(':id/restore')
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.RESTORED)
+  async restore(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
+    await this.restoreSprintUseCase.execute(id);
+  }
+
+  @Delete(':id/hardDelete')
+  @ResponseMessage(SPRINT_RESPONSE_MESSAGES.HARD_DELETED)
+  async hardDelete(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
+    await this.hardDeleteSprintUseCase.execute(id);
   }
 }

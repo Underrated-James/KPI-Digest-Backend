@@ -13,7 +13,9 @@ export function toEntity(doc: SprintDocument): SprintEntity {
         doc.dayOff || [],
         doc.officialStartDate ?? null,
         doc.officialEndDate ?? null,
-        doc.createdAt,
-        doc.updatedAt
+        doc.isDeleted ?? false,
+        doc.deletedAt ?? undefined,
+        doc.createdAt ?? undefined,
+        doc.updatedAt ?? undefined
     );
 }

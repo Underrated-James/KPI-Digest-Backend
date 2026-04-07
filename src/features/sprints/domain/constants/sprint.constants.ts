@@ -9,4 +9,6 @@ export const SPRINT_RESPONSE_MESSAGES = {
   PATCHED: 'Sprint patched successfully',
   PUT: 'Sprint put successfully',
   DELETED: 'Sprint deleted successfully',
+  RESTORED: 'Sprint restored successfully',
+  HARD_DELETED: 'Sprint permanently deleted successfully',
 };
