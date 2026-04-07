@@ -12,7 +12,19 @@ export class GetSprintUseCase {
     private readonly SprintRepository: SprintRepository,
   ) { }
 
-  async execute(page: number, size: number, status?: SprintStatus, projectId?: string): Promise<PaginatedResult<SprintEntity>> {
-    return this.SprintRepository.findAllPaginated(page, size, status, projectId);
+  async execute(
+    page: number,
+    size: number,
+    status?: SprintStatus,
+    projectId?: string,
+    search?: string,
+  ): Promise<PaginatedResult<SprintEntity>> {
+    return this.SprintRepository.findAllPaginated(
+      page,
+      size,
+      status,
+      projectId,
+      search,
+    );
   }
 }

@@ -10,6 +10,8 @@ import { GetSprintByIdUseCase } from './application/use-cases/get-sprint-by-id-u
 import { GetSprintUseCase } from './application/use-cases/get-sprints-use-case';
 import { PatchSprintUseCase } from './application/use-cases/patch-sprint-use-case';
 import { PutSprintUseCase } from './application/use-cases/put-sprint-use-case';
+import { RestoreSprintUseCase } from './application/use-cases/restore-sprint-use-case';
+import { HardDeleteSprintUseCase } from './application/use-cases/hard-delete-sprint-use-case';
 import { SPRINT_REPOSITORY, SPRINT_MODEL } from './domain/constants/sprint.constants';
 import { ProjectModule } from '../project/project.module';
 
@@ -27,6 +29,8 @@ import { ProjectModule } from '../project/project.module';
         PatchSprintUseCase,
         PutSprintUseCase,
         DeleteSprintUseCase,
+        RestoreSprintUseCase,
+        HardDeleteSprintUseCase,
         {
             provide: SPRINT_REPOSITORY,
             useClass: SprintMongooseRepository
@@ -39,7 +43,9 @@ import { ProjectModule } from '../project/project.module';
         GetSprintByIdUseCase,
         PatchSprintUseCase,
         PutSprintUseCase,
-        DeleteSprintUseCase
+        DeleteSprintUseCase,
+        RestoreSprintUseCase,
+        HardDeleteSprintUseCase
     ]
 })
 export class SprintsModule { }

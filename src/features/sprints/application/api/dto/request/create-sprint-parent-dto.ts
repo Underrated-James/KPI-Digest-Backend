@@ -60,6 +60,12 @@ export class CreateSprintDto {
   @Type(() => DayOffDto)
   @IsWithinRange('startDate')
   dayOff: DayOffDto[];
+
+  @IsOptional()
+  isDeleted?: boolean;
+
+  @IsOptional()
+  deletedAt?: string;
 }
 
 

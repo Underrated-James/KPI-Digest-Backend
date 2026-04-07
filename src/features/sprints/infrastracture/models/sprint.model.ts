@@ -18,17 +18,18 @@ export type SprintDocument = HydratedDocument<SprintModel>;
 
 @Schema({ collection: SPRINT_COLLECTION, timestamps: true })
 export class SprintModel {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   projectId: string;
 
   @Prop({
     required: true,
     minlength: 2,
     maxlength: 50,
+    index: true,
   })
   name: string;
 
-  @Prop({ required: true, enum: SprintStatus })
+  @Prop({ required: true, enum: SprintStatus, index: true })
   status: SprintStatus;
 
   @Prop({ required: false })
@@ -51,6 +52,12 @@ export class SprintModel {
 
   @Prop({ type: [DayOffSchema], default: [] })
   dayOff: { label: string; date: string }[];
+
+  @Prop({ default: false, index: true })
+  isDeleted: boolean;
+
+  @Prop({ type: Date, default: null })
+  deletedAt: Date | null;
 
   @Prop()
   createdAt: Date;

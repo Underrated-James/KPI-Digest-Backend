@@ -18,6 +18,8 @@ export class Sprint {
     public _dayOff: DayOff[] = [],
     public _officialStartDate: Date | null = null,
     public _officialEndDate: Date | null = null,
+    public _isDeleted: boolean = false,
+    public _deletedAt?: Date,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) {}
@@ -62,6 +64,14 @@ export class Sprint {
     return this._workingHoursDay;
   }
 
+  get isDeleted(): boolean {
+    return this._isDeleted;
+  }
+
+  get deletedAt(): Date | undefined {
+    return this._deletedAt;
+  }
+
   get createdAt(): Date | undefined {
     return this._createdAt;
   }
@@ -104,5 +114,15 @@ export class Sprint {
 
   updateDayOff(dayOff: DayOff[]): void {
     this._dayOff = dayOff;
+  }
+
+  softDelete(): void {
+    this._isDeleted = true;
+    this._deletedAt = new Date();
+  }
+
+  restore(): void {
+    this._isDeleted = false;
+    this._deletedAt = undefined;
   }
 }

@@ -18,20 +18,44 @@ export class SprintMongooseRepository implements SprintRepository {
     private readonly sprintModel: Model<SprintDocument>,
   ) { }
   // Get all Sprint Paginated 
-  async findAllPaginated(page: number, size: number, status?: SprintStatus, projectId?: string): Promise<PaginatedResult<SprintEntity>> {
-    const query: any = {};
+  async findAllPaginated(
+    page: number,
+    size: number,
+    status?: SprintStatus,
+    projectId?: string,
+    search?: string,
+  ): Promise<PaginatedResult<SprintEntity>> {
+    const query: any = { isDeleted: false };
     if (status) query.status = status;
     if (projectId) query.projectId = projectId;
+
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeSearch, 'i');
+      query.$or = [{ name: regex }];
+    }
+
     const skip = (page - 1) * size;
 
-    const docs = await this.sprintModel.find(query).skip(skip).limit(size).exec();
-    const totalElements = await this.sprintModel.countDocuments(query).exec();
+    const [totalElements, docs] = await Promise.all([
+      this.sprintModel.countDocuments(query).exec(),
+      this.sprintModel
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(size)
+        .select('-__v')
+        .lean()
+        .exec(),
+    ]);
+
     const totalPages = Math.ceil(totalElements / size);
     const numberOfElements = docs.length;
     const firstPage = page === 1;
-    const lastPage = page === totalPages;
+    const lastPage = page >= totalPages;
+
     return {
-      content: docs.map((doc) => toEntity(doc)),
+      content: docs.map((doc: any) => toEntity(doc)),
       page,
       size,
       totalElements,
@@ -55,25 +79,44 @@ export class SprintMongooseRepository implements SprintRepository {
       dayOff: sprint.dayOff,
       officialStartDate: sprint.officialStartDate,
       officialEndDate: sprint.officialEndDate,
+      isDeleted: false,
+      deletedAt: null,
     });
     const doc = await createdSprint.save();
     return toEntity(doc);
   }
 
   //Get All Sprint (filter with status optional)
-  async findAll(status?: SprintStatus, projectId?: string): Promise<SprintEntity[]> {
-    const query: any = {};
+  async findAll(
+    status?: SprintStatus,
+    projectId?: string,
+    search?: string,
+  ): Promise<SprintEntity[]> {
+    const query: any = { isDeleted: false };
     if (status) query.status = status;
     if (projectId) query.projectId = projectId;
 
-    const docs = await this.sprintModel.find(query).exec();
-    return docs.map((doc) => toEntity(doc));
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeSearch, 'i');
+      query.$or = [{ name: regex }];
+    }
+
+    const docs = await this.sprintModel
+      .find(query)
+      .select('-__v')
+      .lean()
+      .exec();
+    return docs.map((doc: any) => toEntity(doc));
   }
 
   //Get Sprint by ID
   async findById(id: string): Promise<SprintEntity | null> {
-    const doc = await this.sprintModel.findById(id).exec();
-    return doc ? toEntity(doc) : null;
+    const doc = await this.sprintModel
+      .findOne({ _id: id, isDeleted: false })
+      .lean()
+      .exec();
+    return doc ? toEntity(doc as any) : null;
   }
 
   // Patch Sprint by ID
@@ -93,11 +136,11 @@ export class SprintMongooseRepository implements SprintRepository {
     if (project.officialStartDate !== undefined) updateData.officialStartDate = project.officialStartDate;
     if (project.officialEndDate !== undefined) updateData.officialEndDate = project.officialEndDate;
 
-
     const doc = await this.sprintModel
-      .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
+      .findOneAndUpdate({ _id: id, isDeleted: false }, updateData, { returnDocument: 'after' })
+      .lean()
       .exec();
-    return doc ? toEntity(doc) : null;
+    return doc ? toEntity(doc as any) : null;
   }
 
   //PUT Sprint by ID
@@ -116,24 +159,42 @@ export class SprintMongooseRepository implements SprintRepository {
     };
 
     const doc = await this.sprintModel
-      .findByIdAndUpdate(id, updateData, {
+      .findOneAndUpdate({ _id: id, isDeleted: false }, updateData, {
         returnDocument: 'after',
         overwrite: true,
         runValidators: true,
       })
+      .lean()
       .exec();
 
-    return doc ? toEntity(doc) : null;
+    return doc ? toEntity(doc as any) : null;
   }
 
   //Delete Sprint by ID
   async delete(id: string): Promise<void> {
+    await this.sprintModel
+      .findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date() })
+      .exec();
+  }
+
+  //Restore Sprint by ID
+  async restore(id: string): Promise<void> {
+    await this.sprintModel
+      .findByIdAndUpdate(id, { isDeleted: false, deletedAt: null })
+      .exec();
+  }
+
+  //Hard Delete Sprint by ID
+  async hardDelete(id: string): Promise<void> {
     await this.sprintModel.findByIdAndDelete(id).exec();
   }
 
   //Find Sprint by Name
   async findByName(name: string): Promise<SprintEntity | null> {
-    const doc = await this.sprintModel.findOne({ name }).exec();
-    return doc ? toEntity(doc) : null;
+    const doc = await this.sprintModel
+      .findOne({ name, isDeleted: false })
+      .lean()
+      .exec();
+    return doc ? toEntity(doc as any) : null;
   }
 }
