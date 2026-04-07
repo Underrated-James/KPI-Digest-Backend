@@ -7,6 +7,8 @@ export class User {
         public _email: string,
         public _role: UserRole,
         public _status: boolean,
+        public _isDeleted: boolean = false,
+        public _deletedAt?: Date,
         public readonly _createdAt?: Date,
         public readonly _updatedAt?: Date,
     ) { }
@@ -25,6 +27,14 @@ export class User {
 
     get status(): boolean {
         return this._status;
+    }
+
+    get isDeleted(): boolean {
+        return this._isDeleted;
+    }
+
+    get deletedAt(): Date | undefined {
+        return this._deletedAt;
     }
 
     get createdAt(): Date | undefined {
@@ -49,5 +59,15 @@ export class User {
 
     updateStatus(status: boolean): void {
         this._status = status;
+    }
+
+    softDelete(): void {
+        this._isDeleted = true;
+        this._deletedAt = new Date();
+    }
+
+    restore(): void {
+        this._isDeleted = false;
+        this._deletedAt = undefined;
     }
 }

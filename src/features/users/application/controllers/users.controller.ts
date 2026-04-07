@@ -15,6 +15,8 @@ import { GetUserByIdUseCase } from '../use-cases/get-user-by-id-use-case';
 import { PatchUserUseCase } from '../use-cases/patch-user-use-case';
 import { PutUserUseCase } from '../use-cases/put-user-use-case';
 import { DeleteUserUseCase } from '../use-cases/delete-user-use-case';
+import { RestoreUserUseCase } from '../use-cases/restore-user-use-case';
+import { HardDeleteUserUseCase } from '../use-cases/hard-delete-user-use-case';
 import { CreateUserDto } from '../api/dtos/request/create-user-dto';
 import { PatchUserDto } from '../api/dtos/request/patch-user-dto';
 import { PutUserDto } from '../api/dtos/request/put-user-dto';
@@ -33,6 +35,8 @@ export class UsersController {
     private readonly patchUserUseCase: PatchUserUseCase,
     private readonly putUserUseCase: PutUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly restoreUserUseCase: RestoreUserUseCase,
+    private readonly hardDeleteUserUseCase: HardDeleteUserUseCase,
   ) { }
 
   @Get() // Get all users (paginated)
@@ -44,6 +48,7 @@ export class UsersController {
       getUserQueryDto.page,
       getUserQueryDto.size,
       getUserQueryDto.role,
+      getUserQueryDto.search,
     );
     return UserResponseDto.fromPaginatedResult(result);
   }
@@ -86,6 +91,20 @@ export class UsersController {
   @ResponseMessage(USER_RESPONSE_MESSAGES.DELETED)
   async delete(@Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string) {
     await this.deleteUserUseCase.execute(id);
+    return { id };
+  }
+
+  @Patch(':id/restore') // Restore a soft-deleted user
+  @ResponseMessage(USER_RESPONSE_MESSAGES.RESTORED)
+  async restore(@Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string) {
+    await this.restoreUserUseCase.execute(id);
+    return { id };
+  }
+
+  @Delete(':id/hardDelete') // Permanently delete a user
+  @ResponseMessage(USER_RESPONSE_MESSAGES.HARD_DELETED)
+  async hardDelete(@Param('id', new ParseMongoIdPipe(USER_MODEL)) id: string) {
+    await this.hardDeleteUserUseCase.execute(id);
     return { id };
   }
 }

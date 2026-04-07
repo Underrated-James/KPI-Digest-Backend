@@ -18,15 +18,30 @@ export class ProjectMongooseRepository implements ProjectRepository {
   ) { }
 
   //Get All Projects with Pagination (page is 1-indexed)
-  async findAllPaginated(page: number, size: number, status?: ProjectStatus): Promise<PaginatedResult<ProjectsEntity>> {
-    const query = status ? { status } : {};
-    const skip = (page - 1) * size; // Zero-Index Trap: page 1 → skip 0
+  async findAllPaginated(page: number, size: number, status?: ProjectStatus, search?: string): Promise<PaginatedResult<ProjectsEntity>> {
+    const query: any = status ? { isDeleted: false, status: status } : {};
+    if (status) query.status = status;
 
+
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeSearch, 'i');
+      query.$or = [{ name: regex }];
+    }
+
+    const skip = (page - 1) * size; // Zero-Index Trap: page 1 → skip 0
     // Run count + paginated fetch in parallel for performance
     const [totalElements, docs] = await Promise.all([
       this.projectModel.countDocuments(query).exec(),
-      this.projectModel.find(query).skip(skip).limit(size).exec(),
+      this.projectModel
+        .find(query)
+        .skip(skip)
+        .limit(size)
+        .select('-__v')
+        .lean()
+        .exec(),
     ]);
+
 
     const content = docs.map((doc) => toEntity(doc));
     const totalPages = Math.ceil(totalElements / size);
@@ -54,11 +69,23 @@ export class ProjectMongooseRepository implements ProjectRepository {
   }
 
   //Get All Prooject (filter with status optional)
-  async findAll(status?: ProjectStatus): Promise<ProjectsEntity[]> {
-    const query = status ? { status } : {};
-    const docs = await this.projectModel.find(query).exec();
+  async findAll(status?: ProjectStatus, search?: string): Promise<ProjectsEntity[]> {
+    const query: any = { isDeleted: false };
+    if (status) query.status = status;
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeSearch, 'i');
+      query.$or = [{ name: regex }];
+    }
+
+    const docs = await this.projectModel
+      .find(query)
+      .select('-__v')
+      .lean()
+      .exec();
     return docs.map((doc) => toEntity(doc));
   }
+
 
   //Get Project by ID
   async findById(id: string): Promise<ProjectsEntity | null> {
@@ -110,5 +137,18 @@ export class ProjectMongooseRepository implements ProjectRepository {
   async findByName(name: string): Promise<ProjectsEntity | null> {
     const doc = await this.projectModel.findOne({ name }).exec();
     return doc ? toEntity(doc) : null;
+  }
+
+  //Restore Project by ID
+  async restore(id: string): Promise<void> {
+    await this.projectModel.findByIdAndUpdate(id, {
+      isDeleted: false,
+      deletedAt: null
+    }).exec();
+  }
+
+  //Hard Delete Project by ID
+  async hardDelete(id: string): Promise<void> {
+    await this.projectModel.findByIdAndDelete(id).exec();
   }
 }

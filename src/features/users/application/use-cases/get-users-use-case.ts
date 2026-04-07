@@ -12,7 +12,12 @@ export class GetUsersUseCase {
         private readonly userRepository: UserRepository,
     ) { }
 
-    async execute(page: number, size: number, role?: UserRole): Promise<PaginatedResult<UserEntity>> {
-        return this.userRepository.findAllPaginated(page, size, role);
+    async execute(
+        page: number,
+        size: number,
+        role?: UserRole,
+        search?: string,
+    ): Promise<PaginatedResult<UserEntity>> {
+        return this.userRepository.findAllPaginated(page, size, role, search);
     }
 }

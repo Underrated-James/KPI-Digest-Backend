@@ -6,15 +6,16 @@ import {
   Patch,
   Param,
   Delete,
-  Put,
   Query,
 } from '@nestjs/common';
-import { GetProjectsUseCase } from '../api/use-cases/get-projects-use-case';
-import { CreateProjectUseCase } from '../api/use-cases/create-project-use-case';
-import { GetProjectByIdUseCase } from '../api/use-cases/get-project-by-id-use-case';
-import { PatchProjectUseCase } from '../api/use-cases/patch-project-use-case';
-import { PutProjectUseCase } from '../api/use-cases/put-project-use-case';
-import { DeleteProjectUseCase } from '../api/use-cases/delete-project-use-case';
+import { GetProjectsUseCase } from '../use-cases/get-projects-use-case';
+import { CreateProjectUseCase } from '../use-cases/create-project-use-case';
+import { GetProjectByIdUseCase } from '../use-cases/get-project-by-id-use-case';
+import { PatchProjectUseCase } from '../use-cases/patch-project-use-case';
+import { PutProjectUseCase } from '../use-cases/put-project-use-case';
+import { DeleteProjectUseCase } from '../use-cases/delete-project-use-case';
+import { RestoreProjectUseCase } from '../use-cases/restore-project-use-case';
+import { HardDeleteProjectUseCase } from '../use-cases/hard-delete-project-use-case';
 import { ProjectResponseDto } from '../api/dto/response/project-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
@@ -33,6 +34,8 @@ export class ProjectController {
     private readonly patchProjectUseCase: PatchProjectUseCase,
     private readonly putProjectUseCase: PutProjectUseCase,
     private readonly deleteProjectUseCase: DeleteProjectUseCase,
+    private readonly restoreProjectUseCase: RestoreProjectUseCase,
+    private readonly hardDeleteProjectUseCase: HardDeleteProjectUseCase,
   ) { }
 
 
@@ -45,7 +48,8 @@ export class ProjectController {
     const projects = await this.getProjectsUseCase.execute(
       getProjectQueryDto.page,
       getProjectQueryDto.size,
-      getProjectQueryDto.status
+      getProjectQueryDto.status,
+      getProjectQueryDto.search,
     );
     return ProjectResponseDto.fromPaginatedResult(projects);
   }
@@ -77,7 +81,6 @@ export class ProjectController {
     return ProjectResponseDto.fromEntity(project);
   }
 
-  @Put(':id')
   @ResponseMessage(PROJECT_RESPONSE_MESSAGES.PUT)
   async put(
     @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,
@@ -91,5 +94,21 @@ export class ProjectController {
   @ResponseMessage(PROJECT_RESPONSE_MESSAGES.DELETED)
   async remove(@Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string) {
     await this.deleteProjectUseCase.execute(id);
+  }
+
+  // Patch Restore Project by ID
+  @Patch(':id/restore')
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.RESTORED)
+  async restore(
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string) {
+    await this.restoreProjectUseCase.execute(id);
+  }
+
+  // Hard Delete a Project by ID
+  @Delete(':id/hard-delete')
+  @ResponseMessage(PROJECT_RESPONSE_MESSAGES.HARD_DELETED)
+  async hardDelete(
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string) {
+    await this.hardDeleteProjectUseCase.execute(id);
   }
 }

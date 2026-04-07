@@ -6,6 +6,8 @@ export class Project {
     public _name: string,
     public _status: ProjectStatus,
     public _finishDate: Date,
+    public _isDeleted: boolean = false,
+    public _deletedAt?: Date,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) {}
@@ -20,6 +22,13 @@ export class Project {
 
   get finishDate(): Date {
     return this._finishDate;
+  }
+
+  get isDeleted(): boolean {
+    return this._isDeleted;
+  }
+  get deletedAt(): Date | undefined {
+    return this._deletedAt;
   }
 
   get createdAt(): Date | undefined {
@@ -39,5 +48,14 @@ export class Project {
 
   updateFinishDate(finishDate: Date): void {
     this._finishDate = finishDate;
+  }
+  softDelete(): void {
+    this._isDeleted = true;
+    this._deletedAt = new Date();
+  }
+
+  restore(): void {
+    this._isDeleted = false;
+    this._deletedAt = undefined;
   }
 }

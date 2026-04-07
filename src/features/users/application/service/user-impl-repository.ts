@@ -30,24 +30,56 @@ export class UserMongooseRepository implements UserRepository {
   }
 
   //Get All User (filter with role optional)
-  async findAll(role?: UserRole): Promise<UserEntity[]> {
-    const query = role ? { role } : {};
-    const docs = await this.userModel.find(query).exec();
-    return docs.map((doc) => toEntity(doc));
+  async findAll(role?: UserRole, search?: string): Promise<UserEntity[]> {
+    const query: any = { isDeleted: false };
+    if (role) query.role = role;
+
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeSearch, 'i');
+      query.$or = [{ name: regex }, { email: regex }];
+    }
+
+    const docs = await this.userModel
+      .find(query)
+      .select('-__v')
+      .lean()
+      .exec();
+    return docs.map((doc: any) => toEntity(doc));
   }
 
   // Get All Users with Pagination (page is 1-indexed)
-  async findAllPaginated(page: number, size: number, role?: UserRole): Promise<PaginatedResult<UserEntity>> {
-    const query = role ? { role } : {};
+  async findAllPaginated(
+    page: number,
+    size: number,
+    role?: UserRole,
+    search?: string,
+  ): Promise<PaginatedResult<UserEntity>> {
+    const query: any = { isDeleted: false };
+    if (role) query.role = role;
+
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeSearch, 'i');
+      query.$or = [{ name: regex }, { email: regex }];
+    }
+
     const skip = (page - 1) * size;
 
     // Run count + paginated fetch in parallel for performance
     const [totalElements, docs] = await Promise.all([
       this.userModel.countDocuments(query).exec(),
-      this.userModel.find(query).skip(skip).limit(size).exec(),
+      this.userModel
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(size)
+        .select('-__v')
+        .lean()
+        .exec(),
     ]);
 
-    const content = docs.map((doc) => toEntity(doc));
+    const content = docs.map((doc: any) => toEntity(doc));
     const totalPages = Math.ceil(totalElements / size);
 
     return {
@@ -64,13 +96,13 @@ export class UserMongooseRepository implements UserRepository {
 
   //Get User by ID
   async findById(id: string): Promise<UserEntity | null> {
-    const doc = await this.userModel.findById(id).exec();
+    const doc = await this.userModel.findOne({ _id: id, isDeleted: false }).exec();
     return doc ? toEntity(doc) : null;
   }
 
   //Get Users by IDs (batch lookup)
   async findByIds(ids: string[]): Promise<UserEntity[]> {
-    const docs = await this.userModel.find({ _id: { $in: ids } }).exec();
+    const docs = await this.userModel.find({ _id: { $in: ids }, isDeleted: false }).exec();
     return docs.map((doc) => toEntity(doc));
   }
 
@@ -86,7 +118,7 @@ export class UserMongooseRepository implements UserRepository {
     if (user.status !== undefined) updateData.status = user.status;
 
     const doc = await this.userModel
-      .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
+      .findOneAndUpdate({ _id: id, isDeleted: false }, updateData, { returnDocument: 'after' })
       .exec();
     return doc ? toEntity(doc) : null;
   }
@@ -101,7 +133,7 @@ export class UserMongooseRepository implements UserRepository {
     };
 
     const doc = await this.userModel
-      .findByIdAndUpdate(id, updateData, {
+      .findOneAndUpdate({ _id: id, isDeleted: false }, updateData, {
         returnDocument: 'after',
         overwrite: true,
         runValidators: true,
@@ -113,12 +145,28 @@ export class UserMongooseRepository implements UserRepository {
 
   //Delete User by ID
   async delete(id: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, {
+      isDeleted: true,
+      deletedAt: new Date(),
+    }).exec();
+  }
+
+  //Restore User by ID
+  async restore(id: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, {
+      isDeleted: false,
+      deletedAt: null,
+    }).exec();
+  }
+
+  //Hard Delete User by ID
+  async hardDelete(id: string): Promise<void> {
     await this.userModel.findByIdAndDelete(id).exec();
   }
 
   //Find User by Email
   async findByEmail(email: string): Promise<UserEntity | null> {
-    const doc = await this.userModel.findOne({ email }).exec();
+    const doc = await this.userModel.findOne({ email, isDeleted: false }).exec();
     return doc ? toEntity(doc) : null;
   }
 }
