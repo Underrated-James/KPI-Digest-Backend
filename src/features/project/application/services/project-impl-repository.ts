@@ -130,7 +130,10 @@ export class ProjectMongooseRepository implements ProjectRepository {
 
   //Delete Project by ID
   async delete(id: string): Promise<void> {
-    await this.projectModel.findByIdAndDelete(id).exec();
+    await this.projectModel.findByIdAndUpdate(id, {
+      isDeleted: true,
+      deletedAt: new Date()
+    }).exec();
   }
 
   //Find Project by Name
@@ -142,8 +145,8 @@ export class ProjectMongooseRepository implements ProjectRepository {
   //Restore Project by ID
   async restore(id: string): Promise<void> {
     await this.projectModel.findByIdAndUpdate(id, {
-      isDeleted: false,
-      deletedAt: null
+      $set: { isDeleted: false },
+      $unset: { deletedAt: 1 }
     }).exec();
   }
 
