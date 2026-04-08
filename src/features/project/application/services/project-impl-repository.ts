@@ -19,7 +19,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
 
   //Get All Projects with Pagination (page is 1-indexed)
   async findAllPaginated(page: number, size: number, status?: ProjectStatus, search?: string): Promise<PaginatedResult<ProjectsEntity>> {
-    const query: any = status ? { isDeleted: false, status: status } : {};
+    const query: any = { isDeleted: { $ne: true } };
     if (status) query.status = status;
 
 
@@ -70,7 +70,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
 
   //Get All Prooject (filter with status optional)
   async findAll(status?: ProjectStatus, search?: string): Promise<ProjectsEntity[]> {
-    const query: any = { isDeleted: false };
+    const query: any = { isDeleted: { $ne: true } };
     if (status) query.status = status;
     if (search) {
       const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
