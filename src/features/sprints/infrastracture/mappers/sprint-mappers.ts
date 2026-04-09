@@ -1,6 +1,5 @@
-import { SprintDocument } from "../../infrastracture/models/sprint.model";
 import { Sprint as SprintEntity } from "../../domain/entities/sprint-entity";
-export function toEntity(doc: SprintDocument): SprintEntity {
+export function toEntity(doc: any): SprintEntity {
     return new SprintEntity(
         doc._id.toString(),
         doc.projectId,
@@ -13,6 +12,7 @@ export function toEntity(doc: SprintDocument): SprintEntity {
         doc.dayOff || [],
         doc.officialStartDate ?? null,
         doc.officialEndDate ?? null,
+        doc.projectName,
         doc.isDeleted ?? false,
         doc.deletedAt ?? undefined,
         doc.createdAt ?? undefined,
