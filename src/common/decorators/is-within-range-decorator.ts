@@ -33,7 +33,7 @@ export function IsWithinRange(property: string, validationOptions?: ValidationOp
           });
         },
         defaultMessage(_args: ValidationArguments) {
-          return `One or more day-off dates are outside the sprint range`;
+          return `One of Date is of bounds`;
         }
       },
     });
