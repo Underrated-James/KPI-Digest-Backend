@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { SprintRepository } from '../../infrastracture/repository/sprint-repository';
 import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import {
   SprintDocument,
 } from '../../infrastracture/models/sprint.model';
 import { SPRINT_MODEL } from '../../domain/constants/sprint.constants';
+import { PROJECT_COLLECTION } from '../../../project/domain/constants/project.constants';
 import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 import { toEntity } from '../../infrastracture/mappers/sprint-mappers';
@@ -37,16 +38,50 @@ export class SprintMongooseRepository implements SprintRepository {
 
     const skip = (page - 1) * size;
 
+    // Use aggregation to join with Projects collection for project name
+    const pipeline: any[] = [
+      { $match: query },
+      {
+        $addFields: {
+          projectIdObj: {
+            $cond: {
+              if: { $regexMatch: { input: "$projectId", regex: /^[0-9a-fA-F]{24}$/ } },
+              then: { $toObjectId: "$projectId" },
+              else: "$projectId"
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: PROJECT_COLLECTION,
+          localField: 'projectIdObj',
+          foreignField: '_id',
+          as: 'projectInfo',
+        },
+      },
+      {
+        $unwind: {
+          path: '$projectInfo',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          projectName: '$projectInfo.name',
+        },
+      },
+      { $sort: { createdAt: -1 } },
+    ];
+
     const [totalElements, docs] = await Promise.all([
       this.sprintModel.countDocuments(query).exec(),
-      this.sprintModel
-        .find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(size)
-        .select('-__v')
-        .lean()
-        .exec(),
+      this.sprintModel.aggregate([
+        ...pipeline,
+        { $skip: skip },
+        { $limit: size },
+        { $project: { projectInfo: 0, projectIdObj: 0 } }
+      ]).exec(),
     ]);
 
     const totalPages = Math.ceil(totalElements / size);
@@ -82,7 +117,7 @@ export class SprintMongooseRepository implements SprintRepository {
       isDeleted: false,
     });
     const doc = await createdSprint.save();
-    return toEntity(doc);
+    return this.findById(doc._id.toString()) as Promise<SprintEntity>;
   }
 
   //Get All Sprint (filter with status optional)
@@ -101,21 +136,85 @@ export class SprintMongooseRepository implements SprintRepository {
       query.$or = [{ name: regex }];
     }
 
-    const docs = await this.sprintModel
-      .find(query)
-      .select('-__v')
-      .lean()
-      .exec();
+    const docs = await this.sprintModel.aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          projectIdObj: {
+            $cond: {
+              if: { $regexMatch: { input: "$projectId", regex: /^[0-9a-fA-F]{24}$/ } },
+              then: { $toObjectId: "$projectId" },
+              else: "$projectId"
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: PROJECT_COLLECTION,
+          localField: 'projectIdObj',
+          foreignField: '_id',
+          as: 'projectInfo',
+        },
+      },
+      {
+        $unwind: {
+          path: '$projectInfo',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          projectName: '$projectInfo.name',
+        },
+      },
+      { $project: { projectInfo: 0, projectIdObj: 0 } }
+    ]).exec();
     return docs.map((doc: any) => toEntity(doc));
   }
 
   //Get Sprint by ID
   async findById(id: string): Promise<SprintEntity | null> {
-    const doc = await this.sprintModel
-      .findOne({ _id: id, isDeleted: { $ne: true } })
-      .lean()
-      .exec();
-    return doc ? toEntity(doc as any) : null;
+    const docs = await this.sprintModel.aggregate([
+      {
+        $match: {
+          _id: Types.ObjectId.isValid(id) ? new Types.ObjectId(id) : id,
+          isDeleted: { $ne: true }
+        }
+      },
+      {
+        $addFields: {
+          projectIdObj: {
+            $cond: {
+              if: { $regexMatch: { input: "$projectId", regex: /^[0-9a-fA-F]{24}$/ } },
+              then: { $toObjectId: "$projectId" },
+              else: "$projectId"
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: PROJECT_COLLECTION,
+          localField: 'projectIdObj',
+          foreignField: '_id',
+          as: 'projectInfo',
+        },
+      },
+      {
+        $unwind: {
+          path: '$projectInfo',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          projectName: '$projectInfo.name',
+        },
+      },
+      { $project: { projectInfo: 0, projectIdObj: 0 } }
+    ]).exec();
+    return docs.length > 0 ? toEntity(docs[0]) : null;
   }
 
   // Patch Sprint by ID
@@ -139,7 +238,7 @@ export class SprintMongooseRepository implements SprintRepository {
       .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateData, { returnDocument: 'after' })
       .lean()
       .exec();
-    return doc ? toEntity(doc as any) : null;
+    return doc ? this.findById(id) : null;
   }
 
   //PUT Sprint by ID
@@ -166,7 +265,7 @@ export class SprintMongooseRepository implements SprintRepository {
       .lean()
       .exec();
 
-    return doc ? toEntity(doc as any) : null;
+    return doc ? this.findById(id) : null;
   }
 
   //Delete Sprint by ID
@@ -190,10 +289,40 @@ export class SprintMongooseRepository implements SprintRepository {
 
   //Find Sprint by Name
   async findByName(name: string): Promise<SprintEntity | null> {
-    const doc = await this.sprintModel
-      .findOne({ name, isDeleted: { $ne: true } })
-      .lean()
-      .exec();
-    return doc ? toEntity(doc as any) : null;
+    const docs = await this.sprintModel.aggregate([
+      { $match: { name, isDeleted: { $ne: true } } },
+      {
+        $addFields: {
+          projectIdObj: {
+            $cond: {
+              if: { $regexMatch: { input: "$projectId", regex: /^[0-9a-fA-F]{24}$/ } },
+              then: { $toObjectId: "$projectId" },
+              else: "$projectId"
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: PROJECT_COLLECTION,
+          localField: 'projectIdObj',
+          foreignField: '_id',
+          as: 'projectInfo',
+        },
+      },
+      {
+        $unwind: {
+          path: '$projectInfo',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          projectName: '$projectInfo.name',
+        },
+      },
+      { $project: { projectInfo: 0, projectIdObj: 0 } }
+    ]).exec();
+    return docs.length > 0 ? toEntity(docs[0]) : null;
   }
 }

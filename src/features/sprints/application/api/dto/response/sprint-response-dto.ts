@@ -15,6 +15,7 @@ export class SprintResponseDto {
     public readonly workingHoursDay: number,
     public readonly sprintDuration: number,
     public readonly dayOff: DayOff[],
+    public readonly projectName?: string,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) { }
@@ -32,6 +33,7 @@ export class SprintResponseDto {
       sprint.workingHoursDay,
       sprint.sprintDuration,
       sprint.dayOff,
+      sprint.projectName,
       sprint.createdAt,
       sprint.updatedAt,
     );

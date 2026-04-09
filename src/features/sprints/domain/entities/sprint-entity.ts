@@ -18,6 +18,7 @@ export class Sprint {
     public _dayOff: DayOff[] = [],
     public _officialStartDate: Date | null = null,
     public _officialEndDate: Date | null = null,
+    public _projectName?: string,
     public _isDeleted: boolean = false,
     public _deletedAt?: Date,
     public readonly _createdAt?: Date,
@@ -58,6 +59,10 @@ export class Sprint {
 
   get officialEndDate(): Date | null {
     return this._officialEndDate;
+  }
+
+  get projectName(): string | undefined {
+    return this._projectName;
   }
 
   get workingHoursDay(): number {
