@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ProjectRepository } from '../../infrastracture/repositories/project.repository';
 import { Project as ProjectsEntity } from '../../domain/entities/project.entity';
 import {
   ProjectDocument,
 } from '../../infrastracture/models/project.model';
 import { PROJECT_MODEL } from '../../domain/constants/project.constants';
+import { SPRINT_COLLECTION } from '../../../sprints/domain/constants/sprint.constants';
 import { ProjectStatus } from '../../domain/enums/project-status-enums';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 import { toEntity } from '../../infrastracture/mappers/project-mapper';
@@ -30,16 +31,44 @@ export class ProjectMongooseRepository implements ProjectRepository {
     }
 
     const skip = (page - 1) * size; // Zero-Index Trap: page 1 → skip 0
+
+    // Build aggregation pipeline for counting sprints
+    const pipeline: any[] = [
+      { $match: query },
+      {
+        $lookup: {
+          from: SPRINT_COLLECTION,
+          let: { projectId: { $toString: "$_id" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$projectId", "$$projectId"] },
+                    { $ne: ["$isDeleted", true] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "sprints"
+        }
+      },
+      {
+        $addFields: {
+          sprintCount: { $size: "$sprints" }
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: size },
+      { $project: { sprints: 0, __v: 0 } }
+    ];
+
     // Run count + paginated fetch in parallel for performance
     const [totalElements, docs] = await Promise.all([
       this.projectModel.countDocuments(query).exec(),
-      this.projectModel
-        .find(query)
-        .skip(skip)
-        .limit(size)
-        .select('-__v')
-        .lean()
-        .exec(),
+      this.projectModel.aggregate(pipeline).exec(),
     ]);
 
 
@@ -78,19 +107,73 @@ export class ProjectMongooseRepository implements ProjectRepository {
       query.$or = [{ name: regex }];
     }
 
-    const docs = await this.projectModel
-      .find(query)
-      .select('-__v')
-      .lean()
-      .exec();
+    const pipeline: any[] = [
+      { $match: query },
+      {
+        $lookup: {
+          from: SPRINT_COLLECTION,
+          let: { projectId: { $toString: "$_id" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$projectId", "$$projectId"] },
+                    { $ne: ["$isDeleted", true] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "sprints"
+        }
+      },
+      {
+        $addFields: {
+          sprintCount: { $size: "$sprints" }
+        }
+      },
+      { $project: { sprints: 0, __v: 0 } }
+    ];
+
+    const docs = await this.projectModel.aggregate(pipeline).exec();
     return docs.map((doc) => toEntity(doc));
   }
 
 
   //Get Project by ID
   async findById(id: string): Promise<ProjectsEntity | null> {
-    const doc = await this.projectModel.findById(id).exec();
-    return doc ? toEntity(doc) : null;
+    const pipeline: any[] = [
+      { $match: { _id: Types.ObjectId.isValid(id) ? new Types.ObjectId(id) : id } },
+      {
+        $lookup: {
+          from: SPRINT_COLLECTION,
+          let: { projectId: { $toString: "$_id" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$projectId", "$$projectId"] },
+                    { $ne: ["$isDeleted", true] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "sprints"
+        }
+      },
+      {
+        $addFields: {
+          sprintCount: { $size: "$sprints" }
+        }
+      },
+      { $project: { sprints: 0, __v: 0 } }
+    ];
+
+    const docs = await this.projectModel.aggregate(pipeline).exec();
+    return docs.length > 0 ? toEntity(docs[0]) : null;
   }
 
   // Patch Project by ID
@@ -106,7 +189,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
     const doc = await this.projectModel
       .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
-    return doc ? toEntity(doc) : null;
+    return doc ? this.findById(id) : null;
   }
 
   //PUT Project by ID
@@ -125,7 +208,7 @@ export class ProjectMongooseRepository implements ProjectRepository {
       })
       .exec();
 
-    return doc ? toEntity(doc) : null;
+    return doc ? this.findById(id) : null;
   }
 
   //Delete Project by ID
