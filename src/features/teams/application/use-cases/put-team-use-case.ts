@@ -4,7 +4,7 @@ import { TEAM_REPOSITORY } from '../../domain/constants/team.constants';
 import { SPRINT_REPOSITORY } from '../../../sprints/domain/constants/sprint.constants';
 import { USER_REPOSITORY } from '../../../users/domain/constants/user.constants';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
-import { CreateTeamDto } from '../api/dto/request/create-team.dto';
+import { PutTeamDto } from '../api/dto/request/put-team.dto';
 import { type SprintRepository } from '../../../sprints/infrastracture/repository/sprint-repository';
 import { type UserRepository } from '../../../users/infrastracture/repositories/user.repository';
 
@@ -19,7 +19,7 @@ export class PutTeamUseCase {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async execute(id: string, dto: CreateTeamDto): Promise<TeamEntity> {
+  async execute(id: string, dto: PutTeamDto): Promise<TeamEntity> {
     const team = await this.teamRepository.findById(id);
     if (!team) {
       throw new NotFoundException(`Team with id '${id}' not found`);
@@ -64,7 +64,20 @@ export class PutTeamUseCase {
       }
     });
 
-    const updatedTeam = await this.teamRepository.put(id, dto);
+    const teamEntity = new TeamEntity(
+      id,
+      dto.projectId,
+      dto.sprintId,
+      dto.userIds.map(u => ({
+        userId: u.userId,
+        allocationPercentage: u.allocationPercentage,
+        hoursPerDay: u.hoursPerDay,
+        role: u.role,
+        leave: u.leave
+      }))
+    );
+
+    const updatedTeam = await this.teamRepository.put(id, teamEntity);
     if (!updatedTeam) {
         throw new NotFoundException(`Team with id '${id}' not found after update`);
     }

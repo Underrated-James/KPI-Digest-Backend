@@ -70,7 +70,6 @@ export class TeamMongooseRepository implements TeamRepository {
           _id: '$_id',
           projectId: { $first: '$projectId' },
           sprintId: { $first: '$sprintId' },
-          calculatedHoursPerDay: { $first: '$calculatedHoursPerDay' },
           createdAt: { $first: '$createdAt' },
           updatedAt: { $first: '$updatedAt' },
           projectName: { $first: '$project.name' },
@@ -125,10 +124,11 @@ export class TeamMongooseRepository implements TeamRepository {
     const createdTeam = new this.teamModel({
       projectId: team.projectId,
       sprintId: team.sprintId,
-      calculatedHoursPerDay: team.calculatedHoursPerDay,
-      userIds: team.userIds.map(u => ({
+      userIds: team.users.map(u => ({
         userId: u.userId,
         allocationPercentage: u.allocationPercentage,
+        hoursPerDay: u.hoursPerDay,
+        role: u.role,
         leave: u.leave
       })),
     });
@@ -174,29 +174,36 @@ export class TeamMongooseRepository implements TeamRepository {
     return docs.length > 0 ? toEntity(docs[0]) : null;
   }
 
-  async patch(id: string, team: Partial<TeamEntity>): Promise<TeamEntity | null> {
+  async patch(id: string, team: any): Promise<TeamEntity | null> {
     const updateData: any = {};
-    if (team.userIds) {
-      updateData.userIds = team.userIds.map(u => ({
+    if (team.projectId) updateData.projectId = team.projectId;
+    if (team.sprintId) updateData.sprintId = team.sprintId;
+    
+    if (team.users || team.userIds) {
+      const members = team.users || team.userIds;
+      updateData.userIds = members.map((u: any) => ({
         userId: u.userId,
         allocationPercentage: u.allocationPercentage,
+        hoursPerDay: u.hoursPerDay,
+        role: u.role,
         leave: u.leave
       }));
     }
-    if (team.calculatedHoursPerDay !== undefined) updateData.calculatedHoursPerDay = team.calculatedHoursPerDay;
 
     await this.teamModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
     return this.findById(id);
   }
 
-  async put(id: string, team: Partial<TeamEntity>): Promise<TeamEntity | null> {
+  async put(id: string, team: any): Promise<TeamEntity | null> {
+    const members = team.users || team.userIds || [];
     const updateData: any = {
       projectId: team.projectId,
       sprintId: team.sprintId,
-      calculatedHoursPerDay: team.calculatedHoursPerDay,
-      userIds: team.userIds?.map(u => ({
+      userIds: members.map((u: any) => ({
         userId: u.userId,
         allocationPercentage: u.allocationPercentage,
+        hoursPerDay: u.hoursPerDay,
+        role: u.role,
         leave: u.leave
       })),
     };

@@ -1,4 +1,3 @@
-import { ProjectDocument } from "../../infrastracture/models/project.model";
 import { Project as ProjectsEntity } from "../../domain/entities/project.entity";
 
 export function toEntity(doc: any): ProjectsEntity {

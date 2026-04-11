@@ -1,7 +1,6 @@
 import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
-import { Team as TeamEntity } from '../../../../domain/entities/team.entity';
+import { Team as TeamEntity, TeamUser } from '../../../../domain/entities/team.entity';
 import { ProjectStatus } from 'src/features/project/domain/enums/project-status-enums';
-import { ListOfUsers } from '../../dto/request/create-team.dto';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
 
 export class TeamResponseDto {
@@ -13,9 +12,8 @@ export class TeamResponseDto {
     public readonly sprintId: string,
     public readonly sprintName: string | undefined,
     public readonly sprintStatus: SprintStatus | undefined,
-    public readonly HoursDay: number | undefined,
-    public readonly userIds: ListOfUsers[],
-    public readonly calculatedHoursPerDay: number,
+    public readonly hoursDay: number | undefined,
+    public readonly users: TeamUser[],
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) { }
@@ -29,9 +27,8 @@ export class TeamResponseDto {
       team.sprintId,
       team.sprintName,
       team.sprintStatus,
-      team.HoursDay,
-      team.userIds,
-      team.calculatedHoursPerDay,
+      team.hoursDay,
+      team.users,
       team.createdAt,
       team.updatedAt,
     );

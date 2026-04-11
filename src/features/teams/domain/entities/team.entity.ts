@@ -2,13 +2,21 @@ import { ProjectStatus } from "src/features/project/domain/enums/project-status-
 import { SprintStatus } from "src/features/sprints/domain/enums/sprint-status-enums";
 import { ListOfUsers } from "../../application/api/dto/request/create-team.dto";
 
+export interface TeamUser {
+  userId: string;
+  name?: string;
+  allocationPercentage: number;
+  hoursPerDay: number;
+  role: string;
+  leave?: any[];
+}
+
 export class Team {
   constructor(
     public readonly id: string,
     public _projectId: string,
     public _sprintId: string,
-    public _calculatedHoursPerDay: number,
-    public _userIds: ListOfUsers[],
+    public _userIds: TeamUser[],
     public _projectName?: string,
     public _projectStatus?: ProjectStatus,
     public _sprintName?: string,
@@ -42,16 +50,12 @@ export class Team {
     return this._sprintStatus;
   }
 
-  get HoursDay(): number | undefined {
+  get hoursDay(): number | undefined {
     return this._HoursDay;
   }
 
-  get userIds(): ListOfUsers[] {
+  get users(): TeamUser[] {
     return this._userIds;
-  }
-
-  get calculatedHoursPerDay(): number {
-    return this._calculatedHoursPerDay;
   }
 
   get createdAt(): Date | undefined {
@@ -92,10 +96,6 @@ export class Team {
 
   updateUserIds(userIds: ListOfUsers[]): void {
     this._userIds = userIds;
-  }
-
-  updateCalculatedHoursPerDay(calculatedHoursPerDay: number): void {
-    this._calculatedHoursPerDay = calculatedHoursPerDay;
   }
 
 }

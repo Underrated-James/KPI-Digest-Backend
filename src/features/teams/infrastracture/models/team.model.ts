@@ -13,13 +13,12 @@ export class TeamModel {
   @Prop({ required: true })
   sprintId: string;
 
-  @Prop({ required: true })
-  calculatedHoursPerDay: number;
-
   @Prop({ required: true, type: Array })
   userIds: {
     userId: string;
     allocationPercentage: number;
+    hoursPerDay: number;
+    role: string;
     leave?: any[];
   }[];
 

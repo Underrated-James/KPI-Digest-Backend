@@ -5,8 +5,14 @@ export function toEntity(doc: any): TeamEntity {
         doc._id.toString(),
         doc.projectId,
         doc.sprintId,
-        doc.calculatedHoursPerDay,
-        doc.userIds,
+        doc.userIds.map((u: any) => ({
+            userId: u.userId,
+            name: u.name,
+            allocationPercentage: u.allocationPercentage,
+            hoursPerDay: u.hoursPerDay,
+            role: u.role,
+            leave: u.leave
+        })),
         doc.projectName,
         doc.projectStatus,
         doc.sprintName,

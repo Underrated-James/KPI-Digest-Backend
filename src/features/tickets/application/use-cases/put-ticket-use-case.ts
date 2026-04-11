@@ -47,7 +47,7 @@ export class PutTicketUseCase {
       if (!team) {
         throw new BadRequestException('No team has been defined for this sprint yet. Cannot assign a user.');
       }
-      const isUserInTeam = team.userIds.some(u => u.userId === assignedUserId);
+      const isUserInTeam = team.users.some(u => u.userId === assignedUserId);
       if (!isUserInTeam) {
         throw new UnprocessableEntityException(
           `User ${assignedUserId} is not a member of the team for Sprint: ${dto.sprintId}`
