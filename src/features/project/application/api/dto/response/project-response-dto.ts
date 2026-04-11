@@ -7,6 +7,7 @@ export class ProjectResponseDto {
     public readonly name: string,
     public readonly status: ProjectStatus,
     public readonly finishDate: Date,
+    public readonly sprintCount: number,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
   ) { }
@@ -17,6 +18,7 @@ export class ProjectResponseDto {
       project.name,
       project.status,
       project._finishDate,
+      project.sprintCount,
       project._createdAt,
       project._updatedAt,
     );

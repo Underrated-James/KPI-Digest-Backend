@@ -8,6 +8,7 @@ export class Project {
     public _finishDate: Date,
     public _isDeleted: boolean = false,
     public _deletedAt?: Date,
+    public _sprintCount: number = 0,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) {}
@@ -22,6 +23,10 @@ export class Project {
 
   get finishDate(): Date {
     return this._finishDate;
+  }
+
+  get sprintCount(): number {
+    return this._sprintCount;
   }
 
   get isDeleted(): boolean {
