@@ -12,33 +12,23 @@ import { LeaveDays } from 'src/features/teams/domain/enums/leave-days-enums';
 import { UserRole } from 'src/features/users/domain/enums/user-role.enum';
 
 export class CreateTeamDto {
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Project ID is required' })
     @IsString()
     projectId: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Sprint ID is required' })
     @IsString()
     sprintId: string;
-
-    @IsNotEmpty()
-    @IsNumber()
-    HoursDay: number;
 
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => ListOfUsers)
     userIds: ListOfUsers[];
-
-    @IsNotEmpty({ message: 'Calculated hours per day is required' })
-    @IsNumber()
-    calculatedHoursPerDay: number;
-
 }
 
 
 export class ListOfUsers {
-
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'User ID is required' })
     @IsString()
     userId: string;
 
@@ -46,7 +36,11 @@ export class ListOfUsers {
     @IsNumber()
     allocationPercentage: number;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Hours per day is required' })
+    @IsNumber()
+    hoursPerDay: number;
+
+    @IsNotEmpty({ message: 'Role is required' })
     @IsEnum(UserRole, { message: `Role must be one of the following values: ${Object.values(UserRole).join(', ')}` })
     role: UserRole;
 
@@ -55,5 +49,4 @@ export class ListOfUsers {
     @ValidateNested({ each: true })
     @Type(() => LeaveDays)
     leave?: LeaveDays[];
-
 }

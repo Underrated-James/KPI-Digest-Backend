@@ -41,7 +41,7 @@ export class PatchTeamUseCase {
 
     // If either sprintId or userIds (with leaves) are being updated, we need to validate
     const sprintId = dto.sprintId || team.sprintId;
-    const userIds = dto.userIds || team.userIds;
+    const users = dto.userIds || team.users;
 
     if (dto.userIds || dto.sprintId) {
       const sprint = await this.sprintRepository.findById(sprintId);
@@ -50,7 +50,7 @@ export class PatchTeamUseCase {
       }
 
       // Validate each user's leave date against the sprint's start and end date
-      userIds.forEach((user) => {
+      users.forEach((user) => {
         if (user.leave && user.leave.length > 0) {
           user.leave.forEach((leave) => {
             const leaveDate = new Date(leave.leaveDate);
@@ -72,7 +72,18 @@ export class PatchTeamUseCase {
       });
     }
 
-    const updatedTeam = await this.teamRepository.patch(id, dto);
+    const patchData: any = { ...dto };
+    if (dto.userIds) {
+      patchData.userIds = dto.userIds.map(u => ({
+        userId: u.userId,
+        allocationPercentage: u.allocationPercentage,
+        hoursPerDay: u.hoursPerDay,
+        role: u.role,
+        leave: u.leave
+      }));
+    }
+
+    const updatedTeam = await this.teamRepository.patch(id, patchData);
     if (!updatedTeam) {
         throw new NotFoundException(`Team with id '${id}' not found after update`);
     }
