@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
 import { TicketStatus } from 'src/features/tickets/domain/enums/ticket-status';
 
 
@@ -14,7 +15,11 @@ export class PutTicketDto {
 
     @IsOptional()
     @IsString()
-    assignedUserId?: string;
+    assignedDevId?: string;
+
+    @IsOptional()
+    @IsString()
+    assignedQaId?: string;
 
     @IsString()
     @IsNotEmpty({ message: 'Ticket number is required' })
@@ -33,10 +38,12 @@ export class PutTicketDto {
     descriptionLink: string;
 
     @IsNotEmpty({ message: 'Estimation testing is required' })
+    @Type(() => Number)
     @IsNumber()
     estimationTesting: number;
 
     @IsNotEmpty({ message: 'Development estimation is required' })
+    @Type(() => Number)
     @IsNumber()
     developmentEstimation: number;
 }

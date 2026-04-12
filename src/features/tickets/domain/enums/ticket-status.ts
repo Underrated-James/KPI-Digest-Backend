@@ -1,7 +1,7 @@
 export enum TicketStatus {
     Open = 'open',
-    ForDevelopment = 'forDevelopment',
-    ForTesting = 'forTesting',
-    Completed = 'completed',
+    InProgress = 'inProgress',
+    Done = 'done',
+    Cancelled = 'cancelled',
 }
 

@@ -7,7 +7,7 @@ export interface TicketRepository {
     create(ticket: Ticket): Promise<Ticket>;
     createMany(tickets: Ticket[]): Promise<Ticket[]>;
     findAll(status?: TicketStatus): Promise<Ticket[]>;
-    findAllPaginated(page: number, size: number, status?: TicketStatus, projectId?: string, sprintId?: string, teamId?: string ): Promise<PaginatedResult<Ticket>>;
+    findAllPaginated(page: number, size: number, status?: TicketStatus, projectId?: string, sprintId?: string, teamId?: string, search?: string ): Promise<PaginatedResult<Ticket>>;
     findById(id: string): Promise<Ticket | null>;
     findTicketNumber(ticketNumber: string): Promise<Ticket | null>;
     patch(id: string, ticket: Partial<Ticket>): Promise<Ticket | null>;

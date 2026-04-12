@@ -5,7 +5,7 @@ import { PaginationQueryDto } from 'src/common/dtos/pagination-query.dto';
 export class GetTicketQueryDto extends PaginationQueryDto {
     @IsOptional()
     @IsEnum(TicketStatus, { message: 'Invalid status value' })
-    ticketStatus?: TicketStatus;
+    status?: TicketStatus;
 
     @IsOptional()
     teamId?: string;
@@ -16,4 +16,6 @@ export class GetTicketQueryDto extends PaginationQueryDto {
     @IsOptional()
     projectId?: string;
 
+    @IsOptional()
+    search?: string;
 }

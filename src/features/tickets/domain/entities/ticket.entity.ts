@@ -7,7 +7,8 @@ export class Ticket {
     public readonly projectId: string,
     public readonly sprintId: string,
     public readonly teamId: string | null,
-    public readonly assignedUserId: string | null,
+    public readonly assignedDevId: string | null,
+    public readonly assignedQaId: string | null,
     public _ticketNumber: string,
     public _status: string,
     public _ticketTitle: string,
@@ -18,8 +19,10 @@ export class Ticket {
     public readonly _projectStatus?: ProjectStatus,
     public readonly _sprintName?: string,
     public readonly _sprintStatus?: SprintStatus,
-    public readonly _assignedUserName?: string,
-    public readonly _assignedUserRole?: string,
+    public readonly _assignedDevName?: string,
+    public readonly _assignedDevRole?: string,
+    public readonly _assignedQaName?: string,
+    public readonly _assignedQaRole?: string,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) { }
@@ -64,12 +67,20 @@ export class Ticket {
     return this._sprintStatus;
   }
 
-  get assignedUserName(): string | undefined {
-    return this._assignedUserName;
+  get assignedDevName(): string | undefined {
+    return this._assignedDevName;
   }
 
-  get assignedUserRole(): string | undefined {
-    return this._assignedUserRole;
+  get assignedDevRole(): string | undefined {
+    return this._assignedDevRole;
+  }
+
+  get assignedQaName(): string | undefined {
+    return this._assignedQaName;
+  }
+
+  get assignedQaRole(): string | undefined {
+    return this._assignedQaRole;
   }
 
   get createdAt(): Date | undefined {

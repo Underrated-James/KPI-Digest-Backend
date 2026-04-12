@@ -12,7 +12,7 @@ export class GetTicketsUseCase {
         private readonly ticketRepository: TicketRepository,
     ) { }
     
-    async execute(page: number, size: number, status?: TicketStatus, projectId?: string, sprintId?: string, teamId?: string ): Promise<PaginatedResult<TicketsEntity>> {
-        return this.ticketRepository.findAllPaginated(page, size, status, projectId, sprintId, teamId);
+    async execute(page: number, size: number, status?: TicketStatus, projectId?: string, sprintId?: string, teamId?: string, search?: string ): Promise<PaginatedResult<TicketsEntity>> {
+        return this.ticketRepository.findAllPaginated(page, size, status, projectId, sprintId, teamId, search);
     }
 }

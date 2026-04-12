@@ -12,7 +12,11 @@ export class CreateTicketDto {
 
     @IsOptional()
     @IsString()
-    assignedUserId?: string;
+    assignedDevId?: string;
+
+    @IsOptional()
+    @IsString()
+    assignedQaId?: string;
 
     @IsString()
     @IsNotEmpty({ message: 'Ticket number is required' })
