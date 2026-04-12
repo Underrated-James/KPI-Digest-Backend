@@ -8,6 +8,8 @@ import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.consta
 import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
 import { type SprintRepository } from 'src/features/sprints/infrastracture/repository/sprint-repository';
+import { USER_REPOSITORY } from 'src/features/users/domain/constants/user.constants';
+import { type UserRepository } from 'src/features/users/infrastracture/repositories/user.repository';
 
 @Injectable()
 export class PatchTicketUseCase {
@@ -18,6 +20,8 @@ export class PatchTicketUseCase {
     private readonly teamRepository: TeamRepository,
     @Inject(SPRINT_REPOSITORY)
     private readonly sprintRepository: SprintRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository,
   ) { }
 
   async execute(id: string, dto: PatchTicketDto): Promise<TicketsEntity> {
@@ -26,11 +30,12 @@ export class PatchTicketUseCase {
       throw new TicketNotFoundError(id);
     }
 
-    // If sprintId or assignedUserId is changing, we need to validate
+    // If sprintId, assignedDevId or assignedQaId is changing, we need to validate
     const sprintId = dto.sprintId || ticket.sprintId;
-    const assignedUserId = dto.assignedUserId !== undefined ? dto.assignedUserId : ticket.assignedUserId;
+    const assignedDevId = dto.assignedDevId !== undefined ? dto.assignedDevId : ticket.assignedDevId;
+    const assignedQaId = dto.assignedQaId !== undefined ? dto.assignedQaId : ticket.assignedQaId;
 
-    if (dto.sprintId || dto.assignedUserId !== undefined) {
+    if (dto.sprintId || dto.assignedDevId !== undefined || dto.assignedQaId !== undefined) {
       const [sprint, team] = await Promise.all([
         this.sprintRepository.findById(sprintId),
         this.teamRepository.findBySprintId(sprintId),
@@ -40,15 +45,35 @@ export class PatchTicketUseCase {
         throw new BadRequestException(`Sprint with ID ${sprintId} not found`);
       }
 
-      if (assignedUserId) {
-        if (!team) {
-          throw new BadRequestException('No team has been defined for this sprint yet. Cannot assign a user.');
+      if (assignedDevId) {
+        const user = await this.userRepository.findById(assignedDevId);
+        if (!user) {
+          throw new UnprocessableEntityException(`Assigned Developer with ID ${assignedDevId} not found`);
         }
-        const isUserInTeam = team.users.some(u => u.userId === assignedUserId);
-        if (!isUserInTeam) {
-          throw new UnprocessableEntityException(
-            `User ${assignedUserId} is not a member of the team for Sprint: ${sprintId}`
-          );
+        if (user.role !== 'DEVS') {
+          throw new UnprocessableEntityException(`User ${user.name} is not a Developer (Role: ${user.role})`);
+        }
+        if (team) {
+          const isMember = team.users.some(u => u.userId === assignedDevId);
+          if (!isMember) {
+            throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${sprintId}`);
+          }
+        }
+      }
+
+      if (assignedQaId) {
+        const user = await this.userRepository.findById(assignedQaId);
+        if (!user) {
+          throw new UnprocessableEntityException(`Assigned QA with ID ${assignedQaId} not found`);
+        }
+        if (user.role !== 'QA') {
+          throw new UnprocessableEntityException(`User ${user.name} is not a QA (Role: ${user.role})`);
+        }
+        if (team) {
+          const isMember = team.users.some(u => u.userId === assignedQaId);
+          if (!isMember) {
+            throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${sprintId}`);
+          }
         }
       }
     }

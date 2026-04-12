@@ -7,6 +7,8 @@ import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.
 import { type SprintRepository } from 'src/features/sprints/infrastracture/repository/sprint-repository';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
+import { USER_REPOSITORY } from 'src/features/users/domain/constants/user.constants';
+import { type UserRepository } from 'src/features/users/infrastracture/repositories/user.repository';
 import { TicketStatus } from '../../domain/enums/ticket-status';
 
 @Injectable()
@@ -18,6 +20,8 @@ export class CreateTicketUseCase {
     private readonly sprintRepository: SprintRepository,
     @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository,
   ) { }
 
   async execute(dto: CreateTicketDto | CreateTicketDto[]): Promise<TicketEntity | TicketEntity[]> {
@@ -35,7 +39,7 @@ export class CreateTicketUseCase {
       this.teamRepository.findBySprintId(dto.sprintId),
     ]);
 
-    this.validateTicket(dto, existingTicket, sprint, team);
+    await this.validateTicket(dto, existingTicket, sprint, team);
 
     const ticketEntity = this.mapToEntity(dto, team);
     return this.ticketRepository.create(ticketEntity);
@@ -56,19 +60,19 @@ export class CreateTicketUseCase {
     const teamMap = new Map(teams.filter(t => t !== null).map(t => [t!.sprintId, t!]));
     const existingTicketNumbers = new Set(existingTickets.map(t => t.ticketNumber));
 
-    const ticketEntities = dtos.map(dto => {
+    const ticketEntities = await Promise.all(dtos.map(async (dto) => {
       const sprint = sprintMap.get(dto.sprintId);
       const team = teamMap.get(dto.sprintId);
       const existingTicket = existingTicketNumbers.has(dto.ticketNumber) ? { ticketNumber: dto.ticketNumber } : null;
 
-      this.validateTicket(dto, existingTicket as any, sprint || null, team || null);
+      await this.validateTicket(dto, existingTicket as any, sprint || null, team || null);
       return this.mapToEntity(dto, team || null);
-    });
+    }));
 
     return this.ticketRepository.createMany(ticketEntities);
   }
 
-  private validateTicket(dto: CreateTicketDto, existingTicket: TicketEntity | null, sprint: any | null, team: any | null): void {
+  private async validateTicket(dto: CreateTicketDto, existingTicket: TicketEntity | null, sprint: any | null, team: any | null): Promise<void> {
     if (existingTicket) {
       throw new ConflictException(`Ticket ${dto.ticketNumber} already exists`);
     }
@@ -81,20 +85,38 @@ export class CreateTicketUseCase {
       throw new BadRequestException(`Project ID ${dto.projectId} does not match the sprint's project ID ${sprint.projectId}`);
     }
 
-    let assignedUserId: string | null = dto.assignedUserId || null;
+    const assignedDevId = dto.assignedDevId || null;
+    const assignedQaId = dto.assignedQaId || null;
 
-    if (team) {
-      if (assignedUserId) {
-        const isUserInTeam = team.userIds.some((u: any) => u.userId === assignedUserId);
-        if (!isUserInTeam) {
-          throw new UnprocessableEntityException(
-            `User ${assignedUserId} is not a member of the team for Sprint: ${dto.sprintId}`
-          );
+    if (assignedDevId) {
+      const user = await this.userRepository.findById(assignedDevId);
+      if (!user) {
+        throw new UnprocessableEntityException(`Assigned Developer with ID ${assignedDevId} not found`);
+      }
+      if (user.role !== 'DEVS') {
+        throw new UnprocessableEntityException(`User ${user.name} is not a Developer (Role: ${user.role})`);
+      }
+      if (team) {
+        const isMember = team.users.some((u: any) => u.userId === assignedDevId);
+        if (!isMember) {
+          throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${dto.sprintId}`);
         }
       }
-    } else {
-      if (assignedUserId) {
-        throw new BadRequestException(`No team has been defined for sprint ${dto.sprintId} yet. Cannot assign a user to the ticket.`);
+    }
+
+    if (assignedQaId) {
+      const user = await this.userRepository.findById(assignedQaId);
+      if (!user) {
+        throw new UnprocessableEntityException(`Assigned QA with ID ${assignedQaId} not found`);
+      }
+      if (user.role !== 'QA') {
+        throw new UnprocessableEntityException(`User ${user.name} is not a QA (Role: ${user.role})`);
+      }
+      if (team) {
+        const isMember = team.users.some((u: any) => u.userId === assignedQaId);
+        if (!isMember) {
+          throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${dto.sprintId}`);
+        }
       }
     }
   }
@@ -105,7 +127,8 @@ export class CreateTicketUseCase {
       dto.projectId,
       dto.sprintId,
       team ? team.id : null,
-      dto.assignedUserId || null,
+      dto.assignedDevId || null,
+      dto.assignedQaId || null,
       dto.ticketNumber,
       TicketStatus.Open,
       dto.ticketTitle,

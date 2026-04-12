@@ -26,7 +26,8 @@ export class TicketMongooseRepository implements TicketRepository {
                 $addFields: {
                     projectObjId: { $toObjectId: '$projectId' },
                     sprintObjId: { $toObjectId: '$sprintId' },
-                    userObjId: { $cond: [{ $ne: ['$assignedUserId', null] }, { $toObjectId: '$assignedUserId' }, null] }
+                    devObjId: { $cond: [{ $ne: ['$assignedDevId', null] }, { $toObjectId: '$assignedDevId' }, null] },
+                    qaObjId: { $cond: [{ $ne: ['$assignedQaId', null] }, { $toObjectId: '$assignedQaId' }, null] }
                 }
             },
             {
@@ -50,19 +51,29 @@ export class TicketMongooseRepository implements TicketRepository {
             {
                 $lookup: {
                     from: USER_COLLECTION,
-                    localField: 'userObjId',
+                    localField: 'devObjId',
                     foreignField: '_id',
-                    as: 'assignedUser'
+                    as: 'assignedDev'
                 }
             },
-            { $unwind: { path: '$assignedUser', preserveNullAndEmptyArrays: true } },
+            { $unwind: { path: '$assignedDev', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: USER_COLLECTION,
+                    localField: 'qaObjId',
+                    foreignField: '_id',
+                    as: 'assignedQa'
+                }
+            },
+            { $unwind: { path: '$assignedQa', preserveNullAndEmptyArrays: true } },
             {
                 $project: {
                     _id: 1,
                     projectId: 1,
                     sprintId: 1,
                     teamId: 1,
-                    assignedUserId: 1,
+                    assignedDevId: 1,
+                    assignedQaId: 1,
                     ticketNumber: 1,
                     status: 1,
                     ticketTitle: 1,
@@ -75,8 +86,10 @@ export class TicketMongooseRepository implements TicketRepository {
                     projectStatus: '$project.status',
                     sprintName: '$sprint.name',
                     sprintStatus: '$sprint.status',
-                    assignedUserName: '$assignedUser.name',
-                    assignedUserRole: '$assignedUser.role'
+                    assignedDevName: '$assignedDev.name',
+                    assignedDevRole: '$assignedDev.role',
+                    assignedQaName: '$assignedQa.name',
+                    assignedQaRole: '$assignedQa.role'
                 }
             }
         ];
@@ -90,8 +103,30 @@ export class TicketMongooseRepository implements TicketRepository {
     }
 
     //Get All Tickets with Pagination (page is 1-indexed)
-    async findAllPaginated(page: number, size: number, status?: TicketStatus): Promise<PaginatedResult<TicketEntity>> {
-        const query: any = status ? { status } : {};
+    async findAllPaginated(
+        page: number, 
+        size: number, 
+        status?: TicketStatus, 
+        projectId?: string, 
+        sprintId?: string, 
+        teamId?: string,
+        search?: string
+    ): Promise<PaginatedResult<TicketEntity>> {
+        const query: any = {};
+        if (status) query.status = status;
+        if (projectId) query.projectId = projectId;
+        if (sprintId) query.sprintId = sprintId;
+        if (teamId) query.teamId = teamId;
+
+        if (search) {
+            const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(safeSearch, 'i');
+            query.$or = [
+                { ticketNumber: regex },
+                { ticketTitle: regex }
+            ];
+        }
+
         const skip = (page - 1) * size;
 
         const totalElements = await this.ticketModel.countDocuments(query).exec();
@@ -123,7 +158,8 @@ export class TicketMongooseRepository implements TicketRepository {
             projectId: ticket.projectId,
             sprintId: ticket.sprintId,
             teamId: ticket.teamId,
-            assignedUserId: ticket.assignedUserId,
+            assignedDevId: ticket.assignedDevId,
+            assignedQaId: ticket.assignedQaId,
             ticketNumber: ticket.ticketNumber,
             ticketTitle: ticket.ticketTitle,
             descriptionLink: ticket.descriptionLink,
@@ -140,7 +176,8 @@ export class TicketMongooseRepository implements TicketRepository {
             projectId: ticket.projectId,
             sprintId: ticket.sprintId,
             teamId: ticket.teamId,
-            assignedUserId: ticket.assignedUserId,
+            assignedDevId: ticket.assignedDevId,
+            assignedQaId: ticket.assignedQaId,
             ticketNumber: ticket.ticketNumber,
             ticketTitle: ticket.ticketTitle,
             descriptionLink: ticket.descriptionLink,
@@ -184,7 +221,8 @@ export class TicketMongooseRepository implements TicketRepository {
         if (ticket.estimationTesting !== undefined) updateData.estimationTesting = ticket.estimationTesting;
         if (ticket.developmentEstimation !== undefined) updateData.developmentEstimation = ticket.developmentEstimation;
         if (ticket.status) updateData.status = ticket.status;
-        if (ticket.assignedUserId !== undefined) updateData.assignedUserId = ticket.assignedUserId;
+        if (ticket.assignedDevId !== undefined) updateData.assignedDevId = ticket.assignedDevId;
+        if (ticket.assignedQaId !== undefined) updateData.assignedQaId = ticket.assignedQaId;
         if (ticket.teamId !== undefined) updateData.teamId = ticket.teamId;
 
         await this.ticketModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
@@ -197,7 +235,8 @@ export class TicketMongooseRepository implements TicketRepository {
             projectId: ticket.projectId,
             sprintId: ticket.sprintId,
             teamId: ticket.teamId,
-            assignedUserId: ticket.assignedUserId,
+            assignedDevId: ticket.assignedDevId,
+            assignedQaId: ticket.assignedQaId,
             ticketNumber: ticket.ticketNumber,
             ticketTitle: ticket.ticketTitle,
             descriptionLink: ticket.descriptionLink,

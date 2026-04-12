@@ -18,7 +18,10 @@ export class TicketModel {
     teamId: string | null;
 
     @Prop({ type: String, required: false, index: true, default: null }) 
-    assignedUserId: string | null;
+    assignedDevId: string | null;
+
+    @Prop({ type: String, required: false, index: true, default: null }) 
+    assignedQaId: string | null;
 
     @Prop({ unique: true, required: true })
     ticketNumber: string;
@@ -40,4 +43,5 @@ export class TicketModel {
 }
 
 export const TicketSchema = SchemaFactory.createForClass(TicketModel);
-TicketSchema.index({ sprintId: 1, assignedUserId: 1 });
+TicketSchema.index({ sprintId: 1, assignedDevId: 1 });
+TicketSchema.index({ sprintId: 1, assignedQaId: 1 });

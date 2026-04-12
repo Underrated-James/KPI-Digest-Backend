@@ -19,6 +19,7 @@ import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 import { TICKET_MODEL, TICKET_RESPONSE_MESSAGES } from '../../domain/constants/ticket.constants';
 import { DeleteTicketUseCase } from '../use-cases/delete-ticket-use-case';
 import { PutTicketUseCase } from '../use-cases/put-ticket-use-case';
+import { GetAvailableMembersUseCase } from '../use-cases/get-available-members-use-case';
 import { GetTicketQueryDto } from '../api/dto/request/get-tickets-dto';
 import { TicketResponseDto } from '../api/dto/response/tickets-reponse-dto';
 import { PutTicketDto } from '../api/dto/request/put-ticket-dto';
@@ -35,7 +36,16 @@ export class TicketsController {
     private readonly patchTicketUseCase: PatchTicketUseCase,
     private readonly putTicketUseCase: PutTicketUseCase,
     private readonly deleteTicketUseCase: DeleteTicketUseCase,
+    private readonly getAvailableMembersUseCase: GetAvailableMembersUseCase,
   ) { }
+
+
+  // Get Available Members for a Ticket
+  @Get(':id/available-members')
+  @ResponseMessage('Available members retrieved successfully')
+  async getAvailableMembers(@Param('id', new ParseMongoIdPipe(TICKET_MODEL)) id: string) {
+    return this.getAvailableMembersUseCase.execute(id);
+  }
 
 
   // Get All Tickets (Paginated)
@@ -47,7 +57,11 @@ export class TicketsController {
     const tickets = await this.getTicketsUseCase.execute(
       getTicketQueryDto.page,
       getTicketQueryDto.size,
-      getTicketQueryDto.ticketStatus
+      getTicketQueryDto.status,
+      getTicketQueryDto.projectId,
+      getTicketQueryDto.sprintId,
+      getTicketQueryDto.teamId,
+      getTicketQueryDto.search
     );
     return TicketResponseDto.fromPaginatedResult(tickets);
   }

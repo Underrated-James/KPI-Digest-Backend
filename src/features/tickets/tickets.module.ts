@@ -9,16 +9,19 @@ import { DeleteTicketUseCase } from './application/use-cases/delete-ticket-use-c
 import { GetTicketByIdUseCase } from './application/use-cases/get-ticket-by-id-user-case';
 import { PatchTicketUseCase } from './application/use-cases/patch-ticket-use-case';
 import { PutTicketUseCase } from './application/use-cases/put-ticket-use-case';
+import { GetAvailableMembersUseCase } from './application/use-cases/get-available-members-use-case';
 import { TICKET_MODEL, TICKET_REPOSITORY } from './domain/constants/ticket.constants';
 import { SprintsModule } from '../sprints/sprints.module';
 import { TeamsModule } from '../teams/teams.module';
+import { UsersModule } from '../users/users.module';
 
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: TICKET_MODEL, schema: TicketSchema }]),
         SprintsModule,
-        TeamsModule
+        TeamsModule,
+        UsersModule
     ],
     controllers: [TicketsController],
     providers: [
@@ -28,6 +31,7 @@ import { TeamsModule } from '../teams/teams.module';
         PatchTicketUseCase,
         PutTicketUseCase,
         DeleteTicketUseCase,
+        GetAvailableMembersUseCase,
         {
             provide: TICKET_REPOSITORY,
             useClass: TicketMongooseRepository
@@ -40,7 +44,8 @@ import { TeamsModule } from '../teams/teams.module';
         GetTicketByIdUseCase,
         PatchTicketUseCase,
         PutTicketUseCase,
-        DeleteTicketUseCase
+        DeleteTicketUseCase,
+        GetAvailableMembersUseCase
     ]
 })
 export class TicketsModule { }
