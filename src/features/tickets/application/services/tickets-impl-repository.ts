@@ -227,6 +227,32 @@ export class TicketMongooseRepository implements TicketRepository {
         id: string,
         ticket: Partial<TicketEntity>,
     ): Promise<TicketEntity | null> {
+        const updateData = this.getPatchUpdateData(ticket);
+
+        await this.ticketModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+        return this.findById(id);
+    }
+
+    // Patch Many Tickets
+    async patchMany(
+        updates: { id: string; data: Partial<TicketEntity> }[],
+    ): Promise<TicketEntity[]> {
+        const bulkOps = updates.map(update => ({
+            updateOne: {
+                filter: { _id: new Types.ObjectId(update.id) },
+                update: { $set: this.getPatchUpdateData(update.data) },
+            },
+        }));
+
+        await this.ticketModel.bulkWrite(bulkOps);
+
+        const ids = updates.map(u => new Types.ObjectId(u.id));
+        const query = { _id: { $in: ids } };
+        const enrichedDocs = await this.ticketModel.aggregate(this.getAggregationPipeline(query)).exec();
+        return enrichedDocs.map(doc => toEntity(doc));
+    }
+
+    private getPatchUpdateData(ticket: Partial<TicketEntity>): any {
         const updateData: any = {};
         if (ticket.ticketNumber) updateData.ticketNumber = ticket.ticketNumber;
         if (ticket.ticketTitle) updateData.ticketTitle = ticket.ticketTitle;
@@ -240,9 +266,9 @@ export class TicketMongooseRepository implements TicketRepository {
         if (ticket.assignedDevId !== undefined) updateData.assignedDevId = ticket.assignedDevId;
         if (ticket.assignedQaId !== undefined) updateData.assignedQaId = ticket.assignedQaId;
         if (ticket.teamId !== undefined) updateData.teamId = ticket.teamId;
-
-        await this.ticketModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
-        return this.findById(id);
+        if (ticket.projectId !== undefined) updateData.projectId = ticket.projectId;
+        if (ticket.sprintId !== undefined) updateData.sprintId = ticket.sprintId;
+        return updateData;
     }
 
     //PUT Ticket by ID

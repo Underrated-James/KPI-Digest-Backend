@@ -19,11 +19,13 @@ import { TICKET_MODEL, TICKET_RESPONSE_MESSAGES } from '../../domain/constants/t
 import { DeleteTicketUseCase } from '../use-cases/use-cases-tickets/delete-ticket-use-case';
 import { PutTicketUseCase } from '../use-cases/use-cases-tickets/put-ticket-use-case';
 import { GetAvailableMembersUseCase } from '../use-cases/use-cases-tickets/get-available-members-use-case';
+import { BulkPatchTicketUseCase } from '../use-cases/use-cases-tickets/bulk-patch-ticket-use-case';
 import { GetTicketQueryDto } from '../api/dto/request/get-tickets-dto';
 import { TicketResponseDto } from '../api/dto/response/tickets-reponse-dto';
 import { PutTicketDto } from '../api/dto/request/put-ticket-dto';
 import { PatchTicketDto } from '../api/dto/request/patch-ticket.dto';
 import { CreateTicketDto } from '../api/dto/request/create-ticket-dto';
+import { BulkPatchTicketDto } from '../api/dto/request/bulk-patch-ticket-dto';
 
 
 @Controller('tickets')
@@ -36,6 +38,7 @@ export class TicketsController {
     private readonly putTicketUseCase: PutTicketUseCase,
     private readonly deleteTicketUseCase: DeleteTicketUseCase,
     private readonly getAvailableMembersUseCase: GetAvailableMembersUseCase,
+    private readonly bulkPatchTicketUseCase: BulkPatchTicketUseCase,
   ) { }
 
 
@@ -96,6 +99,16 @@ export class TicketsController {
   ) {
     const ticket = await this.patchTicketUseCase.execute(id, patchTicketDto);
     return TicketResponseDto.fromEntity(ticket);
+  }
+
+  // Bulk Patch Tickets
+  @Patch()
+  @ResponseMessage(TICKET_RESPONSE_MESSAGES.PATCHED)
+  async bulkPatch(
+    @Body() bulkPatchTicketDto: BulkPatchTicketDto
+  ) {
+    const tickets = await this.bulkPatchTicketUseCase.execute(bulkPatchTicketDto);
+    return TicketResponseDto.fromEntities(tickets);
   }
 
   @Put(':id')
