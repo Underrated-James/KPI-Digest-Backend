@@ -13,6 +13,10 @@ export class CreateTicketDto {
 
     @IsOptional()
     @IsString()
+    teamId?: string;
+
+    @IsOptional()
+    @IsString()
     assignedDevId?: string;
 
     @IsOptional()

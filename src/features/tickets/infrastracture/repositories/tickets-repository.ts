@@ -11,6 +11,7 @@ export interface TicketRepository {
     findById(id: string): Promise<Ticket | null>;
     findTicketNumber(ticketNumber: string): Promise<Ticket | null>;
     patch(id: string, ticket: Partial<Ticket>): Promise<Ticket | null>;
+    patchMany(updates: { id: string; data: Partial<Ticket> }[]): Promise<Ticket[]>;
     put(id: string, ticket: Partial<Ticket>): Promise<Ticket | null>;
     delete(id: string): Promise<void>;
 }   
