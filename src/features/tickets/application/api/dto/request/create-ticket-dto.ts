@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateTicketDto {
 
@@ -6,9 +7,9 @@ export class CreateTicketDto {
     @IsString()
     projectId: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    sprintId: string;
+    sprintId?: string;
 
     @IsOptional()
     @IsString()
@@ -30,11 +31,13 @@ export class CreateTicketDto {
     @IsString()
     descriptionLink: string;
 
-    @IsNotEmpty({ message: 'Estimation testing is required' })
+    @IsOptional()
+    @Type(() => Number)
     @IsNumber()
-    estimationTesting: number;
+    estimationTesting?: number;
 
-    @IsNotEmpty({ message: 'Development estimation is required' })
+    @IsOptional()
+    @Type(() => Number)
     @IsNumber()
-    developmentEstimation: number;
+    developmentEstimation?: number;
 }

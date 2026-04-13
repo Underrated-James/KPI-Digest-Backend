@@ -11,8 +11,8 @@ export class TicketModel {
     @Prop({ required: true, index: true })
     projectId: string;
 
-    @Prop({ required: true, index: true })
-    sprintId: string;
+    @Prop({ type: String, required: false, index: true, default: null }) 
+    sprintId: string | null;
 
     @Prop({ type: String, required: false, index: true, default: null }) 
     teamId: string | null;
@@ -35,11 +35,20 @@ export class TicketModel {
     @Prop({ required: true })
     descriptionLink: string;
 
-    @Prop({ required: true })
-    estimationTesting: number;
+    @Prop({type:Number, required: false, default: null })
+    estimationTesting: number | null;
 
-    @Prop({ required: true })
-    developmentEstimation: number;
+    @Prop({type:Number, required: false, default: null })
+    developmentEstimation: number | null;
+
+    @Prop({ type: Number, required: false, default: 0 })
+    sprintCapacity: number;
+
+    @Prop({ type: Number, required: false, default: 0 })
+    commitedCapacity: number;
+
+    @Prop({ type: Number, required: false, default: 0 })
+    availableCapacity: number;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(TicketModel);

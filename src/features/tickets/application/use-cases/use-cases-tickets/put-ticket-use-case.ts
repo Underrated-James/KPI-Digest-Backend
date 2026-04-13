@@ -1,9 +1,9 @@
 import { Injectable, Inject, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
-import { TICKET_REPOSITORY } from '../../domain/constants/ticket.constants';
-import { type TicketRepository } from '../../infrastracture/repositories/tickets-repository';
-import { PutTicketDto } from '../api/dto/request/put-ticket-dto';
-import { Ticket as TicketsEntity } from '../../domain/entities/ticket.entity';
-import { TicketNotFoundError } from '../../presentation/errors/tickets-not-found';
+import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
+import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
+import { PutTicketDto } from '../../api/dto/request/put-ticket-dto';
+import { Ticket as TicketsEntity } from '../../../domain/entities/ticket.entity';
+import { TicketNotFoundError } from '../../../presentation/errors/tickets-not-found';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
@@ -33,16 +33,22 @@ export class PutTicketUseCase {
 
     // Integrity checks for PUT
     const [sprint, team] = await Promise.all([
-      this.sprintRepository.findById(dto.sprintId),
-      this.teamRepository.findBySprintId(dto.sprintId),
+      dto.sprintId
+        ? this.sprintRepository.findById(dto.sprintId)
+        : Promise.resolve(null),
+      dto.sprintId
+        ? this.teamRepository.findBySprintId(dto.sprintId)
+        : Promise.resolve(null),
     ]);
 
-    if (!sprint) {
-      throw new BadRequestException(`Sprint with ID ${dto.sprintId} not found`);
-    }
+    if (dto.sprintId) {
+      if (!sprint) {
+        throw new BadRequestException(`Sprint with ID ${dto.sprintId} not found`);
+      }
 
-    if (dto.projectId !== sprint.projectId) {
-      throw new BadRequestException(`Project ID ${dto.projectId} does not match the sprint's project ID ${sprint.projectId}`);
+      if (dto.projectId !== sprint.projectId) {
+        throw new BadRequestException(`Project ID ${dto.projectId} does not match the sprint's project ID ${sprint.projectId}`);
+      }
     }
 
     // Team Membership Guard Check
@@ -85,7 +91,7 @@ export class PutTicketUseCase {
     const ticketToPut = new TicketsEntity(
       id,
       dto.projectId,
-      dto.sprintId,
+      dto.sprintId || null,
       team?.id || null,
       assignedDevId,
       assignedQaId,
@@ -93,8 +99,8 @@ export class PutTicketUseCase {
       dto.status,
       dto.ticketTitle,
       dto.descriptionLink,
-      dto.estimationTesting,
-      dto.developmentEstimation,
+      dto.estimationTesting || null,
+      dto.developmentEstimation || null,
     );
 
     const updatedTicket = await this.ticketRepository.put(id, ticketToPut);

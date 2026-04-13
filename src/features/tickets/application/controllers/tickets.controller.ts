@@ -8,18 +8,17 @@ import {
   Delete,
   Put,
   Query,
-  ParseArrayPipe,
 } from '@nestjs/common';
-import { CreateTicketUseCase } from '../use-cases/create-ticket-use-case';
-import { GetTicketsUseCase } from '../use-cases/get-tickets-use-case';
-import { GetTicketByIdUseCase } from '../use-cases/get-ticket-by-id-user-case';
-import { PatchTicketUseCase } from '../use-cases/patch-ticket-use-case';
+import { CreateTicketUseCase } from '../use-cases/use-cases-tickets/create-ticket-use-case';
+import { GetTicketsUseCase } from '../use-cases/use-cases-tickets/get-tickets-use-case';
+import { GetTicketByIdUseCase } from '../use-cases/use-cases-tickets/get-ticket-by-id-user-case';
+import { PatchTicketUseCase } from '../use-cases/use-cases-tickets/patch-ticket-use-case';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 import { TICKET_MODEL, TICKET_RESPONSE_MESSAGES } from '../../domain/constants/ticket.constants';
-import { DeleteTicketUseCase } from '../use-cases/delete-ticket-use-case';
-import { PutTicketUseCase } from '../use-cases/put-ticket-use-case';
-import { GetAvailableMembersUseCase } from '../use-cases/get-available-members-use-case';
+import { DeleteTicketUseCase } from '../use-cases/use-cases-tickets/delete-ticket-use-case';
+import { PutTicketUseCase } from '../use-cases/use-cases-tickets/put-ticket-use-case';
+import { GetAvailableMembersUseCase } from '../use-cases/use-cases-tickets/get-available-members-use-case';
 import { GetTicketQueryDto } from '../api/dto/request/get-tickets-dto';
 import { TicketResponseDto } from '../api/dto/response/tickets-reponse-dto';
 import { PutTicketDto } from '../api/dto/request/put-ticket-dto';
@@ -70,11 +69,14 @@ export class TicketsController {
   @Post()
   @ResponseMessage(TICKET_RESPONSE_MESSAGES.CREATED)
   async create(
-    @Body(new ParseArrayPipe({ items: CreateTicketDto, optional: true })) 
-    createTicketDto: CreateTicketDto[]
+    @Body() 
+    createTicketDto: CreateTicketDto | CreateTicketDto[]
   ) {
     const tickets = await this.createTicketUseCase.execute(createTicketDto);
-    return TicketResponseDto.fromEntities(tickets as any[]);
+    if (Array.isArray(tickets)) {
+        return TicketResponseDto.fromEntities(tickets as any[]);
+    }
+    return TicketResponseDto.fromEntity(tickets as any);
   }
 
   // Get a Ticket by ID

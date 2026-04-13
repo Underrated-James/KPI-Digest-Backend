@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
-import { TICKET_REPOSITORY } from '../../domain/constants/ticket.constants';
-import { type TicketRepository } from '../../infrastracture/repositories/tickets-repository';
-import { TicketStatus } from '../../domain/enums/ticket-status';
-import { Ticket as TicketsEntity } from '../../domain/entities/ticket.entity';
+import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
+import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
+import { TicketStatus } from '../../../domain/enums/ticket-status';
+import { Ticket as TicketsEntity } from '../../../domain/entities/ticket.entity';
 
 @Injectable()
 export class GetTicketsUseCase {

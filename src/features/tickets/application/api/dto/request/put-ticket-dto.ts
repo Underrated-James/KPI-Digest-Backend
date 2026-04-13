@@ -9,9 +9,9 @@ export class PutTicketDto {
     @IsString()
     projectId: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    sprintId: string;
+    sprintId?: string;
 
     @IsOptional()
     @IsString()
@@ -37,13 +37,13 @@ export class PutTicketDto {
     @IsString()
     descriptionLink: string;
 
-    @IsNotEmpty({ message: 'Estimation testing is required' })
+    @IsOptional()
     @Type(() => Number)
     @IsNumber()
-    estimationTesting: number;
+    estimationTesting?: number;
 
-    @IsNotEmpty({ message: 'Development estimation is required' })
+    @IsOptional()
     @Type(() => Number)
     @IsNumber()
-    developmentEstimation: number;
+    developmentEstimation?: number;
 }
