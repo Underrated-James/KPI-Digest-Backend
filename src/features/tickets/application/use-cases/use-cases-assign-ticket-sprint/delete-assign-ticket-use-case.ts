@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { TICKET_REPOSITORY } from '../../domain/constants/ticket.constants';
-import { type TicketRepository } from '../../infrastracture/repositories/tickets-repository';
-import { TicketNotFoundError } from '../../presentation/errors/tickets-not-found';
+import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
+import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
+import { TicketNotFoundError } from '../../../presentation/errors/tickets-not-found';
 
 @Injectable()
-export class DeleteTicketUseCase {
+export class DeleteAssignTicketUseCase {
   constructor(
     @Inject(TICKET_REPOSITORY)
     private readonly ticketRepository: TicketRepository,
@@ -15,7 +15,6 @@ export class DeleteTicketUseCase {
     if (!ticket) {
       throw new TicketNotFoundError(id);
     }
-
     await this.ticketRepository.delete(id);
   }
 }

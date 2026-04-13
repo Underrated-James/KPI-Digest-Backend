@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { TICKET_REPOSITORY } from '../../domain/constants/ticket.constants';
-import { type TicketRepository } from '../../infrastracture/repositories/tickets-repository';
+import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
+import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
 
@@ -21,7 +21,7 @@ export class GetAvailableMembersUseCase {
 
     if (!ticket.teamId) {
         // If ticket doesn't have a teamId, try to find it by sprintId
-        const team = await this.teamRepository.findBySprintId(ticket.sprintId);
+        const team = await this.teamRepository.findBySprintId(ticket.sprintId || '');
         if (!team) {
             return { devs: [], qas: [] };
         }

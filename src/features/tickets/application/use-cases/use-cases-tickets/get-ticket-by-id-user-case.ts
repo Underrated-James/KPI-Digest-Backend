@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { TICKET_REPOSITORY } from '../../domain/constants/ticket.constants';
-import { type TicketRepository } from '../../infrastracture/repositories/tickets-repository';
-import { Ticket as TicketsEntity } from '../../domain/entities/ticket.entity';
-import { TicketNotFoundError } from '../../presentation/errors/tickets-not-found';
+import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
+import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
+import { Ticket as TicketsEntity } from '../../../domain/entities/ticket.entity';
+import { TicketNotFoundError } from '../../../presentation/errors/tickets-not-found';
 
 @Injectable()
 export class GetTicketByIdUseCase {

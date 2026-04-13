@@ -1,9 +1,9 @@
 import { Injectable, Inject, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
-import { TICKET_REPOSITORY } from '../../domain/constants/ticket.constants';
-import { type TicketRepository } from '../../infrastracture/repositories/tickets-repository';
-import { PatchTicketDto } from '../api/dto/request/patch-ticket.dto';
-import { TicketNotFoundError } from '../../presentation/errors/tickets-not-found';
-import { Ticket as TicketsEntity } from '../../domain/entities/ticket.entity';
+import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
+import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
+import { PatchTicketDto } from '../../api/dto/request/patch-ticket.dto';
+import { TicketNotFoundError } from '../../../presentation/errors/tickets-not-found';
+import { Ticket as TicketsEntity } from '../../../domain/entities/ticket.entity';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
@@ -37,8 +37,8 @@ export class PatchTicketUseCase {
 
     if (dto.sprintId || dto.assignedDevId !== undefined || dto.assignedQaId !== undefined) {
       const [sprint, team] = await Promise.all([
-        this.sprintRepository.findById(sprintId),
-        this.teamRepository.findBySprintId(sprintId),
+        this.sprintRepository.findById(sprintId || ''),
+        this.teamRepository.findBySprintId(sprintId || ''),
       ]);
 
       if (!sprint) {

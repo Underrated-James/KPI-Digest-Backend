@@ -5,7 +5,7 @@ export class Ticket {
   constructor(
     public readonly id: string,
     public readonly projectId: string,
-    public readonly sprintId: string,
+    public readonly sprintId: string | null,
     public readonly teamId: string | null,
     public readonly assignedDevId: string | null,
     public readonly assignedQaId: string | null,
@@ -13,8 +13,11 @@ export class Ticket {
     public _status: string,
     public _ticketTitle: string,
     public _descriptionLink: string,
-    public _estimationTesting: number,
-    public _developmentEstimation: number,
+    public _estimationTesting?: number | null,
+    public _developmentEstimation?: number | null,
+    public _sprintCapacity?: number,
+    public _commitedCapacity?: number,
+    public _availableCapacity?: number,
     public readonly _projectName?: string,
     public readonly _projectStatus?: ProjectStatus,
     public readonly _sprintName?: string,
@@ -43,12 +46,24 @@ export class Ticket {
     return this._descriptionLink;
   }
 
-  get estimationTesting(): number {
-    return this._estimationTesting;
+  get estimationTesting(): number | null {
+    return this._estimationTesting || null;
   }
 
-  get developmentEstimation(): number {
-    return this._developmentEstimation;
+  get developmentEstimation(): number | null {
+    return this._developmentEstimation || null;
+  }
+
+  get sprintCapacity(): number | undefined {
+    return this._sprintCapacity;
+  }
+
+  get commitedCapacity(): number | undefined {
+    return this._commitedCapacity;
+  }
+
+  get availableCapacity(): number | undefined {
+    return this._availableCapacity;
   }
 
   get projectName(): string | undefined {
@@ -108,6 +123,18 @@ export class Ticket {
   updateDevelopmentEstimation(developmentEstimation: number): void {
     this._developmentEstimation = developmentEstimation;
   }
-  
- 
+
+  updateSprintCapacity(sprintCapacity: number): void {
+    this._sprintCapacity = sprintCapacity;
+  }
+
+  updateCommitedCapacity(commitedCapacity: number): void {
+    this._commitedCapacity = commitedCapacity;
+  }
+
+  updateAvailableCapacity(availableCapacity: number): void {
+    this._availableCapacity = availableCapacity;
+  }
+
+
 }

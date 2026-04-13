@@ -1,14 +1,14 @@
-import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
-import { Ticket as TicketEntity } from 'src/features/tickets/domain/entities/ticket.entity';
+import { PaginatedResult } from '../../../../../../common/interfaces/paginated-result.interface';
+import { Ticket as AssignTicketEntity } from '../../../../domain/entities/ticket.entity';
 import { TicketStatus } from '../../../../domain/enums/ticket-status';
-import { ProjectStatus } from 'src/features/project/domain/enums/project-status-enums';
-import { SprintStatus } from 'src/features/sprints/domain/enums/sprint-status-enums';
+import { ProjectStatus } from '../../../../../project/domain/enums/project-status-enums';
+import { SprintStatus } from '../../../../../sprints/domain/enums/sprint-status-enums';
 
-export class TicketResponseDto {
+export class AssignTicketResponseDto {
   constructor(
     public readonly id: string,
     public readonly projectId: string,
-    public readonly sprintId: string,
+    public readonly sprintId: string | null,
     public readonly teamId: string | null,
     public readonly assignedDevId: string | null,
     public readonly assignedQaId: string | null,
@@ -18,6 +18,9 @@ export class TicketResponseDto {
     public readonly descriptionLink: string,
     public readonly developmentEstimation: number | null,
     public readonly estimationTesting: number | null,
+    public readonly sprintCapacity: number,
+    public readonly commitedCapacity: number,
+    public readonly availableCapacity: number,
     public readonly projectName?: string,
     public readonly projectStatus?: ProjectStatus,
     public readonly sprintName?: string,
@@ -30,11 +33,11 @@ export class TicketResponseDto {
     public readonly updatedAt?: Date,
   ) { }
 
-  static fromEntity(ticket: TicketEntity): TicketResponseDto {
-    return new TicketResponseDto(
+  static fromEntity(ticket: AssignTicketEntity): AssignTicketResponseDto {
+    return new AssignTicketResponseDto(
       ticket.id,
       ticket.projectId,
-      ticket.sprintId || '',
+      ticket.sprintId,
       ticket.teamId,
       ticket.assignedDevId,
       ticket.assignedQaId,
@@ -42,8 +45,11 @@ export class TicketResponseDto {
       ticket.ticketTitle,
       ticket.status as TicketStatus,
       ticket.descriptionLink,
-      ticket.developmentEstimation || null,
-      ticket.estimationTesting || null,
+      ticket.developmentEstimation,
+      ticket.estimationTesting,
+      ticket.sprintCapacity || 0,
+      ticket.commitedCapacity || 0,
+      ticket.availableCapacity || 0,
       ticket.projectName,
       ticket.projectStatus,
       ticket.sprintName,
@@ -57,13 +63,13 @@ export class TicketResponseDto {
     );
   }
 
-  static fromEntities(users: TicketEntity[]): TicketResponseDto[] {
-    return users.map((user) => TicketResponseDto.fromEntity(user));
+  static fromEntities(tickets: AssignTicketEntity[]): AssignTicketResponseDto[] {
+    return tickets.map((ticket) => AssignTicketResponseDto.fromEntity(ticket));
   }
 
-  static fromPaginatedResult(result: PaginatedResult<TicketEntity>): PaginatedResult<TicketResponseDto> {
+  static fromPaginatedResult(result: PaginatedResult<AssignTicketEntity>): PaginatedResult<AssignTicketResponseDto> {
     return {
-      content: TicketResponseDto.fromEntities(result.content),
+      content: AssignTicketResponseDto.fromEntities(result.content),
       page: result.page,
       size: result.size,
       totalElements: result.totalElements,

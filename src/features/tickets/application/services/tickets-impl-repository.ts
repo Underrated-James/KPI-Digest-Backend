@@ -25,7 +25,7 @@ export class TicketMongooseRepository implements TicketRepository {
             {
                 $addFields: {
                     projectObjId: { $toObjectId: '$projectId' },
-                    sprintObjId: { $toObjectId: '$sprintId' },
+                    sprintObjId: { $cond: [{ $and: [{ $ne: ['$sprintId', null] }, { $ne: ['$sprintId', ''] }] }, { $toObjectId: '$sprintId' }, null] },
                     devObjId: { $cond: [{ $ne: ['$assignedDevId', null] }, { $toObjectId: '$assignedDevId' }, null] },
                     qaObjId: { $cond: [{ $ne: ['$assignedQaId', null] }, { $toObjectId: '$assignedQaId' }, null] }
                 }
@@ -80,6 +80,9 @@ export class TicketMongooseRepository implements TicketRepository {
                     descriptionLink: 1,
                     estimationTesting: 1,
                     developmentEstimation: 1,
+                    sprintCapacity: 1,
+                    commitedCapacity: 1,
+                    availableCapacity: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     projectName: '$project.name',
@@ -165,6 +168,9 @@ export class TicketMongooseRepository implements TicketRepository {
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
+            sprintCapacity: (ticket as any).sprintCapacity || 0,
+            commitedCapacity: (ticket as any).commitedCapacity || 0,
+            availableCapacity: (ticket as any).availableCapacity || 0,
             status: ticket.status
         });
         const doc = await createdTicket.save();
@@ -183,6 +189,9 @@ export class TicketMongooseRepository implements TicketRepository {
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
+            sprintCapacity: (ticket as any).sprintCapacity || 0,
+            commitedCapacity: (ticket as any).commitedCapacity || 0,
+            availableCapacity: (ticket as any).availableCapacity || 0,
             status: ticket.status
         }));
 
@@ -195,8 +204,12 @@ export class TicketMongooseRepository implements TicketRepository {
     }
 
     //Get All Tickets (filter with status optional)
-    async findAll(status?: TicketStatus): Promise<TicketEntity[]> {
-        const query = status ? { status } : {};
+    async findAll(status?: TicketStatus, projectId?: string, sprintId?: string, teamId?: string): Promise<TicketEntity[]> {
+        const query: any = {};
+        if (status) query.status = status;
+        if (projectId) query.projectId = projectId;
+        if (sprintId) query.sprintId = sprintId;
+        if (teamId) query.teamId = teamId;
         const docs = await this.ticketModel.aggregate(this.getAggregationPipeline(query)).exec();
         return docs.map((doc) => toEntity(doc));
     }
@@ -220,6 +233,9 @@ export class TicketMongooseRepository implements TicketRepository {
         if (ticket.descriptionLink) updateData.descriptionLink = ticket.descriptionLink;
         if (ticket.estimationTesting !== undefined) updateData.estimationTesting = ticket.estimationTesting;
         if (ticket.developmentEstimation !== undefined) updateData.developmentEstimation = ticket.developmentEstimation;
+        if ((ticket as any).sprintCapacity !== undefined) updateData.sprintCapacity = (ticket as any).sprintCapacity;
+        if ((ticket as any).commitedCapacity !== undefined) updateData.commitedCapacity = (ticket as any).commitedCapacity;
+        if ((ticket as any).availableCapacity !== undefined) updateData.availableCapacity = (ticket as any).availableCapacity;
         if (ticket.status) updateData.status = ticket.status;
         if (ticket.assignedDevId !== undefined) updateData.assignedDevId = ticket.assignedDevId;
         if (ticket.assignedQaId !== undefined) updateData.assignedQaId = ticket.assignedQaId;
@@ -242,6 +258,9 @@ export class TicketMongooseRepository implements TicketRepository {
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
+            sprintCapacity: (ticket as any).sprintCapacity || 0,
+            commitedCapacity: (ticket as any).commitedCapacity || 0,
+            availableCapacity: (ticket as any).availableCapacity || 0,
             status: ticket.status,
         };
 
