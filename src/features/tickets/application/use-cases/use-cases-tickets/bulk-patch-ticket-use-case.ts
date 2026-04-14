@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
 import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
 import { BulkPatchTicketDto } from '../../api/dto/request/bulk-patch-ticket-dto';
@@ -7,8 +7,7 @@ import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.
 import { type SprintRepository } from 'src/features/sprints/infrastracture/repository/sprint-repository';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
-import { USER_REPOSITORY } from 'src/features/users/domain/constants/user.constants';
-import { type UserRepository } from 'src/features/users/infrastracture/repositories/user.repository';
+import { TicketAssignmentValidatorService } from '../../services/ticket-assignment-validator.service';
 
 @Injectable()
 export class BulkPatchTicketUseCase {
@@ -19,8 +18,7 @@ export class BulkPatchTicketUseCase {
     private readonly sprintRepository: SprintRepository,
     @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
-    @Inject(USER_REPOSITORY)
-    private readonly userRepository: UserRepository,
+    private readonly ticketAssignmentValidator: TicketAssignmentValidatorService,
   ) { }
 
   async execute(dto: BulkPatchTicketDto): Promise<TicketEntity[]> {
@@ -45,73 +43,51 @@ export class BulkPatchTicketUseCase {
       }
     }
 
-    // Pre-fetch all necessary data (Sprints, Teams, Users)
+    // Pre-fetch all necessary data (Sprints and Teams)
     const sprintIds = [...new Set(patchItems.map(item => {
         const ticket = ticketMap.get(item.id)!;
         return item.sprintId || ticket.sprintId;
     }).filter(id => !!id))] as string[];
 
-    const userIds = [...new Set([
-        ...patchItems.map(item => item.assignedDevId).filter(id => !!id),
-        ...patchItems.map(item => item.assignedQaId).filter(id => !!id),
-        ...existingTickets.map(t => t?.assignedDevId).filter(id => !!id),
-        ...existingTickets.map(t => t?.assignedQaId).filter(id => !!id),
-    ])] as string[];
-
-    const [sprints, teams, users] = await Promise.all([
+    const [sprints, teams] = await Promise.all([
       Promise.all(sprintIds.map(id => this.sprintRepository.findById(id))),
       Promise.all(sprintIds.map(id => this.teamRepository.findBySprintId(id))),
-      Promise.all(userIds.map(id => this.userRepository.findById(id))),
     ]);
 
     const sprintMap = new Map(sprints.filter(s => s !== null).map(s => [s!.id, s!]));
     const teamMap = new Map(teams.filter(t => t !== null).map(t => [t!.sprintId, t!]));
-    const userMap = new Map(users.filter(u => u !== null).map(u => [u!.id, u!]));
 
     // Perform validations
     for (const item of patchItems) {
       const ticket = ticketMap.get(item.id)!;
       const sprintId = item.sprintId || ticket.sprintId;
+      const projectId = item.projectId || ticket.projectId;
       const sprint = sprintId ? sprintMap.get(sprintId) : null;
       const team = sprintId ? teamMap.get(sprintId) : null;
-
-      // Validate sprint and project consistency if sprint is changing
-      if (item.sprintId && sprint) {
-        const projectId = item.projectId || ticket.projectId;
-        if (projectId !== sprint.projectId) {
-          throw new BadRequestException(`Project ID ${projectId} does not match the sprint's project ID ${sprint.projectId} for ticket ${ticket.ticketNumber}`);
-        }
-      }
 
       // Validate assignments
       const assignedDevId = item.assignedDevId !== undefined ? item.assignedDevId : ticket.assignedDevId;
       const assignedQaId = item.assignedQaId !== undefined ? item.assignedQaId : ticket.assignedQaId;
 
-      if (assignedDevId) {
-        const user = userMap.get(assignedDevId);
-        if (!user) throw new UnprocessableEntityException(`Assigned Developer with ID ${assignedDevId} not found`);
-        if (user.role !== 'DEVS') throw new UnprocessableEntityException(`User ${user.name} is not a Developer`);
-        if (team) {
-          const isMember = team.users.some((u: any) => u.userId === assignedDevId);
-          if (!isMember) throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${sprintId}`);
-        }
-      }
-
-      if (assignedQaId) {
-        const user = userMap.get(assignedQaId);
-        if (!user) throw new UnprocessableEntityException(`Assigned QA with ID ${assignedQaId} not found`);
-        if (user.role !== 'QA') throw new UnprocessableEntityException(`User ${user.name} is not a QA`);
-        if (team) {
-          const isMember = team.users.some((u: any) => u.userId === assignedQaId);
-          if (!isMember) throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${sprintId}`);
-        }
-      }
+      await this.ticketAssignmentValidator.assertProjectExists(projectId);
+      this.ticketAssignmentValidator.validateSprint(sprintId, sprint || null, projectId);
+      await this.ticketAssignmentValidator.validateAssignments({
+        projectId,
+        assignedDevId,
+        assignedQaId,
+        team,
+      });
     }
 
     // Execute bulk update
     const updates = patchItems.map(item => ({
         id: item.id,
-        data: item as Partial<TicketEntity>,
+        data: {
+          ...(item as Partial<TicketEntity>),
+          ...(item.sprintId !== undefined
+            ? { teamId: item.sprintId ? teamMap.get(item.sprintId)?.id || null : null }
+            : {}),
+        } as Partial<TicketEntity>,
     }));
 
     return this.ticketRepository.patchMany(updates);

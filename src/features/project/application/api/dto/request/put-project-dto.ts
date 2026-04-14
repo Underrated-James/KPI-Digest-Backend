@@ -1,4 +1,15 @@
-import { IsDate, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  ArrayUnique,
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { ProjectStatus } from '../../../../domain/enums/project-status-enums';
 import { Type } from 'class-transformer';
 
@@ -15,4 +26,10 @@ export class PutProjectDto {
   @Type(() => Date)
   @IsDate()
   finishDate: Date;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsMongoId({ each: true })
+  memberIds?: string[];
 }

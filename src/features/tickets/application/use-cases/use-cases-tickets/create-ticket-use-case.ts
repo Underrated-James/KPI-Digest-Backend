@@ -1,4 +1,4 @@
-import { Injectable, Inject, ConflictException, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, Inject, ConflictException, BadRequestException } from '@nestjs/common';
 import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
 import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
 import { CreateTicketDto } from '../../api/dto/request/create-ticket-dto';
@@ -7,9 +7,8 @@ import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.
 import { type SprintRepository } from 'src/features/sprints/infrastracture/repository/sprint-repository';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
-import { USER_REPOSITORY } from 'src/features/users/domain/constants/user.constants';
-import { type UserRepository } from 'src/features/users/infrastracture/repositories/user.repository';
 import { TicketStatus } from '../../../domain/enums/ticket-status';
+import { TicketAssignmentValidatorService } from '../../services/ticket-assignment-validator.service';
 
 @Injectable()
 export class CreateTicketUseCase {
@@ -20,8 +19,7 @@ export class CreateTicketUseCase {
     private readonly sprintRepository: SprintRepository,
     @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
-    @Inject(USER_REPOSITORY)
-    private readonly userRepository: UserRepository,
+    private readonly ticketAssignmentValidator: TicketAssignmentValidatorService,
   ) { }
 
   async execute(dto: CreateTicketDto | CreateTicketDto[]): Promise<TicketEntity | TicketEntity[]> {
@@ -93,50 +91,14 @@ export class CreateTicketUseCase {
       throw new ConflictException(`Ticket ${dto.ticketNumber} already exists`);
     }
 
-    if (dto.sprintId) {
-      if (!sprint) {
-        throw new BadRequestException(`Sprint with ID ${dto.sprintId} not found`);
-      }
-
-      if (dto.projectId !== sprint.projectId) {
-        throw new BadRequestException(`Project ID ${dto.projectId} does not match the sprint's project ID ${sprint.projectId}`);
-      }
-    }
-
-    const assignedDevId = dto.assignedDevId || null;
-    const assignedQaId = dto.assignedQaId || null;
-
-    if (assignedDevId) {
-      const user = await this.userRepository.findById(assignedDevId);
-      if (!user) {
-        throw new UnprocessableEntityException(`Assigned Developer with ID ${assignedDevId} not found`);
-      }
-      if (user.role !== 'DEVS') {
-        throw new UnprocessableEntityException(`User ${user.name} is not a Developer (Role: ${user.role})`);
-      }
-      if (team) {
-        const isMember = team.users.some((u: any) => u.userId === assignedDevId);
-        if (!isMember) {
-          throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${dto.sprintId}`);
-        }
-      }
-    }
-
-    if (assignedQaId) {
-      const user = await this.userRepository.findById(assignedQaId);
-      if (!user) {
-        throw new UnprocessableEntityException(`Assigned QA with ID ${assignedQaId} not found`);
-      }
-      if (user.role !== 'QA') {
-        throw new UnprocessableEntityException(`User ${user.name} is not a QA (Role: ${user.role})`);
-      }
-      if (team) {
-        const isMember = team.users.some((u: any) => u.userId === assignedQaId);
-        if (!isMember) {
-          throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${dto.sprintId}`);
-        }
-      }
-    }
+    await this.ticketAssignmentValidator.assertProjectExists(dto.projectId);
+    this.ticketAssignmentValidator.validateSprint(dto.sprintId, sprint, dto.projectId);
+    await this.ticketAssignmentValidator.validateAssignments({
+      projectId: dto.projectId,
+      assignedDevId: dto.assignedDevId || null,
+      assignedQaId: dto.assignedQaId || null,
+      team,
+    });
   }
 
   private mapToEntity(dto: CreateTicketDto, team: any | null): TicketEntity {

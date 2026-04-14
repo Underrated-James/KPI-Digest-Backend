@@ -3,6 +3,8 @@ import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
 import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
 import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
+import { PROJECT_REPOSITORY } from 'src/features/project/domain/constants/project.constants';
+import { type ProjectRepository } from 'src/features/project/infrastracture/repositories/project.repository';
 
 @Injectable()
 export class GetAvailableMembersUseCase {
@@ -11,6 +13,8 @@ export class GetAvailableMembersUseCase {
     private readonly ticketRepository: TicketRepository,
     @Inject(TEAM_REPOSITORY)
     private readonly teamRepository: TeamRepository,
+    @Inject(PROJECT_REPOSITORY)
+    private readonly projectRepository: ProjectRepository,
   ) { }
 
   async execute(ticketId: string) {
@@ -19,19 +23,33 @@ export class GetAvailableMembersUseCase {
       throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
     }
 
-    if (!ticket.teamId) {
-        // If ticket doesn't have a teamId, try to find it by sprintId
-        const team = await this.teamRepository.findBySprintId(ticket.sprintId || '');
-        if (!team) {
-            return { devs: [], qas: [] };
-        }
-        return this.filterMembers(team.users);
+    const [devs, qas] = await Promise.all([
+      this.projectRepository.getMembersByRole(ticket.projectId, 'DEVS'),
+      this.projectRepository.getMembersByRole(ticket.projectId, 'QA'),
+    ]);
+
+    if (devs.length || qas.length) {
+      return {
+        devs: devs.map((user) => ({ userId: user.id, name: user.name })),
+        qas: qas.map((user) => ({ userId: user.id, name: user.name })),
+      };
     }
 
-    const team = await this.teamRepository.findById(ticket.teamId);
+    const team = ticket.teamId
+      ? await this.teamRepository.findById(ticket.teamId)
+      : ticket.sprintId
+        ? await this.teamRepository.findBySprintId(ticket.sprintId)
+        : null;
+
     if (!team) {
       return { devs: [], qas: [] };
     }
+
+    await Promise.all(
+      [...new Set(team.users.map((user) => user.userId))].map((userId) =>
+        this.projectRepository.addMember(ticket.projectId, userId),
+      ),
+    );
 
     return this.filterMembers(team.users);
   }

@@ -1,4 +1,4 @@
-import { Injectable, Inject, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { TICKET_REPOSITORY } from '../../../domain/constants/ticket.constants';
 import { type TicketRepository } from '../../../infrastracture/repositories/tickets-repository';
 import { PatchTicketDto } from '../../api/dto/request/patch-ticket.dto';
@@ -8,8 +8,7 @@ import { TEAM_REPOSITORY } from 'src/features/teams/domain/constants/team.consta
 import { SPRINT_REPOSITORY } from 'src/features/sprints/domain/constants/sprint.constants';
 import { type TeamRepository } from 'src/features/teams/infrastracture/repository/team-repository';
 import { type SprintRepository } from 'src/features/sprints/infrastracture/repository/sprint-repository';
-import { USER_REPOSITORY } from 'src/features/users/domain/constants/user.constants';
-import { type UserRepository } from 'src/features/users/infrastracture/repositories/user.repository';
+import { TicketAssignmentValidatorService } from '../../services/ticket-assignment-validator.service';
 
 @Injectable()
 export class PatchTicketUseCase {
@@ -20,8 +19,7 @@ export class PatchTicketUseCase {
     private readonly teamRepository: TeamRepository,
     @Inject(SPRINT_REPOSITORY)
     private readonly sprintRepository: SprintRepository,
-    @Inject(USER_REPOSITORY)
-    private readonly userRepository: UserRepository,
+    private readonly ticketAssignmentValidator: TicketAssignmentValidatorService,
   ) { }
 
   async execute(id: string, dto: PatchTicketDto): Promise<TicketsEntity> {
@@ -32,53 +30,35 @@ export class PatchTicketUseCase {
 
     // If sprintId, assignedDevId or assignedQaId is changing, we need to validate
     const sprintId = dto.sprintId || ticket.sprintId;
+    const projectId = dto.projectId || ticket.projectId;
     const assignedDevId = dto.assignedDevId !== undefined ? dto.assignedDevId : ticket.assignedDevId;
     const assignedQaId = dto.assignedQaId !== undefined ? dto.assignedQaId : ticket.assignedQaId;
 
-    if (dto.sprintId || dto.assignedDevId !== undefined || dto.assignedQaId !== undefined) {
+    if (dto.sprintId || dto.projectId || dto.assignedDevId !== undefined || dto.assignedQaId !== undefined) {
       const [sprint, team] = await Promise.all([
-        this.sprintRepository.findById(sprintId || ''),
-        this.teamRepository.findBySprintId(sprintId || ''),
+        sprintId ? this.sprintRepository.findById(sprintId) : Promise.resolve(null),
+        sprintId ? this.teamRepository.findBySprintId(sprintId) : Promise.resolve(null),
       ]);
 
-      if (!sprint) {
-        throw new BadRequestException(`Sprint with ID ${sprintId} not found`);
-      }
-
-      if (assignedDevId) {
-        const user = await this.userRepository.findById(assignedDevId);
-        if (!user) {
-          throw new UnprocessableEntityException(`Assigned Developer with ID ${assignedDevId} not found`);
-        }
-        if (user.role !== 'DEVS') {
-          throw new UnprocessableEntityException(`User ${user.name} is not a Developer (Role: ${user.role})`);
-        }
-        if (team) {
-          const isMember = team.users.some(u => u.userId === assignedDevId);
-          if (!isMember) {
-            throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${sprintId}`);
-          }
-        }
-      }
-
-      if (assignedQaId) {
-        const user = await this.userRepository.findById(assignedQaId);
-        if (!user) {
-          throw new UnprocessableEntityException(`Assigned QA with ID ${assignedQaId} not found`);
-        }
-        if (user.role !== 'QA') {
-          throw new UnprocessableEntityException(`User ${user.name} is not a QA (Role: ${user.role})`);
-        }
-        if (team) {
-          const isMember = team.users.some(u => u.userId === assignedQaId);
-          if (!isMember) {
-            throw new UnprocessableEntityException(`User ${user.name} is not a member of the team for Sprint: ${sprintId}`);
-          }
-        }
-      }
+      await this.ticketAssignmentValidator.assertProjectExists(projectId);
+      this.ticketAssignmentValidator.validateSprint(sprintId, sprint, projectId);
+      await this.ticketAssignmentValidator.validateAssignments({
+        projectId,
+        assignedDevId,
+        assignedQaId,
+        team,
+      });
     }
 
-    const updatedTicket = await this.ticketRepository.patch(id, dto);
+    const effectiveTeam =
+      sprintId ? await this.teamRepository.findBySprintId(sprintId) : null;
+
+    const updatedTicket = await this.ticketRepository.patch(id, {
+      ...dto,
+      ...(dto.projectId !== undefined ? { projectId } : {}),
+      ...(dto.sprintId !== undefined ? { sprintId: dto.sprintId } : {}),
+      ...(dto.sprintId !== undefined ? { teamId: effectiveTeam?.id || null } : {}),
+    });
     if (!updatedTicket) {
       throw new TicketNotFoundError(id);
     }

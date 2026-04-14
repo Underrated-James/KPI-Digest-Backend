@@ -105,7 +105,15 @@ export class CreateTeamUseCase {
       }))
     );
 
-    return this.teamRepository.create(teamEntity);
+    const createdTeam = await this.teamRepository.create(teamEntity);
+
+    await Promise.all(
+      [...new Set(dto.userIds.map((user) => user.userId))].map((userId) =>
+        this.projectRepository.addMember(dto.projectId, userId),
+      ),
+    );
+
+    return createdTeam;
   }
 }
 

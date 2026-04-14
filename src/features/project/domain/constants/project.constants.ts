@@ -1,6 +1,8 @@
 export const PROJECT_REPOSITORY = 'ProjectRepository';
 export const PROJECT_MODEL = 'Project';
 export const PROJECT_COLLECTION = 'Projects';
+export const PROJECT_MEMBER_MODEL = 'ProjectMember';
+export const PROJECT_MEMBER_COLLECTION = 'ProjectMembers';
 
 export const PROJECT_RESPONSE_MESSAGES = {
   RESTORED: 'Project restored successfully',
