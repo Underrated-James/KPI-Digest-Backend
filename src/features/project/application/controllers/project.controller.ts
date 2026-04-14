@@ -1,12 +1,14 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
   Query,
+  Put,
 } from '@nestjs/common';
 import { GetProjectsUseCase } from '../use-cases/get-projects-use-case';
 import { CreateProjectUseCase } from '../use-cases/create-project-use-case';
@@ -17,13 +19,19 @@ import { DeleteProjectUseCase } from '../use-cases/delete-project-use-case';
 import { RestoreProjectUseCase } from '../use-cases/restore-project-use-case';
 import { HardDeleteProjectUseCase } from '../use-cases/hard-delete-project-use-case';
 import { ProjectResponseDto } from '../api/dto/response/project-response-dto';
+import { UserResponseDto } from 'src/features/users/application/api/dtos/response/user-response-dto';
 import { ResponseMessage } from '../../../../common/decorators/response-message.decorator';
 import { ParseMongoIdPipe } from '../../../../common/pipes/parse-mongo-id.pipe';
 import { CreateProjectDto } from '../api/dto/request/create-project-dto';
 import { PatchProjectDto } from '../api/dto/request/patch-project-dto';
 import { PutProjectDto } from '../api/dto/request/put-project-dto';
 import { GetProjectQueryDto } from '../api/dto/request/get-project-dto';
-import { PROJECT_RESPONSE_MESSAGES, PROJECT_MODEL } from '../../domain/constants/project.constants';
+import {
+  PROJECT_MODEL,
+  PROJECT_RESPONSE_MESSAGES,
+  PROJECT_REPOSITORY,
+} from '../../domain/constants/project.constants';
+import { type ProjectRepository } from '../../infrastracture/repositories/project.repository';
 
 @Controller('projects')
 export class ProjectController {
@@ -36,6 +44,8 @@ export class ProjectController {
     private readonly deleteProjectUseCase: DeleteProjectUseCase,
     private readonly restoreProjectUseCase: RestoreProjectUseCase,
     private readonly hardDeleteProjectUseCase: HardDeleteProjectUseCase,
+    @Inject(PROJECT_REPOSITORY)
+    private readonly projectRepository: ProjectRepository,
   ) { }
 
 
@@ -70,6 +80,33 @@ export class ProjectController {
     return ProjectResponseDto.fromEntity(project);
   }
 
+  @Get(':id/members')
+  @ResponseMessage('Project members retrieved successfully')
+  async getProjectMembers(
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,
+  ) {
+    const members = await this.projectRepository.getMembers(id);
+    return UserResponseDto.fromEntities(members);
+  }
+
+  @Get(':id/members/developers')
+  @ResponseMessage('Project developers retrieved successfully')
+  async getProjectDevelopers(
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,
+  ) {
+    const developers = await this.projectRepository.getMembersByRole(id, 'DEVS');
+    return UserResponseDto.fromEntities(developers);
+  }
+
+  @Get(':id/members/qa')
+  @ResponseMessage('Project QA retrieved successfully')
+  async getProjectQa(
+    @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,
+  ) {
+    const qa = await this.projectRepository.getMembersByRole(id, 'QA');
+    return UserResponseDto.fromEntities(qa);
+  }
+
   // Patch User by ID
   @Patch(':id')
   @ResponseMessage(PROJECT_RESPONSE_MESSAGES.PATCHED)
@@ -81,6 +118,7 @@ export class ProjectController {
     return ProjectResponseDto.fromEntity(project);
   }
 
+  @Put(':id')
   @ResponseMessage(PROJECT_RESPONSE_MESSAGES.PUT)
   async put(
     @Param('id', new ParseMongoIdPipe(PROJECT_MODEL)) id: string,

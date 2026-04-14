@@ -21,6 +21,12 @@ export class ProjectModel {
   @Prop({ required: true })
   finishDate: Date;
 
+  @Prop({ type: [String], default: [] })
+  ownerIds: string[];
+
+  @Prop()
+  createdBy?: string;
+
   @Prop({ default: false, index: true})
   isDeleted: boolean;
   

@@ -12,11 +12,13 @@ import { PutTicketUseCase } from './application/use-cases/use-cases-tickets/put-
 import { GetAvailableMembersUseCase } from './application/use-cases/use-cases-tickets/get-available-members-use-case';
 import { BulkPatchTicketUseCase } from './application/use-cases/use-cases-tickets/bulk-patch-ticket-use-case';
 import { GetSprintCapacityUseCase } from './application/use-cases/use-cases-tickets/get-sprint-capacity-use-case';
+import { TicketAssignmentValidatorService } from './application/services/ticket-assignment-validator.service';
 
 import { TICKET_MODEL, TICKET_REPOSITORY } from './domain/constants/ticket.constants';
 import { SprintsModule } from '../sprints/sprints.module';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
+import { ProjectModule } from '../project/project.module';
 
 
 @Module({
@@ -24,7 +26,8 @@ import { UsersModule } from '../users/users.module';
         MongooseModule.forFeature([{ name: TICKET_MODEL, schema: TicketSchema }]),
         SprintsModule,
         TeamsModule,
-        UsersModule
+        UsersModule,
+        ProjectModule,
     ],
     controllers: [TicketsController],
     providers: [
@@ -37,6 +40,7 @@ import { UsersModule } from '../users/users.module';
         GetAvailableMembersUseCase,
         BulkPatchTicketUseCase,
         GetSprintCapacityUseCase,
+        TicketAssignmentValidatorService,
         {
             provide: TICKET_REPOSITORY,
             useClass: TicketMongooseRepository

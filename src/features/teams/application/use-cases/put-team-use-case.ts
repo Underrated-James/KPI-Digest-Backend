@@ -2,10 +2,12 @@ import { Injectable, Inject, NotFoundException, BadRequestException } from '@nes
 import { type TeamRepository } from '../../infrastracture/repository/team-repository';
 import { TEAM_REPOSITORY } from '../../domain/constants/team.constants';
 import { SPRINT_REPOSITORY } from '../../../sprints/domain/constants/sprint.constants';
+import { PROJECT_REPOSITORY } from '../../../project/domain/constants/project.constants';
 import { USER_REPOSITORY } from '../../../users/domain/constants/user.constants';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
 import { PutTeamDto } from '../api/dto/request/put-team.dto';
 import { type SprintRepository } from '../../../sprints/infrastracture/repository/sprint-repository';
+import { type ProjectRepository } from '../../../project/infrastracture/repositories/project.repository';
 import { type UserRepository } from '../../../users/infrastracture/repositories/user.repository';
 
 @Injectable()
@@ -15,6 +17,8 @@ export class PutTeamUseCase {
     private readonly teamRepository: TeamRepository,
     @Inject(SPRINT_REPOSITORY)
     private readonly sprintRepository: SprintRepository,
+    @Inject(PROJECT_REPOSITORY)
+    private readonly projectRepository: ProjectRepository,
     @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
   ) {}
@@ -81,6 +85,13 @@ export class PutTeamUseCase {
     if (!updatedTeam) {
         throw new NotFoundException(`Team with id '${id}' not found after update`);
     }
+
+    await Promise.all(
+      [...new Set(dto.userIds.map((user) => user.userId))].map((userId) =>
+        this.projectRepository.addMember(dto.projectId, userId),
+      ),
+    );
+
     return updatedTeam;
   }
 }

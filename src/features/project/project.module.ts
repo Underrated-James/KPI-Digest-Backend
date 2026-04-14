@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectSchema } from './infrastracture/models/project.model';
+import {
+  ProjectMemberSchema,
+} from './infrastracture/models/project-member.model';
 import { ProjectController } from './application/controllers/project.controller';
 import { GetProjectsUseCase } from './application/use-cases/get-projects-use-case';
 import { CreateProjectUseCase } from './application/use-cases/create-project-use-case';
@@ -11,12 +14,21 @@ import { RestoreProjectUseCase } from './application/use-cases/restore-project-u
 import { HardDeleteProjectUseCase } from './application/use-cases/hard-delete-project-use-case';
 import { PutProjectUseCase } from './application/use-cases/put-project-use-case';
 import { ProjectMongooseRepository } from './application/services/project-impl-repository';
-import { PROJECT_REPOSITORY, PROJECT_MODEL } from './domain/constants/project.constants';
+import {
+  PROJECT_REPOSITORY,
+  PROJECT_MODEL,
+  PROJECT_MEMBER_MODEL,
+} from './domain/constants/project.constants';
+import { UsersModule } from '../users/users.module';
 
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: PROJECT_MODEL, schema: ProjectSchema }])
+        MongooseModule.forFeature([
+            { name: PROJECT_MODEL, schema: ProjectSchema },
+            { name: PROJECT_MEMBER_MODEL, schema: ProjectMemberSchema },
+        ]),
+        UsersModule,
     ],
     controllers: [ProjectController],
     providers: [

@@ -2,10 +2,12 @@ import { Injectable, Inject, NotFoundException, BadRequestException } from '@nes
 import { type TeamRepository } from '../../infrastracture/repository/team-repository';
 import { TEAM_REPOSITORY } from '../../domain/constants/team.constants';
 import { SPRINT_REPOSITORY } from '../../../sprints/domain/constants/sprint.constants';
+import { PROJECT_REPOSITORY } from '../../../project/domain/constants/project.constants';
 import { USER_REPOSITORY } from '../../../users/domain/constants/user.constants';
 import { Team as TeamEntity } from '../../domain/entities/team.entity';
 import { PatchTeamDto } from '../api/dto/request/patch-team.dto';
 import { type SprintRepository } from '../../../sprints/infrastracture/repository/sprint-repository';
+import { type ProjectRepository } from '../../../project/infrastracture/repositories/project.repository';
 import { type UserRepository } from '../../../users/infrastracture/repositories/user.repository';
 
 @Injectable()
@@ -15,6 +17,8 @@ export class PatchTeamUseCase {
     private readonly teamRepository: TeamRepository,
     @Inject(SPRINT_REPOSITORY)
     private readonly sprintRepository: SprintRepository,
+    @Inject(PROJECT_REPOSITORY)
+    private readonly projectRepository: ProjectRepository,
     @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
   ) {}
@@ -87,6 +91,15 @@ export class PatchTeamUseCase {
     if (!updatedTeam) {
         throw new NotFoundException(`Team with id '${id}' not found after update`);
     }
+
+    const projectId = dto.projectId || team.projectId;
+    const memberIds = (dto.userIds || team.users).map((user) => user.userId);
+    await Promise.all(
+      [...new Set(memberIds)].map((userId) =>
+        this.projectRepository.addMember(projectId, userId),
+      ),
+    );
+
     return updatedTeam;
   }
 }

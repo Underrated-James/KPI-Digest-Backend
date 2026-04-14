@@ -1,4 +1,5 @@
 import { ProjectStatus } from '../enums/project-status-enums';
+import { User } from 'src/features/users/domain/entities/user.entity';
 
 export class Project {
   constructor(
@@ -9,6 +10,9 @@ export class Project {
     public _isDeleted: boolean = false,
     public _deletedAt?: Date,
     public _sprintCount: number = 0,
+    public _members: User[] = [],
+    public _ownerIds: string[] = [],
+    public _createdBy?: string,
     public readonly _createdAt?: Date,
     public readonly _updatedAt?: Date,
   ) {}
@@ -27,6 +31,18 @@ export class Project {
 
   get sprintCount(): number {
     return this._sprintCount;
+  }
+
+  get members(): User[] {
+    return this._members;
+  }
+
+  get ownerIds(): string[] {
+    return this._ownerIds;
+  }
+
+  get createdBy(): string | undefined {
+    return this._createdBy;
   }
 
   get isDeleted(): boolean {
@@ -54,6 +70,19 @@ export class Project {
   updateFinishDate(finishDate: Date): void {
     this._finishDate = finishDate;
   }
+
+  updateMembers(members: User[]): void {
+    this._members = members;
+  }
+
+  updateOwnerIds(ownerIds: string[]): void {
+    this._ownerIds = ownerIds;
+  }
+
+  updateCreatedBy(createdBy?: string): void {
+    this._createdBy = createdBy;
+  }
+
   softDelete(): void {
     this._isDeleted = true;
     this._deletedAt = new Date();
