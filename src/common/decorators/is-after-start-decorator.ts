@@ -24,6 +24,14 @@ export function IsAfterStartDate(property: string, validationOptions?: Validatio
           const start = new Date(relatedValue);
           const end = new Date(value);
 
+          // Official end may be set to "now" on the same calendar day as official start
+          if (
+            args.property === 'officialEndDate' &&
+            relatedPropertyName === 'officialStartDate'
+          ) {
+            return end.getTime() >= start.getTime();
+          }
+
           // Normalize to start of day UTC for comparison
           start.setUTCHours(0, 0, 0, 0);
           end.setUTCHours(0, 0, 0, 0);
@@ -32,6 +40,12 @@ export function IsAfterStartDate(property: string, validationOptions?: Validatio
           return end.getTime() > start.getTime();
         },
         defaultMessage(args: ValidationArguments) {
+          if (
+            args.property === 'officialEndDate' &&
+            args.constraints[0] === 'officialStartDate'
+          ) {
+            return `${args.property} must be on or after ${args.constraints[0]}`;
+          }
           return `${args.property} must be at least one day after ${args.constraints[0]}`;
         },
       },

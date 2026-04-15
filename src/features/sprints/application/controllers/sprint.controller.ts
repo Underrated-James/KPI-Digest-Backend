@@ -26,6 +26,15 @@ import { RestoreSprintUseCase } from '../use-cases/restore-sprint-use-case';
 import { HardDeleteSprintUseCase } from '../use-cases/hard-delete-sprint-use-case';
 import { GetSprintsQueryDto } from '../api/dto/request/get-sprints-dto';
 import { SPRINT_RESPONSE_MESSAGES, SPRINT_MODEL } from '../../domain/constants/sprint.constants';
+import { GetProjectTicketsUseCase } from '../use-cases/get-project-tickets-use-case';
+import { GetAvailableTicketsForSprintUseCase } from '../use-cases/get-available-tickets-for-sprint-use-case';
+import { AssignTicketsToSprintUseCase } from '../use-cases/assign-tickets-to-sprint-use-case';
+import { SprintCapacityService } from '../use-cases/sprint-capacity/sprint-capacity.service';
+import { AssignTicketsToSprintDto } from '../api/dto/request/assign-tickets-to-sprint-dto';
+import { GetTicketQueryDto } from 'src/features/tickets/application/api/dto/request/get-tickets-dto';
+import { TicketResponseDto } from 'src/features/tickets/application/api/dto/response/tickets-reponse-dto';
+import { PaginatedResult } from 'src/common/interfaces/paginated-result.interface';
+import { Ticket as TicketEntity } from 'src/features/tickets/domain/entities/ticket.entity';
 
 @Controller('sprints')
 export class SprintController {
@@ -38,6 +47,10 @@ export class SprintController {
     private readonly deleteSprintUseCase: DeleteSprintUseCase,
     private readonly restoreSprintUseCase: RestoreSprintUseCase,
     private readonly hardDeleteSprintUseCase: HardDeleteSprintUseCase,
+    private readonly getProjectTicketsUseCase: GetProjectTicketsUseCase,
+    private readonly getAvailableTicketsForSprintUseCase: GetAvailableTicketsForSprintUseCase,
+    private readonly assignTicketsToSprintUseCase: AssignTicketsToSprintUseCase,
+    private readonly sprintCapacityService: SprintCapacityService,
   ) { }
 
 
@@ -110,5 +123,60 @@ export class SprintController {
   @ResponseMessage(SPRINT_RESPONSE_MESSAGES.HARD_DELETED)
   async hardDelete(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
     await this.hardDeleteSprintUseCase.execute(id);
+  }
+
+  @Get(':id/tickets')
+  @ResponseMessage('Sprint project tickets retrieved successfully')
+  async getProjectTickets(
+    @Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string,
+    @Query() query: GetTicketQueryDto,
+  ) {
+    const sprint = await this.getSprintByIdUseCase.execute(id);
+    const tickets = await this.getProjectTicketsUseCase.execute(
+      sprint.projectId,
+      query.page,
+      query.size,
+      query.status,
+      query.sprintId,
+      query.search,
+    );
+
+    if ('content' in tickets) {
+      return TicketResponseDto.fromPaginatedResult(
+        tickets as PaginatedResult<TicketEntity>,
+      );
+    }
+    return TicketResponseDto.fromEntities(tickets as TicketEntity[]);
+  }
+
+  @Get(':id/tickets/available')
+  @ResponseMessage('Available sprint tickets retrieved successfully')
+  async getAvailableTickets(
+    @Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string,
+  ) {
+    const result = await this.getAvailableTicketsForSprintUseCase.execute(id);
+    return {
+      available: TicketResponseDto.fromEntities(result.available),
+      assigned: TicketResponseDto.fromEntities(result.assigned),
+    };
+  }
+
+  @Post(':id/tickets/assign')
+  @ResponseMessage('Tickets assigned to sprint successfully')
+  async assignTickets(
+    @Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string,
+    @Body() assignTicketsToSprintDto: AssignTicketsToSprintDto,
+  ) {
+    const tickets = await this.assignTicketsToSprintUseCase.execute(
+      id,
+      assignTicketsToSprintDto,
+    );
+    return TicketResponseDto.fromEntities(tickets);
+  }
+
+  @Get(':id/capacity')
+  @ResponseMessage('Sprint capacity calculated successfully')
+  async getCapacity(@Param('id', new ParseMongoIdPipe(SPRINT_MODEL)) id: string) {
+    return this.sprintCapacityService.calculateCapacity(id);
   }
 }

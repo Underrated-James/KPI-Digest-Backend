@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TeamsController } from './application/controllers/teams.controller';
 import { TeamsService } from './application/services/teams.service';
@@ -19,7 +19,7 @@ import { UsersModule } from '../users/users.module';
   imports: [
     MongooseModule.forFeature([{ name: TEAM_MODEL, schema: TeamSchema }]),
     ProjectModule,
-    SprintsModule,
+    forwardRef(() => SprintsModule),
     UsersModule,
   ],
   controllers: [TeamsController],
