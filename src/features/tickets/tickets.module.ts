@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TicketSchema } from './infrastracture/models/ticket-model';
 import { GetTicketsUseCase } from './application/use-cases/use-cases-tickets/get-tickets-use-case';
@@ -24,7 +24,7 @@ import { ProjectModule } from '../project/project.module';
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: TICKET_MODEL, schema: TicketSchema }]),
-        SprintsModule,
+        forwardRef(() => SprintsModule),
         TeamsModule,
         UsersModule,
         ProjectModule,

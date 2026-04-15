@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { SprintController } from './application/controllers/sprint.controller';
@@ -14,12 +14,18 @@ import { RestoreSprintUseCase } from './application/use-cases/restore-sprint-use
 import { HardDeleteSprintUseCase } from './application/use-cases/hard-delete-sprint-use-case';
 import { SPRINT_REPOSITORY, SPRINT_MODEL } from './domain/constants/sprint.constants';
 import { ProjectModule } from '../project/project.module';
+import { TicketsModule } from '../tickets/tickets.module';
+import { GetProjectTicketsUseCase } from './application/use-cases/get-project-tickets-use-case';
+import { GetAvailableTicketsForSprintUseCase } from './application/use-cases/get-available-tickets-for-sprint-use-case';
+import { AssignTicketsToSprintUseCase } from './application/use-cases/assign-tickets-to-sprint-use-case';
+import { SprintCapacityService } from './application/use-cases/sprint-capacity/sprint-capacity.service';
 
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: SPRINT_MODEL, schema: SprintSchema }]),
-        ProjectModule
+        ProjectModule,
+        forwardRef(() => TicketsModule),
     ],
     controllers: [SprintController],
     providers: [
@@ -31,6 +37,10 @@ import { ProjectModule } from '../project/project.module';
         DeleteSprintUseCase,
         RestoreSprintUseCase,
         HardDeleteSprintUseCase,
+        GetProjectTicketsUseCase,
+        GetAvailableTicketsForSprintUseCase,
+        AssignTicketsToSprintUseCase,
+        SprintCapacityService,
         {
             provide: SPRINT_REPOSITORY,
             useClass: SprintMongooseRepository

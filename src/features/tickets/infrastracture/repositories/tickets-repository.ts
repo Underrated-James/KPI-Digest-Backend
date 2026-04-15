@@ -12,6 +12,7 @@ export interface TicketRepository {
     findTicketNumber(ticketNumber: string): Promise<Ticket | null>;
     patch(id: string, ticket: Partial<Ticket>): Promise<Ticket | null>;
     patchMany(updates: { id: string; data: Partial<Ticket> }[]): Promise<Ticket[]>;
+    findAvailableForSprint(projectId: string, sprintId?: string | null, statuses?: TicketStatus[]): Promise<Ticket[]>;
     put(id: string, ticket: Partial<Ticket>): Promise<Ticket | null>;
     delete(id: string): Promise<void>;
 }   

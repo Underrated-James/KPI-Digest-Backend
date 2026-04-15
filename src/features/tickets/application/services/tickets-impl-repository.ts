@@ -214,6 +214,25 @@ export class TicketMongooseRepository implements TicketRepository {
         return docs.map((doc) => toEntity(doc));
     }
 
+    async findAvailableForSprint(
+        projectId: string,
+        sprintId?: string | null,
+        statuses?: TicketStatus[],
+    ): Promise<TicketEntity[]> {
+        const query: any = { projectId };
+
+        if (sprintId !== undefined) {
+            query.sprintId = sprintId;
+        }
+
+        if (statuses && statuses.length > 0) {
+            query.status = { $in: statuses };
+        }
+
+        const docs = await this.ticketModel.aggregate(this.getAggregationPipeline(query)).exec();
+        return docs.map((doc) => toEntity(doc));
+    }
+
     //Get Ticket by ID
     async findById(id: string): Promise<TicketEntity | null> {
         if (!Types.ObjectId.isValid(id)) return null;

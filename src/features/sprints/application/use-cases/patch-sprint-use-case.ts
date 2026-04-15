@@ -5,6 +5,7 @@ import { Sprint as SprintEntity } from '../../domain/entities/sprint-entity';
 import { SprintNotFoundError } from './../../presentation/errors/sprint-not-found';
 import { PatchSprintDto } from '../api/dto/request/patch-sprint-dto';
 import { DateUtils } from '../../../../shared/date-utils';
+import { SprintStatus } from '../../domain/enums/sprint-status-enums';
 
 @Injectable()
 export class PatchSprintUseCase {
@@ -17,6 +18,37 @@ export class PatchSprintUseCase {
     const sprintExist = await this.SprintRepository.findById(id);
     if (!sprintExist) {
       throw new SprintNotFoundError(id);
+    }
+
+    if (sprintExist.status === SprintStatus.Completed) {
+      throw new BadRequestException('Cannot modify a completed sprint');
+    }
+
+    if (sprintExist.status === SprintStatus.Active) {
+      const providedKeys = Object.entries(dto)
+        .filter(([, value]) => value !== undefined)
+        .map(([key]) => key);
+      const allowedWhenRunning = new Set(['status', 'officialEndDate']);
+      const forbidden = providedKeys.filter((key) => !allowedWhenRunning.has(key));
+      if (forbidden.length > 0) {
+        throw new BadRequestException(
+          'This sprint is running. Pause it from Controls to edit details, or complete it.',
+        );
+      }
+      if (dto.status === SprintStatus.Completed && !dto.officialEndDate) {
+        throw new BadRequestException('officialEndDate is required when completing a sprint');
+      }
+    }
+
+    if (dto.status === SprintStatus.Completed && dto.officialEndDate) {
+      if (!sprintExist.officialStartDate) {
+        throw new BadRequestException('Cannot complete a sprint that has no official start date');
+      }
+      const endAt = new Date(dto.officialEndDate).getTime();
+      const startAt = sprintExist.officialStartDate.getTime();
+      if (endAt < startAt) {
+        throw new BadRequestException('officialEndDate must be on or after officialStartDate');
+      }
     }
 
     // If any date-related field is updated, we need to re-validate the duration
