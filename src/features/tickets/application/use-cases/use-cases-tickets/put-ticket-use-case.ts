@@ -63,6 +63,7 @@ export class PutTicketUseCase {
       dto.status,
       dto.ticketTitle,
       dto.descriptionLink,
+      dto.description || null,
       dto.estimationTesting || null,
       dto.developmentEstimation || null,
     );

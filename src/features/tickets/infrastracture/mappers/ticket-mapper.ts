@@ -12,6 +12,7 @@ export function toEntity(doc: any): TicketsEntity {
         doc.status || doc.ticketStatus,
         doc.ticketTitle,
         doc.descriptionLink,
+        doc.description || null,
         doc.estimationTesting,
         doc.developmentEstimation,
         doc.sprintCapacity,
