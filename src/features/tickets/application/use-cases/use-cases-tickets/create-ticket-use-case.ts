@@ -113,6 +113,7 @@ export class CreateTicketUseCase {
       TicketStatus.Open,
       dto.ticketTitle,
       dto.descriptionLink,
+      dto.description || null,
       dto.estimationTesting || null,
       dto.developmentEstimation || null,
     );

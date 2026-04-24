@@ -38,6 +38,10 @@ export class PutTicketDto {
     descriptionLink: string;
 
     @IsOptional()
+    @IsString()
+    description?: string;
+
+    @IsOptional()
     @Type(() => Number)
     @IsNumber()
     estimationTesting?: number;

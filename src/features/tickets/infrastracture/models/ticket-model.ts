@@ -32,6 +32,9 @@ export class TicketModel {
     @Prop({ required: true })
     ticketTitle: string;
 
+    @Prop({ required: false, default: null })
+    description?: string;
+
     @Prop({ required: true })
     descriptionLink: string;
 

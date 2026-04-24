@@ -77,6 +77,7 @@ export class TicketMongooseRepository implements TicketRepository {
                     ticketNumber: 1,
                     status: 1,
                     ticketTitle: 1,
+                    description: 1,
                     descriptionLink: 1,
                     estimationTesting: 1,
                     developmentEstimation: 1,
@@ -165,6 +166,7 @@ export class TicketMongooseRepository implements TicketRepository {
             assignedQaId: ticket.assignedQaId,
             ticketNumber: ticket.ticketNumber,
             ticketTitle: ticket.ticketTitle,
+            description: ticket.description,
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
@@ -186,6 +188,7 @@ export class TicketMongooseRepository implements TicketRepository {
             assignedQaId: ticket.assignedQaId,
             ticketNumber: ticket.ticketNumber,
             ticketTitle: ticket.ticketTitle,
+            description: ticket.description,
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
@@ -275,6 +278,7 @@ export class TicketMongooseRepository implements TicketRepository {
         const updateData: any = {};
         if (ticket.ticketNumber) updateData.ticketNumber = ticket.ticketNumber;
         if (ticket.ticketTitle) updateData.ticketTitle = ticket.ticketTitle;
+        if (ticket.description !== undefined) updateData.description = ticket.description;
         if (ticket.descriptionLink) updateData.descriptionLink = ticket.descriptionLink;
         if (ticket.estimationTesting !== undefined) updateData.estimationTesting = ticket.estimationTesting;
         if (ticket.developmentEstimation !== undefined) updateData.developmentEstimation = ticket.developmentEstimation;
@@ -300,6 +304,7 @@ export class TicketMongooseRepository implements TicketRepository {
             assignedQaId: ticket.assignedQaId,
             ticketNumber: ticket.ticketNumber,
             ticketTitle: ticket.ticketTitle,
+            description: ticket.description,
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,

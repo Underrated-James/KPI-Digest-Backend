@@ -13,6 +13,7 @@ export class Ticket {
     public _status: string,
     public _ticketTitle: string,
     public _descriptionLink: string,
+    public _description?: string | null,
     public _estimationTesting?: number | null,
     public _developmentEstimation?: number | null,
     public _sprintCapacity?: number,
@@ -42,6 +43,9 @@ export class Ticket {
     return this._ticketTitle;
   }
 
+  get description(): string | null {
+    return this._description || null;
+  }
   get descriptionLink(): string {
     return this._descriptionLink;
   }
@@ -109,6 +113,9 @@ export class Ticket {
 
   updateTicketTitle(ticketTitle: string): void {
     this._ticketTitle = ticketTitle;
+  }
+  updateDescription(descriptionLink: string): void {
+    this._descriptionLink = descriptionLink;
   }
   updateDescriptionLink(descriptionLink: string): void {
     this._descriptionLink = descriptionLink;
