@@ -21,4 +21,5 @@ export interface ProjectRepository {
     removeMember(projectId: string, userId: string): Promise<void>;
     replaceMembers(projectId: string, userIds: string[], role?: ProjectMemberRole): Promise<void>;
     isMember(projectId: string, userId: string): Promise<boolean>;
+    incrementTicketSequence(projectId: string): Promise<Project | null>;
 }   

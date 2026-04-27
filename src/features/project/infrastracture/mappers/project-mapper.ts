@@ -6,6 +6,8 @@ export function toEntity(doc: any): ProjectsEntity {
         doc._id.toString(),
         doc.name,
         doc.status,
+        doc.projectCode,
+        doc.ticketSequence || 0,
         doc.finishDate,
         doc.isDeleted,
         doc.deletedAt,
