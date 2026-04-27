@@ -18,6 +18,12 @@ export class ProjectModel {
   @Prop({ required: true, enum: ProjectStatus, index: true })
   status: ProjectStatus;
 
+  @Prop({ required: true, minlength: 2, maxlength: 10, index: true })
+  projectCode: string;
+
+  @Prop({ required: true, default: 0 })
+  ticketSequence: number;
+
   @Prop({ required: true })
   finishDate: Date;
 

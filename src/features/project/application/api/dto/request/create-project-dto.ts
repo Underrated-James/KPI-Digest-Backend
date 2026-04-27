@@ -23,6 +23,12 @@ export class CreateProjectDto {
   @IsEnum(ProjectStatus)
   status: ProjectStatus;
 
+  @IsString()
+  @IsNotEmpty({ message: 'Project code is required' })
+  @MaxLength(10, { message: 'Project code is too long (max 10 characters)' })
+  @MinLength(2, { message: 'Project code is too short (min 2 characters)' })
+  projectCode: string;
+
   @Type(() => Date)
   @IsDate()
   finishDate: Date;

@@ -6,6 +6,8 @@ export class Project {
     public readonly id: string,
     public _name: string,
     public _status: ProjectStatus,
+    public _projectCode: string,
+    public _ticketSequence: number,
     public _finishDate: Date,
     public _isDeleted: boolean = false,
     public _deletedAt?: Date,
@@ -23,6 +25,14 @@ export class Project {
 
   get status(): ProjectStatus {
     return this._status;
+  }
+
+  get ticketSequence(): number {
+    return this._ticketSequence;
+  }
+
+  get projectCode(): string {
+    return this._projectCode;
   }
 
   get finishDate(): Date {
@@ -65,7 +75,16 @@ export class Project {
   }
   updateStatus(status: ProjectStatus): void {
     this._status = status;
+  } 
+
+  updateTicketSequence(ticketSequence: number): void {
+    this._ticketSequence = ticketSequence;
   }
+
+  updateProjectCode(projectCode: string): void {
+    this._projectCode = projectCode;
+  }
+
 
   updateFinishDate(finishDate: Date): void {
     this._finishDate = finishDate;

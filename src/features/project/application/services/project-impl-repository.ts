@@ -31,6 +31,16 @@ export class ProjectMongooseRepository implements ProjectRepository {
     private readonly projectMemberModel: Model<ProjectMemberDocument>,
   ) { }
 
+
+  async incrementTicketSequence(projectId: string): Promise<ProjectsEntity | null> {
+    const doc = await this.projectModel.findByIdAndUpdate(
+      projectId,
+      { $inc: { ticketSequence: 1 } },
+      { new: true }
+    );
+    return doc ? toEntity(doc) : null;
+  }
+
   private buildProjectAggregationPipeline(query: any): any[] {
     return [
       { $match: query },
@@ -209,6 +219,8 @@ export class ProjectMongooseRepository implements ProjectRepository {
     const createdProject = new this.projectModel({
       name: project.name,
       status: project.status,
+      projectCode: project.projectCode,
+      ticketSequence: project.ticketSequence || 0,
       finishDate: project.finishDate,
       ownerIds: project.ownerIds,
       createdBy: project.createdBy,
@@ -253,6 +265,8 @@ export class ProjectMongooseRepository implements ProjectRepository {
     const updateData: any = {};
     if (project.name !== undefined) updateData.name = project.name;
     if (project.status !== undefined) updateData.status = project.status;
+    if (project.projectCode !== undefined) updateData.projectCode = project.projectCode;
+    if (project.ticketSequence !== undefined) updateData.ticketSequence = project.ticketSequence;
     if (project.finishDate !== undefined) updateData.finishDate = project.finishDate;
     if (project.ownerIds !== undefined) updateData.ownerIds = project.ownerIds;
     if (project.createdBy !== undefined) updateData.createdBy = project.createdBy;
@@ -268,6 +282,8 @@ export class ProjectMongooseRepository implements ProjectRepository {
     const updateData = {
       name: project.name,
       status: project.status,
+      projectCode: project.projectCode,
+      ticketSequence: project.ticketSequence || 0,
       finishDate: project.finishDate,
       ownerIds: project.ownerIds || [],
       createdBy: project.createdBy,
