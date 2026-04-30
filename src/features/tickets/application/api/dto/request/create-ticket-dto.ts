@@ -48,4 +48,14 @@ export class CreateTicketDto {
     @Type(() => Number)
     @IsNumber()
     developmentEstimation?: number;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    devTimeSpent?: number;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    testingTimeSpent?: number;
 }

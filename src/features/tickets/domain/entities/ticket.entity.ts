@@ -16,6 +16,8 @@ export class Ticket {
     public _description?: string | null,
     public _estimationTesting?: number | null,
     public _developmentEstimation?: number | null,
+    public _devTimeSpent?: number | null,
+    public _testingTimeSpent?: number | null,
     public _sprintCapacity?: number,
     public _commitedCapacity?: number,
     public _availableCapacity?: number,
@@ -56,6 +58,14 @@ export class Ticket {
 
   get developmentEstimation(): number | null {
     return this._developmentEstimation || null;
+  }
+
+  get devTimeSpent(): number | null {
+    return this._devTimeSpent || null;
+  }
+
+  get testingTimeSpent(): number | null {
+    return this._testingTimeSpent || null;
   }
 
   get sprintCapacity(): number | undefined {
@@ -129,6 +139,12 @@ export class Ticket {
   }
   updateDevelopmentEstimation(developmentEstimation: number): void {
     this._developmentEstimation = developmentEstimation;
+  }
+  updateDevTimeSpent(devTimeSpent: number): void {
+    this._devTimeSpent = devTimeSpent;
+  }
+  updateTestingTimeSpent(testingTimeSpent: number): void {
+    this._testingTimeSpent = testingTimeSpent;
   }
 
   updateSprintCapacity(sprintCapacity: number): void {

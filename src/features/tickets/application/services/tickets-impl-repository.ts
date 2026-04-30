@@ -81,6 +81,8 @@ export class TicketMongooseRepository implements TicketRepository {
                     descriptionLink: 1,
                     estimationTesting: 1,
                     developmentEstimation: 1,
+                    devTimeSpent: 1,
+                    testingTimeSpent: 1,
                     sprintCapacity: 1,
                     commitedCapacity: 1,
                     availableCapacity: 1,
@@ -170,6 +172,8 @@ export class TicketMongooseRepository implements TicketRepository {
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
+            devTimeSpent: ticket.devTimeSpent,
+            testingTimeSpent: ticket.testingTimeSpent,
             sprintCapacity: (ticket as any).sprintCapacity || 0,
             commitedCapacity: (ticket as any).commitedCapacity || 0,
             availableCapacity: (ticket as any).availableCapacity || 0,
@@ -192,6 +196,8 @@ export class TicketMongooseRepository implements TicketRepository {
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
+            devTimeSpent: ticket.devTimeSpent,
+            testingTimeSpent: ticket.testingTimeSpent,
             sprintCapacity: (ticket as any).sprintCapacity || 0,
             commitedCapacity: (ticket as any).commitedCapacity || 0,
             availableCapacity: (ticket as any).availableCapacity || 0,
@@ -282,6 +288,8 @@ export class TicketMongooseRepository implements TicketRepository {
         if (ticket.descriptionLink) updateData.descriptionLink = ticket.descriptionLink;
         if (ticket.estimationTesting !== undefined) updateData.estimationTesting = ticket.estimationTesting;
         if (ticket.developmentEstimation !== undefined) updateData.developmentEstimation = ticket.developmentEstimation;
+        if (ticket.devTimeSpent !== undefined) updateData.devTimeSpent = ticket.devTimeSpent;
+        if (ticket.testingTimeSpent !== undefined) updateData.testingTimeSpent = ticket.testingTimeSpent;
         if ((ticket as any).sprintCapacity !== undefined) updateData.sprintCapacity = (ticket as any).sprintCapacity;
         if ((ticket as any).commitedCapacity !== undefined) updateData.commitedCapacity = (ticket as any).commitedCapacity;
         if ((ticket as any).availableCapacity !== undefined) updateData.availableCapacity = (ticket as any).availableCapacity;
@@ -308,6 +316,8 @@ export class TicketMongooseRepository implements TicketRepository {
             descriptionLink: ticket.descriptionLink,
             estimationTesting: ticket.estimationTesting,
             developmentEstimation: ticket.developmentEstimation,
+            devTimeSpent: ticket.devTimeSpent,
+            testingTimeSpent: ticket.testingTimeSpent,
             sprintCapacity: (ticket as any).sprintCapacity || 0,
             commitedCapacity: (ticket as any).commitedCapacity || 0,
             availableCapacity: (ticket as any).availableCapacity || 0,

@@ -66,6 +66,8 @@ export class PutTicketUseCase {
       dto.description || null,
       dto.estimationTesting || null,
       dto.developmentEstimation || null,
+      dto.devTimeSpent || null,
+      dto.testingTimeSpent || null,
     );
 
     const updatedTicket = await this.ticketRepository.put(id, ticketToPut);

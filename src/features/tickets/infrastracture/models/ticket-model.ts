@@ -44,6 +44,12 @@ export class TicketModel {
     @Prop({type:Number, required: false, default: null })
     developmentEstimation: number | null;
 
+    @Prop({type:Number, required: false, default: null })
+    devTimeSpent: number | null;
+
+    @Prop({type:Number, required: false, default: null })
+    testingTimeSpent: number | null;
+
     @Prop({ type: Number, required: false, default: 0 })
     sprintCapacity: number;
 
