@@ -15,6 +15,8 @@ export function toEntity(doc: any): TicketsEntity {
         doc.description || null,
         doc.estimationTesting,
         doc.developmentEstimation,
+        doc.devTimeSpent,
+        doc.testingTimeSpent,
         doc.sprintCapacity,
         doc.commitedCapacity,
         doc.availableCapacity,
