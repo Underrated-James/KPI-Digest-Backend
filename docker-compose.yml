@@ -1,0 +1,36 @@
+services:
+  # MongoDB Database
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: agile-digest-db-standalone
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo-data:/data/db
+  #   restart: always
+
+  # Backend API (NestJS)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agile-digest-api-standalone
+    ports:
+      - '3001:3001'
+    env_file:
+      - .env.production
+    environment:
+      - MONGODB_URI=mongodb://agile-digest-mongodb:27017/KPI_Digest
+      - PORT=3001
+      - NODE_ENV=production
+    restart: always
+    networks:
+      - agile-mongo-container_agile-digest-mongo-network
+      - agile-digest-network
+networks:
+  agile-mongo-container_agile-digest-mongo-network:
+    external: true
+  agile-digest-network:
+    external: true
+volumes:
+  mongo-data:

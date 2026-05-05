@@ -12,6 +12,7 @@ import { TicketsModule } from './features/tickets/tickets.module';
 import { TeamsModule } from './features/teams/teams.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SprintReviewModule } from './features/sprint-review/sprint-review.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AppService } from './app.service';
     SprintsModule,
     TicketsModule,
     TeamsModule,
+    SprintReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
