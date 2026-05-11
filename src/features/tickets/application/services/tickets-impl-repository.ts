@@ -138,6 +138,7 @@ export class TicketMongooseRepository implements TicketRepository {
         const totalElements = await this.ticketModel.countDocuments(query).exec();
         const pipeline = [
             ...this.getAggregationPipeline(query),
+            { $sort: { createdAt: -1 } },
             { $skip: skip },
             { $limit: size }
         ];
@@ -219,7 +220,13 @@ export class TicketMongooseRepository implements TicketRepository {
         if (projectId) query.projectId = projectId;
         if (sprintId) query.sprintId = sprintId;
         if (teamId) query.teamId = teamId;
-        const docs = await this.ticketModel.aggregate(this.getAggregationPipeline(query)).exec();
+        
+        const pipeline = [
+            ...this.getAggregationPipeline(query),
+            { $sort: { createdAt: -1 } }
+        ];
+        
+        const docs = await this.ticketModel.aggregate(pipeline).exec();
         return docs.map((doc) => toEntity(doc));
     }
 
@@ -238,7 +245,12 @@ export class TicketMongooseRepository implements TicketRepository {
             query.status = { $in: statuses };
         }
 
-        const docs = await this.ticketModel.aggregate(this.getAggregationPipeline(query)).exec();
+        const pipeline = [
+            ...this.getAggregationPipeline(query),
+            { $sort: { createdAt: -1 } }
+        ];
+
+        const docs = await this.ticketModel.aggregate(pipeline).exec();
         return docs.map((doc) => toEntity(doc));
     }
 
